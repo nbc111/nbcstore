@@ -1,542 +1,586 @@
-**你的数据还“活着”吗？
+# NBC 钱包后端集成方案
 
-PDP：让数据具备“生命体征”的加密协议**
+> 适用场景：EverShop 电商系统 + NBC 代币支付  
+> 版本：v1.0 | 日期：2026-04-26  
+> 作者：Agent-C（后端与集成专家）
 
-副标题
+---
 
-从“把数据存进去”到“证明数据一直存在”，Filecoin Onchain Cloud 用 PDP 重写云存储的信任模型
+## 1. NBC 代币接口说明
 
-⸻
+### 1.1 代币基本信息（假设）
 
-在 Web2 世界，我们默认一件事：
+假设 NBC 为 ERC-20 代币，部署在某条兼容 EVM 的链上（类比 Ethereum / BSC / Polygon）。
 
-把数据交给云厂商 = 数据就会一直在那里。
+| 参数 | 值 |
+|------|-----|
+| 代币标准 | ERC-20 |
+| 合约地址 | `0x...`（部署时配置） |
+| 小数位数 | 18（标准） |
+| 符号 | NBC |
 
-我们很少去验证。
-也几乎没有能力验证。
+### 1.2 合约方法
 
-⸻
+通过区块链节点的 JSON-RPC 接口调用：
 
-但如果把这个问题换一种方式问：
+```
+# 查询余额
+eth_call → balanceOf(address) → uint256
 
-你如何证明一份数据“现在还存在”？
+# 用户发起转账（用户侧操作，由用户钱包签名）
+eth_sendTransaction → transfer(address to, uint256 amount)
 
-不是昨天。
-不是上传的时候。
-而是此刻。
+# 商户/平台代付（需要授权 + 平台签名）
+eth_sendTransaction → transferFrom(address from, address to, uint256 amount)
+```
 
-⸻
+### 1.3 RPC 接口
 
-这个问题，在传统云里没有答案。
+使用标准 JSON-RPC 2.0，对接节点服务：
 
-而在 Filecoin Onchain Cloud（FOC） 中，这个问题的答案是：
+```
+POST https://<node-rpc-url>
+Headers: Content-Type: application/json
 
-Proof of Data Possession（PDP）
-
-⸻
-
-一、Problem：为什么“存储”本身不再够用
-
-过去的存储逻辑很简单：
-
-* 上传文件
-* 存储在服务器
-* 按月收费
-
-⸻
-
-信任来自：
-
-👉 平台信誉
-👉 SLA 合同
-👉 品牌背书
-
-⸻
-
-但在以下场景，这种模式开始失效：
-
-⸻
-
-1️⃣ AI Agent 的长期记忆
-
-未来的 AI Agent 需要：
-
-* 长期存储记忆
-* 可验证历史
-* 不依赖平台
-
-⸻
-
-问题是：
-
-Agent 无法“相信”云厂商
-
-它需要的是：
-
-👉 可验证的存储
-
-⸻
-
-2️⃣ 数据资产化
-
-如果数据变成资产：
-
-* 数据被交易
-* 数据被授权
-* 数据被审计
-
-⸻
-
-那就必须回答：
-
-数据是否仍然存在？是否被篡改？
-
-⸻
-
-3️⃣ 去中心化应用
-
-在链上世界：
-
-* 没有中心化信任
-* 一切必须可验证
-
-⸻
-
-这意味着：
-
-存储必须变成“可证明行为”
-
-⸻
-
-二、What is PDP：不是“存储”，而是“证明你还在存”
-
-PDP 的核心思想非常简单，但非常反直觉：
-
-不需要重新下载数据，就可以证明数据仍然存在。
-
-⸻
-
-它通过一个机制实现：
-
-挑战-响应（Challenge-Response）
-
-⸻
-
-简单理解：
-
-* 系统随机问一个问题（challenge）
-* 存储节点必须用真实数据回答
-* 如果没有数据 → 无法回答
-
-⸻
-
-所以：
-
-只有真正持有数据的人，才能通过验证
-
-⸻
-
-这和传统云的区别是本质性的：
-
-传统云	PDP
-“我保证我存了”	“我证明我现在还在存”
-靠信任	靠密码学
-静态承诺	持续验证
-
-⸻
-
-三、PDP 提供的三个核心能力
-
-PDP 不是一个单点功能，而是整个系统的“生命体征机制”。
-
-⸻
-
-🧩 1. 数据完整性（Integrity）
-
-确保：
-
-* 数据没有被篡改
-* 数据没有被替换
-
-⸻
-
-通过：
-
-👉 Merkle Tree + 哈希承诺
-
-⸻
-
-🌐 2. 数据可用性（Availability）
-
-确保：
-
-* 数据真的存在
-* 可以被检索
-
-⸻
-
-不是“理论存在”，而是：
-
-物理存在
-
-⸻
-
-⚖️ 3. 可追责性（Accountability）
-
-最关键的一点：
-
-支付与证明绑定
-
-⸻
-
-只有当：
-
-* 数据被证明存在
-
-才会：
-
-* 释放付款
-
-⸻
-
-这意味着：
-
-服务商不能“收钱不干活”
-
-⸻
-
-四、How PDP Works：数据如何“证明自己活着”
-
-PDP 的核心是一个周期性循环：
-
-持续验证数据仍然存在
-
-⸻
-
-Step 1：数据上传
-
-* 客户上传数据
-* 服务商存储数据
-* 构建 Merkle Tree
-* 记录 PieceCID
-
-⸻
-
-👉 每个文件都有一个“指纹”
-
-⸻
-
-Step 2：随机挑战（Challenge）
-
-系统通过：
-
-* drand 随机源
-
-生成不可预测的挑战。
-
-⸻
-
-👉 重点：
-
-服务商无法提前准备答案
-
-⸻
-
-Step 3：生成证明（Proof）
-
-服务商需要：
-
-* 从数据中取出指定块
-* 生成 Merkle proof
-
-⸻
-
-如果数据不完整：
-
-👉 无法生成正确证明
-
-⸻
-
-Step 4：链上验证
-
-智能合约：
-
-* 重算 challenge
-* 验证 proof
-* 判断是否有效
-
-⸻
-
-成功：
-
-👉 标记为“证明通过”
-
-失败：
-
-👉 交易回滚 / 记录 fault
-
-⸻
-
-Step 5：结算（Settlement）
-
-验证结果触发：
-
-* Filecoin Pay 支付
-* 服务信誉更新
-
-⸻
-
-👉 这里非常关键：
-
-存储行为变成“经济行为”
-
-⸻
-
-Step 6：进入下一轮
-
-* 继续随机挑战
-* 持续验证
-
-⸻
-
-这形成一个循环：
-
-数据持续“证明自己还活着”
-
-⸻
-
-五、PDP 的底层结构（不是黑盒）
-
-理解 PDP 的关键是三个数据结构：
-
-⸻
-
-1️⃣ Piece（数据单元）
-
-struct Piece {
-    uint64 id;
-    Cids.Cid data;
-    uint256 size;
+# 余额查询
+{
+  "jsonrpc": "2.0",
+  "method": "eth_call",
+  "params": [{
+    "to": "0xNBC_CONTRACT_ADDRESS",
+    "data": "0x70a08231000000000000000000000000<user_address_without_0x>"
+  }, "latest"],
+  "id": 1
 }
 
-⸻
-
-👉 每个 Piece = 一个文件
-
-⸻
-
-核心：
-
-* CID = 数据指纹
-* Merkle root
-
-⸻
-
-2️⃣ DataSet（数据集合）
-
-struct DataSet {
-    uint64 id;
-    Piece[] pieces;
-    uint256 totalSize;
+# 发送交易（需私钥签名）
+{
+  "jsonrpc": "2.0",
+  "method": "eth_sendTransaction",
+  "params": [{ "to": "0x...", "data": "...", "gas": "..." }],
+  "id": 1
 }
 
-⸻
-
-👉 一个数据集合 = 多个文件
-
-⸻
-
-也是：
-
-验证的基本单位
-
-⸻
-
-3️⃣ Proof（证明）
-
-struct Proof {
-    leaf: bytes32,
-    proof: bytes32[],
+# 获取交易收据（确认状态）
+{
+  "jsonrpc": "2.0",
+  "method": "eth_getTransactionReceipt",
+  "params": ["0x<tx_hash>"],
+  "id": 1
 }
 
-⸻
-
-👉 证明某个数据块存在于 Merkle Tree
-
-⸻
-
-六、为什么 PDP 在 AI 时代变得关键
-
-这一点是很多人没意识到的。
-
-⸻
-
-1️⃣ AI Agent 需要“可验证记忆”
-
-未来 AI Agent 的记忆必须：
-
-* 长期存在
-* 可验证
-* 可审计
-
-⸻
-
-否则：
-
-它的历史没有意义
-
-⸻
-
-PDP 让记忆变成：
-
-可证明存在的状态
-
-⸻
-
-2️⃣ AI Agent 需要“成本约束”
-
-Agent 必须：
-
-* 为存储付钱
-* 为检索付钱
-
-⸻
-
-而 PDP 让：
-
-支付与证明绑定
-
-⸻
-
-这意味着：
-
-* 没有数据 → 没钱
-* 没证明 → 没收入
-
-⸻
-
-👉 这是机器经济的基础
-
-⸻
-
-3️⃣ AI Agent 需要“信任基础设施”
-
-未来 Agent 会问：
-
-你真的有这些数据吗？
-
-⸻
-
-PDP 的回答是：
-
-给你证明
-
-⸻
-
-七、PDP 的安全性（为什么不能作弊）
-
-PDP 的设计核心是：
-
-无法伪造
-
-⸻
-
-❌ 不能预计算
-
-因为：
-
-* challenge 是随机的
-* 不可预测
-
-⸻
-
-❌ 不能伪造数据
-
-因为：
-
-* Merkle root 是绑定的
-* hash 不可逆
-
-⸻
-
-❌ 不能操控随机性
-
-因为：
-
-* drand 是去中心化随机源
-* 无单点控制
-
-⸻
-
-👉 结论：
-
-要么存数据，要么拿不到钱
-
-⸻
-
-八、PDP 的真正意义（不是技术，是范式变化）
-
-如果你退一步看，会发现：
-
-⸻
-
-传统存储是：
-
-承诺（Promise）
-
-⸻
-
-PDP 存储是：
-
-证明（Proof）
-
-⸻
-
-这是一个范式变化：
-
-⸻
-
-模式	Web2	Filecoin + PDP
-信任	平台	密码学
-存储	静态	动态验证
-支付	订阅	proof-based
-数据状态	不透明	可审计
-
-⸻
-
-九、结尾：数据开始拥有“生命体征”
-
-如果你用一个更直观的比喻：
-
-⸻
-
-传统云：
-
-👉 数据像“冷冻文件”
-
-⸻
-
-Filecoin + PDP：
-
-👉 数据像“活着的系统”
-
-⸻
-
-它会：
-
-* 被定期检查
-* 被验证存在
-* 参与经济行为
-
-⸻
-
-一句话总结：
-
-PDP 让数据不只是被存储
-而是被“持续证明存在”
-
-⸻
-
-而当 AI Agent 需要记忆、历史和信任时：
-
-PDP 就是它的“生命体征系统”
+# 获取区块高度（判断确认数）
+{
+  "jsonrpc": "2.0",
+  "method": "eth_blockNumber",
+  "params": [],
+  "id": 1
+}
+```
+
+---
+
+## 2. 钱包服务架构
+
+### 2.1 托管 vs 非托管对比
+
+| 维度 | 非托管（用户自己掌控私钥） | 托管（平台代管余额） |
+|------|--------------------------|-------------------|
+| 用户体验 | 需连接 MetaMask 等钱包 | 直接用钱包地址，无需插件 |
+| 安全责任 | 用户自持，平台无资产风险 | 平台持有资产，有安全风险 |
+| 实现复杂度 | 高（需签名服务） | 低 |
+| 适合场景 | DeFi / Web3 原生应用 | 电商 / 常规业务 |
+
+### 2.2 推荐方案：**半托管模式**
+
+EverShop 场景下推荐**半托管模式**，即：
+
+- **用户侧**：用户使用钱包地址作为身份标识（无需注册），余额存储在**平台数据库**，由平台代管
+- **底层资产**：平台持有用户链上地址的私钥（或通过 HD Wallet 管理）
+- **充值**：用户通过链上转账（从自己的外部钱包）充值到平台地址
+- **支付**：平台内部余额流转，无需每次上链
+
+**原因**：
+1. 电商场景下用户体验优先，不能要求每个买家都懂 Web3
+2. 平台可控制支付流程、支持退款、订单取消等业务逻辑
+3. 充值时上链确认，消除"假转账"
+4. 内部流转不上链，大幅降低 Gas 成本和等待时间
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    用户端                            │
+│   [钱包地址 A] ── 链上转账 ──→ [平台收款地址 P]     │
+│                                     │               │
+└─────────────────────────────────────│───────────────┘
+                                      │ 链上确认后
+                                      ▼
+┌─────────────────────────────────────────────────────┐
+│                   平台后端                           │
+│                                                     │
+│  数据库余额表  ←── 链上事件同步（充值）             │
+│                                                     │
+│  [用户 A 余额: 500 NBC]  ←  平台 HD Wallet 管理    │
+│  [用户 B 余额: 120 NBC]                             │
+│                                                     │
+│  内部流转（数据库事务）→ 无需上链                   │
+│  出金 / 提现 ──→ 构造链上交易 → 签名 → 广播       │
+└─────────────────────────────────────────────────────┘
+```
+
+### 2.3 商户收款钱包设计
+
+- 使用 **HD Wallet（分层确定性钱包）**，通过一个种子短语派生出所有用户的钱包地址
+- 每次用户充值时，显示**唯一收款地址**（避免地址混淆）
+- 定时轮询扫描链上交易，发现充值后更新用户本地余额
+- 管理员可设置归集阈值，超过阈值的余额自动归集到冷钱包
+
+```
+种子短语 (Seed Phrase)
+        │
+        ▼
+    HD Node
+   /   |   \
+用户地址1  用户地址2  用户地址3 ...
+(充值地址)  (充值地址)  (充值地址)
+```
+
+---
+
+## 3. 核心兑换逻辑流程
+
+### 3.1 整体流程
+
+```
+用户浏览商品 → 添加购物车/立即购买
+        │
+        ▼
+计算 NBC 价格（商品标价 × NBC/USD 汇率）
+        │
+        ▼
+验证用户 NBC 余额（数据库查询）
+        │ 余额不足 → 提示充值
+        ▼
+预锁定余额（冻结，乐观锁）
+        │
+        ▼
+创建链上归集交易（如需归集到主账户）
+        │ 或：内部流转无需上链
+        ▼
+更新本地余额（扣除 + 记录流水）
+        │
+        ▼
+创建订单（状态：已支付）
+        │
+        ▼
+通知管理员（新订单提醒）
+        │
+        ▼
+用户收到订单确认
+```
+
+### 3.2 关键代码逻辑（伪代码）
+
+```typescript
+// 订单支付核心逻辑
+async function processPayment(orderId: string, userAddress: string, nbcAmount: string) {
+  const user = await getUserByWallet(userAddress);
+  const order = await getOrder(orderId);
+
+  // 1. 汇率换算（商品人民币价 × NBC/USD 汇率）
+  const nbcPrice = calculateNBCPrice(order.totalPrice, currentRate);
+
+  // 2. 数据库事务：验证余额 + 预扣款
+  const result = await db.transaction(async (tx) => {
+    const freshUser = await tx.users.findOne({ address: userAddress });
+    
+    if (freshUser.balance < nbcPrice) {
+      throw new InsufficientBalanceError('NBC余额不足');
+    }
+
+    // 乐观锁：防止并发扣款
+    const updated = await tx.users.update({
+      where: { address: userAddress, balance: freshUser.balance },
+      data: {
+        balance: freshUser.balance - nbcPrice,
+        frozenBalance: freshUser.frozenBalance + nbcPrice,
+        version: freshUser.version + 1,  // 乐观锁版本号
+      }
+    });
+
+    if (updated.count === 0) {
+      throw new ConcurrentUpdateError('余额已被其他操作修改');
+    }
+
+    // 3. 创建内部转账流水（内部流转，不上链）
+    await tx.walletTx.create({
+      data: {
+        txHash: generateInternalTxHash(),
+        fromAddress: userAddress,
+        toAddress: SYSTEM_WALLET,
+        amount: nbcPrice,
+        type: 'PAYMENT',
+        orderId: orderId,
+        status: 'CONFIRMED',
+      }
+    });
+
+    return updated;
+  });
+
+  // 4. 更新订单状态
+  await updateOrder(orderId, { status: 'PAID', nbcAmount, paidAt: new Date() });
+
+  // 5. 通知管理员
+  await notifyAdmin(`新订单 ${orderId}，支付 ${nbcPrice} NBC`);
+
+  return { success: true, txHash: result.txHash };
+}
+```
+
+### 3.3 充值（链上确认）流程
+
+```typescript
+// 监听链上充值事件
+async function handleDeposit(from: string, amount: string, txHash: string, blockNumber: number) {
+  // 1. 防重放：检查 txHash 是否已处理
+  const existing = await db.walletTx.findOne({ txHash });
+  if (existing) return; // 已处理
+
+  // 2. 等待确认（建议 12 个区块确认，~3 分钟）
+  const currentBlock = await web3.eth.getBlockNumber();
+  const confirmations = currentBlock - blockNumber;
+  
+  if (confirmations < REQUIRED_CONFIRMATIONS) {
+    await scheduleRecheck(txHash, delayMs: 15000);
+    return;
+  }
+
+  // 3. 链上验证：再次确认合约余额变动
+  const onChainBalance = await nbcContract.balanceOf(from);
+
+  // 4. 写入本地余额
+  await db.transaction(async (tx) => {
+    let user = await tx.users.findOne({ address: from });
+    if (!user) {
+      user = await tx.users.create({ address: from, balance: 0, frozenBalance: 0 });
+    }
+
+    await tx.users.update({
+      where: { address: from },
+      data: { balance: user.balance + BigInt(amount) }
+    });
+
+    await tx.walletTx.create({
+      data: {
+        txHash,
+        fromAddress: from,
+        toAddress: SYSTEM_WALLET,
+        amount: BigInt(amount),
+        type: 'DEPOSIT',
+        status: 'CONFIRMED',
+        blockNumber,
+        confirmations,
+      }
+    });
+  });
+}
+```
+
+---
+
+## 4. 订单状态机设计
+
+### 4.1 状态定义
+
+```
+┌──────────┐    创建订单     ┌──────────┐   链上确认    ┌──────────┐
+│  CREATED │ ─────────────→ │ PENDING  │ ───────────→ │  PAID    │
+│  (草稿)  │                │ (待支付)  │              │ (已支付)  │
+└──────────┘                └──────────┘              └──────────┘
+      │                          │                         │
+      │ 超时取消                  │ 支付失败                 │ 商家发货
+      │ (30分钟)                 │ (交易回滚)              ▼
+      ▼                         ▼                   ┌──────────┐
+┌──────────┐              ┌──────────┐   完成      │COMPLETED │
+│ CANCELLED│              │  FAILED  │ ─────────→ │ (完成)    │
+│  (已取消) │              │  (失败)   │              └──────────┘
+└──────────┘              └──────────┘
+                                │
+                                │ 可重试
+                                ▼
+                          ┌──────────┐
+                          │ RETRYING  │
+                          │  (重试中)  │
+                          └──────────┘
+```
+
+### 4.2 状态流转表
+
+| 当前状态 | 触发事件 | 目标状态 | 动作 |
+|---------|---------|---------|------|
+| CREATED | 用户发起支付 | PENDING | 冻结余额，生成支付地址 |
+| PENDING | 链上交易确认（≥12块） | PAID | 解冻余额，确认收款，创建订单 |
+| PENDING | 链上交易失败 | FAILED | 回滚冻结余额，记录错误 |
+| PENDING | 支付超时（30分钟） | CANCELLED | 解冻余额，关闭订单 |
+| PENDING | 用户主动取消 | CANCELLED | 解冻余额 |
+| FAILED | 重试机制触发 | RETRYING | 重试链上操作 |
+| RETRYING | 重试成功 | PAID | 同上 |
+| RETRYING | 重试耗尽（3次） | FAILED | 标记为终态，通知用户 |
+| PAID | 商家确认发货 | SHIPPED | 更新物流信息 |
+| SHIPPED | 买家确认收货 | COMPLETED | 完成交易 |
+| SHIPPED | 超时未确认（14天） | COMPLETED | 自动完成 |
+
+### 4.3 超时自动取消（定时任务）
+
+```typescript
+// 每分钟执行一次
+cron.schedule('* * * * *', async () => {
+  const expiredOrders = await db.orders.findMany({
+    where: {
+      status: 'PENDING',
+      createdAt: { lt: subMinutes(new Date(), 30) }
+    }
+  });
+
+  for (const order of expiredOrders) {
+    await db.transaction(async (tx) => {
+      // 解冻余额
+      const user = await tx.users.findOne({ address: order.userAddress });
+      await tx.users.update({
+        where: { address: order.userAddress },
+        data: {
+          balance: user.balance + order.frozenAmount,
+          frozenBalance: user.frozenBalance - order.frozenAmount,
+        }
+      });
+
+      await tx.orders.update({
+        where: { id: order.id },
+        data: { status: 'CANCELLED', cancelReason: 'PAYMENT_TIMEOUT' }
+      });
+    });
+  }
+});
+```
+
+---
+
+## 5. 安全方案
+
+### 5.1 防止双花攻击
+
+**场景**：同一笔余额被并发用于两个订单。
+
+**解决方案**：
+1. **乐观锁 + 数据库事务**
+   ```sql
+   UPDATE users 
+   SET balance = balance - ?, frozen_balance = frozen_balance + ?, version = version + 1
+   WHERE address = ? AND balance >= ? AND version = ?;
+   ```
+   只有 `version` 匹配的请求才能更新成功，并发请求自动失败回滚。
+
+2. **唯一索引约束**
+   - 链上 `txHash + eventIndex` 建立唯一索引，防止同一笔充值被重复入账
+   - 内部交易流水使用全局唯一 ID
+
+3. **轮询间隔限制**
+   - 同一钱包地址的链上事件轮询，间隔不小于 5 秒
+
+### 5.2 余额并发扣款
+
+使用 PostgreSQL 行级锁：
+```typescript
+await db.$queryRaw`
+  SELECT * FROM users WHERE address = ${address} FOR UPDATE
+`;
+// 锁定该行，后续修改必须等待事务提交
+```
+
+配合乐观锁（version 字段）双重保障。
+
+### 5.3 私钥安全管理
+
+| 层级 | 方案 |
+|------|------|
+| 生成 | 使用 MPC/TSS 或硬件钱包（Ledger）生成 HD 种子 |
+| 存储 | 种子短语加密存储在 Vault（HashiCorp Vault / AWS KMS） |
+| 访问 | 后端服务通过 Vault Agent Sidecar 获取私钥，私钥不出内存 |
+| 签名 | 签名操作在独立Signer服务中执行，网络隔离 |
+| 监控 | 所有签名操作记录审计日志，异常告警 |
+| 归集 | 大额归集需多签审批（M-of-N） |
+
+### 5.4 其他安全措施
+
+- **RPC 节点安全**：使用付费 RPC（Infura / Alchemy）避免公共节点限制；对节点 URL 加白名单
+- **Gas 限制**：所有交易设置合理的 Gas 上限，防止无限消耗
+- **金额精度**：使用 `BigInt`（或 JavaScript `big.js`），避免浮点数精度问题
+- **充值监听**：使用多个 RPC 节点交叉验证，避免单点漏报
+- **API 鉴权**：前端请求携带钱包签名（Sign-In with Ethereum），验证消息归属
+
+---
+
+## 6. 推荐技术选型
+
+### 6.1 区块链交互
+
+| 库 | 适用场景 | 说明 |
+|----|---------|------|
+| **ethers.js v6** | 首选 | 轻量、TypeScript 原生、支持 HDWallet |
+| **web3.js** | 兼容旧项目 | 功能全面，体积较大 |
+| **viem** | 追求性能和类型安全 | 轻量级，比 ethers 更现代 |
+
+**推荐**：使用 `ethers.js v6`
+
+```typescript
+import { ethers } from 'ethers';
+
+const provider = new ethers.JsonRpcProvider(RPC_URL);
+const wallet = ethers.HDWalletWallet.fromMnemonic(MNEMONIC);
+const signer = wallet.connect(provider);
+const nbcContract = new ethers.Contract(NBC_ADDRESS, ERC20_ABI, signer);
+
+// 查询余额
+const balance = await nbcContract.balanceOf(userAddress);
+
+// 发送归集交易（平台侧）
+const tx = await nbcContract.transfer(toAddress, amount);
+await tx.wait(12); // 等待12个区块确认
+```
+
+### 6.2 后端框架
+
+| 框架 | 说明 |
+|------|------|
+| **Node.js + NestJS** | 推荐，分层架构、内置 DI、装饰器丰富 |
+| **Node.js + Fastify** | 高性能，轻量级 |
+| **Go + Gin** | 高并发场景，性能优异 |
+
+**推荐**：Node.js + NestJS（EverShop 本身是 Node.js 项目，保持统一技术栈）
+
+### 6.3 数据库
+
+| 选项 | 说明 |
+|------|------|
+| **PostgreSQL** | 首选，支持事务、乐观锁、行级锁 |
+| **Redis** | 缓存余额热点数据、分布式锁（Redlock） |
+
+### 6.4 辅助工具
+
+| 工具 | 用途 |
+|------|------|
+| **TypeORM / Prisma** | ORM（TypeScript） |
+| **BullMQ** | 任务队列（充值确认、重试、通知） |
+| **ioredis** | Redis 客户端 |
+| **node-cron** | 定时任务（超时检查、归集轮询） |
+| **axios** | HTTP 客户端（调用 RPC） |
+| **dotenv** | 环境变量管理 |
+
+### 6.5 架构概览
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    前端 (EverShop)                    │
+│         钱包地址登录 + 购物车 + 结算页面             │
+└────────────────────────┬────────────────────────────┘
+                         │ REST API / WebSocket
+                         ▼
+┌─────────────────────────────────────────────────────┐
+│                  NestJS 后端服务                    │
+│                                                     │
+│  ┌─────────┐  ┌─────────┐  ┌─────────────────────┐ │
+│  │WalletAPI│  │OrderAPI │  │DepositWatcher       │ │
+│  │(余额/支付)│  │(订单管理)│  │(链上事件监听)        │ │
+│  └────┬────┘  └────┬────┘  └──────────┬──────────┘ │
+│       │            │                  │             │
+│  ┌────┴────────────┴──────────────────┴────┐      │
+│  │            Wallet Service                 │      │
+│  │  (余额管理 + 事务控制 + 冻结机制)          │      │
+│  └─────────────────┬────────────────────────┘      │
+│                    │                               │
+│  ┌─────────────────┴────────────────────────┐      │
+│  │           Blockchain Service              │      │
+│  │  (ethers.js / 交易签名 / RPC调用)         │      │
+│  └───────────────────────────────────────────┘      │
+└────────────────────────┬────────────────────────────┘
+                         │
+          ┌──────────────┼──────────────┐
+          ▼              ▼              ▼
+    ┌──────────┐   ┌──────────┐   ┌──────────┐
+    │PostgreSQL│   │  Redis   │   │  RPC节点 │
+    │(主数据库) │   │(缓存/锁) │   │(ETH/BSC) │
+    └──────────┘   └──────────┘   └──────────┘
+```
+
+---
+
+## 7. 数据模型
+
+### 7.1 核心表结构（PostgreSQL）
+
+```sql
+-- 用户钱包表
+CREATE TABLE wallet_users (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  wallet_address   VARCHAR(64) UNIQUE NOT NULL,
+  balance         NUMERIC(36, 0) NOT NULL DEFAULT 0,   -- NBC 余额（最小单位）
+  frozen_balance  NUMERIC(36, 0) NOT NULL DEFAULT 0,   -- 冻结余额
+  version         INTEGER NOT NULL DEFAULT 0,         -- 乐观锁版本
+  created_at      TIMESTAMPTZ DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 钱包流水表
+CREATE TABLE wallet_transactions (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tx_hash         VARCHAR(66) UNIQUE,                  -- 链上交易hash，内部流转为null
+  internal_id     VARCHAR(64) UNIQUE NOT NULL,          -- 全局唯一流水号
+  from_address    VARCHAR(64) NOT NULL,
+  to_address      VARCHAR(64) NOT NULL,
+  amount          NUMERIC(36, 0) NOT NULL,
+  type            VARCHAR(20) NOT NULL,                 -- DEPOSIT/WITHDRAWAL/PAYMENT/REFUND
+  status          VARCHAR(20) NOT NULL,                -- PENDING/CONFIRMED/FAILED
+  order_id        UUID REFERENCES orders(id),
+  block_number    INTEGER,
+  confirmations   INTEGER DEFAULT 0,
+  error_message   TEXT,
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 订单表（扩展 EverShop 现有订单）
+CREATE TABLE orders (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_address    VARCHAR(64) NOT NULL,
+  total_price     DECIMAL(12, 2) NOT NULL,             -- 原始货币价格
+  nbc_amount      NUMERIC(36, 0),                     -- NBC 支付金额
+  nbc_rate        DECIMAL(20, 8),                     -- 支付时汇率
+  status          VARCHAR(20) NOT NULL DEFAULT 'CREATED',
+  payment_id      VARCHAR(64),                         -- 支付流水号
+  cancel_reason   VARCHAR(100),
+  paid_at         TIMESTAMPTZ,
+  shipped_at      TIMESTAMPTZ,
+  completed_at    TIMESTAMPTZ,
+  created_at      TIMESTAMPTZ DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 防重放索引
+CREATE UNIQUE INDEX idx_wallet_tx_hash ON wallet_transactions(tx_hash) WHERE tx_hash IS NOT NULL;
+CREATE INDEX idx_orders_pending_timeout ON orders(status, created_at) WHERE status = 'PENDING';
+CREATE INDEX idx_wallet_user_address ON wallet_users(wallet_address);
+```
+
+---
+
+## 8. 总结
+
+| 模块 | 推荐方案 |
+|------|---------|
+| 代币标准 | ERC-20（假设），18位精度 |
+| 钱包模式 | 半托管（平台代管余额 + HD Wallet 收款） |
+| 链上交互 | ethers.js v6 + 节点 RPC |
+| 余额同步 | 链上充值监听（≥12确认）；内部流转数据库事务 |
+| 订单状态机 | 6个状态 + 定时超时取消 |
+| 并发安全 | 乐观锁（version）+ 行级锁（FOR UPDATE）+ 唯一索引 |
+| 私钥管理 | Vault / KMS + MPC + 审计日志 |
+| 后端框架 | NestJS + PostgreSQL + Redis + BullMQ |
