@@ -3,7 +3,7 @@
 <img width="60" height="68" alt="EverShop Logo" src="https://raw.githubusercontent.com/evershopcommerce/evershop/dev/.github/images/logo-green.png"/>
 </p>
 <p align="center">
-  <h1 align="center">EverShop</h1>
+  <h1 align="center">NBCShop</h1>
 </p>
 <p align="center">
   <a href="https://trendshift.io/repositories/212" target="_blank"><img src="https://trendshift.io/api/badge/repositories/212" alt="evershopcommerce%2Fevershop | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
@@ -36,6 +36,115 @@ docker compose up -d
 ```
 
 For the full installation guide, please refer to our [Installation guide](https://evershop.io/docs/development/getting-started/installation-guide).
+
+## Local development (from source)
+
+Run the monorepo on your machine when you are working on this repository (not the published Docker image).
+
+### Prerequisites
+
+- **Node.js** (LTS or current; this repo uses `type: "module"`)
+- **PostgreSQL 13+** listening on a host/port your app can reach
+- **npm** (this repo ships a root `package-lock.json`; use `npm ci` for a clean install)
+
+### 1. Install dependencies
+
+From the repository root:
+
+```bash
+npm ci
+```
+
+### 2. Compile package output (`dist`)
+
+The root `dev` / `start` / `build` scripts run compiled files under `packages/evershop/dist`. On a fresh clone you need to compile first:
+
+```bash
+npm run compile
+npm run compile:db
+```
+
+`compile:db` builds `@evershop/postgres-query-builder` into `packages/postgres-query-builder/dist` (required at runtime).
+
+### 3. Build storefront and admin assets
+
+```bash
+npm run build
+```
+
+If `npm run build-fast` fails with `evershop: command not found`, the workspace `bin` link may be missing until a reinstall; you can invoke the CLI directly:
+
+```bash
+node ./packages/evershop/dist/bin/evershop.js build -- --skip-minify
+```
+
+### 4. Database and `.env`
+
+Create a database (example name: `evershop`) and a database user with access to it.
+
+Create a **`.env` file in the repository root** (do not commit real credentials). EverShop reads database settings from the environment:
+
+```env
+DB_HOST="localhost"
+DB_PORT="5432"
+DB_NAME="evershop"
+DB_USER="postgres"
+DB_PASSWORD="your_password"
+DB_SSLMODE="disable"
+```
+
+**Alternative — interactive install:** `npm run setup` walks you through database questions and writes `.env` for you. Skip this if you already manage `.env` yourself.
+
+**Runtime folders:** ensure these exist (the install command also creates them):
+
+```bash
+mkdir -p media public
+```
+
+### 5. Optional demo data
+
+```bash
+node ./packages/evershop/dist/bin/evershop.js seed --all
+```
+
+### 6. Start the server
+
+```bash
+npm run start
+```
+
+By default the app listens on **`http://localhost:3000`** (override with `PORT` if needed).
+
+**Useful URLs**
+
+| What | URL |
+|------|-----|
+| Storefront | `http://localhost:3000/` |
+| Admin (redirects to login) | `http://localhost:3000/admin` → `http://localhost:3000/admin/login` |
+| Storefront GraphQL (POST) | `http://localhost:3000/api/graphql` |
+| Admin GraphQL (POST, auth required) | `http://localhost:3000/api/admin/graphql` |
+| CMS page by `url_key` | `http://localhost:3000/page/<url_key>` (e.g. `/page/about-us` after seeding) |
+
+**Admin user:** after a manual `.env` setup, create the first admin with:
+
+```bash
+node ./packages/evershop/dist/bin/evershop.js user:create --name "Admin" --email "you@example.com" --password "yourSecurePassword"
+```
+
+(Password must be at least 8 characters.) Or use `npm run setup`, which can create an admin during installation.
+
+**Note:** you may see `node-config` warnings about `config/` or `NODE_ENV`; the app can still run. To silence “no configuration directory” warnings you can set `SUPPRESS_NO_CONFIG_WARNING=1` in the environment.
+
+### 中文速览（本地源码）
+
+- **依赖**：Node.js + PostgreSQL 13+；在仓库根目录执行 `npm ci`。
+- **编译**：必须先 `npm run compile` 与 `npm run compile:db`，再 `npm run build`（若报找不到 `evershop`，改用 `node ./packages/evershop/dist/bin/evershop.js build -- --skip-minify`）。
+- **数据库**：创建库与用户；在根目录放置 **`.env`**（含 `DB_HOST`、`DB_PORT`、`DB_NAME`、`DB_USER`、`DB_PASSWORD`、`DB_SSLMODE`）；也可用 **`npm run setup`** 交互生成 `.env`。建议执行 `mkdir -p media public`。
+- **演示数据（可选）**：`node ./packages/evershop/dist/bin/evershop.js seed --all`
+- **启动**：`npm run start`，默认 **`http://localhost:3000`**
+- **后台**：`http://localhost:3000/admin/login`；若手动配好 `.env` 后还没有管理员，用上面的 **`user:create`**（密码至少 8 位），或在 **`npm run setup`** 里创建。
+- **GraphQL**：前台 **`POST http://localhost:3000/api/graphql`**；后台 **`POST /api/admin/graphql`**（需登录）。
+- **CMS 静态页**：路径为 **`/page/<url_key>`**（例如种子数据里的 `/page/about-us`），不是根路径下的 `/<url_key>`。
 
 ## Documentation
 
