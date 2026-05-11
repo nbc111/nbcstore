@@ -1,0 +1,1 @@
+{"version":3,"file":"calculateNbcAmount.js","sourceRoot":"","sources":["../../../src/services/wallet/calculateNbcAmount.ts"],"names":[],"mappings":"AAAA,MAAM,UAAU,kBAAkB,CAAC,SAA0B,EAAE,IAAY;IACzE,MAAM,MAAM,GAAG,MAAM,CAAC,SAAS,CAAC,CAAC;IACjC,OAAO,IAAI,CAAC,KAAK,CAAC,MAAM,GAAG,IAAI,CAAC,CAAC;AACnC,CAAC"}

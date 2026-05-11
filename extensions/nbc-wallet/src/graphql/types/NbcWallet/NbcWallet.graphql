@@ -1,0 +1,65 @@
+type NbcWallet {
+  walletId: Int!
+  uuid: String!
+  customerId: Int!
+  walletAddress: String!
+  chainId: Int
+  balance: Float!
+  frozenBalance: Float!
+  availableBalance: Float!
+  currency: String!
+  status: Int!
+  exchangeRate: Float!
+  cnyValue: Float!
+  availableCnyValue: Float!
+  lastLoginAt: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type NbcWalletTransaction {
+  walletTxId: Int!
+  uuid: String!
+  walletId: Int!
+  orderId: Int
+  orderUuid: String
+  orderNumber: String
+  transactionType: String!
+  amount: Float!
+  balanceBefore: Float!
+  balanceAfter: Float!
+  exchangeRate: Float
+  cnyAmount: Float
+  reference: String
+  status: String!
+  metadata: JSON
+  createdAt: DateTime
+}
+
+type NbcWalletTransactionCollection {
+  items: [NbcWalletTransaction]
+  currentPage: Int!
+  pageSize: Int!
+  total: Int!
+}
+
+type NbcOrderUsage {
+  nbcAmount: Float!
+  exchangeRate: Float!
+  cnyAmount: Float!
+  wallet: NbcWallet
+}
+
+extend type Customer {
+  nbcWallet: NbcWallet
+  nbcWalletTransactions(page: Int, limit: Int, transactionType: String): NbcWalletTransactionCollection
+}
+
+extend type Order {
+  nbcUsage: NbcOrderUsage
+}
+
+extend type Query {
+  nbcWallet: NbcWallet
+  nbcWalletTransactions(page: Int, limit: Int, transactionType: String): NbcWalletTransactionCollection
+}

@@ -1,0 +1,5 @@
+{
+  "methods": ["POST"],
+  "path": "/admin/nbcWallet/onchain/process",
+  "access": "private"
+}

@@ -1,0 +1,38 @@
+{
+  "system": {
+    "extensions": [
+      {
+        "name": "nbc-wallet",
+        "resolve": "extensions/nbc-wallet",
+        "enabled": true,
+        "priority": 10
+      }
+    ]
+  },
+  "nbcWallet": {
+    "status": 1,
+    "displayName": "NBC Wallet",
+    "auth": {
+      "nonceTtlSeconds": 600,
+      "messagePrefix": "Sign this message to authenticate with NBC Store."
+    },
+    "exchangeRate": {
+      "NBC_TO_CNY": 0.01
+    },
+    "onchain": {
+      "enabled": 0,
+      "rpcUrl": "",
+      "chainId": 0,
+      "tokenAddress": "",
+      "treasuryAddress": "",
+      "startBlock": 0,
+      "confirmations": 12,
+      "blockBatchSize": 500,
+      "pollSchedule": "*/5 * * * *"
+    },
+    "reconcile": {
+      "enabled": 1,
+      "schedule": "*/10 * * * *"
+    }
+  }
+}

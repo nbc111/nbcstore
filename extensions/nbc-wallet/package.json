@@ -1,0 +1,15 @@
+{
+  "name": "nbc-wallet",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/bootstrap.js",
+  "scripts": {
+    "tsc": "tsc -p tsconfig.json && copyfiles -u 1 \"src/**/*.{graphql,json}\" dist"
+  },
+  "dependencies": {
+    "@evershop/evershop": "^2.1.2",
+    "@evershop/postgres-query-builder": "^2.0.1",
+    "body-parser": "^1.20.0",
+    "ethers": "^6.15.0"
+  }
+}

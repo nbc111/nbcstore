@@ -1,0 +1,1 @@
+{"version":3,"file":"buildWalletAuthMessage.js","sourceRoot":"","sources":["../../../src/services/auth/buildWalletAuthMessage.ts"],"names":[],"mappings":"AAAA,MAAM,UAAU,sBAAsB,CAAC,aAAqB,EAAE,KAAa;IACzE,OAAO,GAAG,aAAa,cAAc,KAAK,EAAE,CAAC;AAC/C,CAAC"}
