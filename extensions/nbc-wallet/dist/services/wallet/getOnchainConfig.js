@@ -8,9 +8,7 @@ export function getOnchainConfig() {
         rpcUrl: String(getConfig('nbcWallet.onchain.rpcUrl', '')),
         chainId: Number(getConfig('nbcWallet.onchain.chainId', 0)),
         tokenAddress: tokenAddress ? normalizeWalletAddress(tokenAddress) : '',
-        treasuryAddress: treasuryAddress
-            ? normalizeWalletAddress(treasuryAddress)
-            : '',
+        treasuryAddress: treasuryAddress ? normalizeWalletAddress(treasuryAddress) : '',
         startBlock: Math.max(Number(getConfig('nbcWallet.onchain.startBlock', 0)), 0),
         confirmations: Math.max(Number(getConfig('nbcWallet.onchain.confirmations', 12)), 0),
         blockBatchSize: Math.max(Number(getConfig('nbcWallet.onchain.blockBatchSize', 500)), 1),
@@ -35,4 +33,3 @@ export function assertOnchainConfig(config = getOnchainConfig()) {
         throw new Error('nbcWallet.onchain.treasuryAddress is required');
     }
 }
-//# sourceMappingURL=getOnchainConfig.js.map

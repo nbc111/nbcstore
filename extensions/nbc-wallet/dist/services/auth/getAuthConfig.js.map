@@ -1,1 +1,0 @@
-{"version":3,"file":"getAuthConfig.js","sourceRoot":"","sources":["../../../src/services/auth/getAuthConfig.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,uCAAuC,CAAC;AAElE,MAAM,UAAU,aAAa;IAC3B,OAAO;QACL,eAAe,EAAE,MAAM,CAAC,SAAS,CAAC,gCAAgC,EAAE,GAAG,CAAC,CAAC;QACzE,aAAa,EAAE,MAAM,CACnB,SAAS,CACP,8BAA8B,EAC9B,mDAAmD,CACpD,CACF;KACF,CAAC;AACJ,CAAC"}

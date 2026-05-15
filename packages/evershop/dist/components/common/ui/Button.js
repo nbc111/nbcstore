@@ -44,3 +44,4 @@ function Button({ className, variant = 'default', size = 'default', isLoading = 
     }, isLoading ? /*#__PURE__*/ React.createElement(Spinner, null) : children);
 }
 export { Button, buttonVariants };
+//# sourceMappingURL=Button.js.map

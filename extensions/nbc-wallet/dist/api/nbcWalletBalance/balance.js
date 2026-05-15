@@ -18,8 +18,7 @@ export default async function getNbcWalletBalance(request, response) {
                 wallet
             }
         });
-    }
-    catch (error) {
+    } catch (error) {
         response.status(INTERNAL_SERVER_ERROR).json({
             error: {
                 status: INTERNAL_SERVER_ERROR,
@@ -28,4 +27,3 @@ export default async function getNbcWalletBalance(request, response) {
         });
     }
 }
-//# sourceMappingURL=balance.js.map

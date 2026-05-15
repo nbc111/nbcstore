@@ -2,9 +2,8 @@ import { INTERNAL_SERVER_ERROR, INVALID_PAYLOAD, OK } from '@evershop/evershop/l
 import { isValidWalletAddress } from '../../services/wallet/isValidWalletAddress.js';
 import { upsertWalletAuthNonce } from '../../services/wallet/upsertWalletAuthNonce.js';
 export default async function requestWalletAuth(request, response) {
-    var _a;
     try {
-        const walletAddress = (_a = request.body) === null || _a === void 0 ? void 0 : _a.walletAddress;
+        const walletAddress = request.body?.walletAddress;
         if (!walletAddress) {
             response.status(INVALID_PAYLOAD).json({
                 error: {
@@ -32,8 +31,7 @@ export default async function requestWalletAuth(request, response) {
                 expiresAt: nonceRow.expires_at
             }
         });
-    }
-    catch (error) {
+    } catch (error) {
         response.status(INTERNAL_SERVER_ERROR).json({
             error: {
                 status: INTERNAL_SERVER_ERROR,
@@ -42,4 +40,3 @@ export default async function requestWalletAuth(request, response) {
         });
     }
 }
-//# sourceMappingURL=%5BbodyParser%5Drequest.js.map

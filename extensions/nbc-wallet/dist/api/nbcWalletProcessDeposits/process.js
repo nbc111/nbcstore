@@ -6,8 +6,7 @@ export default async function processNbcOnchainDeposits(request, response) {
         response.status(OK).json({
             data: result
         });
-    }
-    catch (error) {
+    } catch (error) {
         response.status(INTERNAL_SERVER_ERROR).json({
             error: {
                 status: INTERNAL_SERVER_ERROR,
@@ -16,4 +15,3 @@ export default async function processNbcOnchainDeposits(request, response) {
         });
     }
 }
-//# sourceMappingURL=process.js.map

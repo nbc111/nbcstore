@@ -6,19 +6,21 @@ async function loadOrderUsage(orderId) {
     const result = await pool.query(`SELECT u.nbc_amount, u.exchange_rate, u.cny_amount, u.wallet_id, w.customer_id
        FROM nbc_order_usage u
        INNER JOIN nbc_wallet w ON w.wallet_id = u.wallet_id
-      WHERE u.order_id = $1`, [orderId]);
+      WHERE u.order_id = $1`, [
+        orderId
+    ]);
     return result.rows[0] || null;
 }
 export default {
     JSON: GraphQLJSON,
     Query: {
-        nbcWallet: async (_, args, { customer }) => {
+        nbcWallet: async (_, args, { customer })=>{
             if (!customer) {
                 return null;
             }
             return getWalletSummary(customer.customer_id);
         },
-        nbcWalletTransactions: async (_, args, { customer }) => {
+        nbcWalletTransactions: async (_, args, { customer })=>{
             if (!customer) {
                 return {
                     items: [],
@@ -31,11 +33,11 @@ export default {
         }
     },
     Customer: {
-        nbcWallet: ({ customerId }) => getWalletSummary(customerId),
-        nbcWalletTransactions: ({ customerId }, args) => listWalletTransactions(customerId, args)
+        nbcWallet: ({ customerId })=>getWalletSummary(customerId),
+        nbcWalletTransactions: ({ customerId }, args)=>listWalletTransactions(customerId, args)
     },
     Order: {
-        nbcUsage: async ({ orderId }, args, { customer }) => {
+        nbcUsage: async ({ orderId }, args, { customer })=>{
             const usage = await loadOrderUsage(orderId);
             if (!usage) {
                 return null;
@@ -47,12 +49,12 @@ export default {
                 nbcAmount: Number(usage.nbc_amount),
                 exchangeRate: Number(usage.exchange_rate),
                 cnyAmount: Number(usage.cny_amount),
-                wallet: () => getWalletSummary(usage.customer_id)
+                wallet: ()=>getWalletSummary(usage.customer_id)
             };
         }
     },
     NbcOrderUsage: {
-        wallet: (usage) => {
+        wallet: (usage)=>{
             if (typeof usage.wallet === 'function') {
                 return usage.wallet();
             }
@@ -60,4 +62,3 @@ export default {
         }
     }
 };
-//# sourceMappingURL=NbcWallet.resolvers.js.map

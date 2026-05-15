@@ -6,7 +6,8 @@ export async function getRefundTransactionByOrderId(orderId) {
         AND transaction_type = 'refund'
         AND status = 'completed'
       ORDER BY wallet_tx_id DESC
-      LIMIT 1`, [orderId]);
+      LIMIT 1`, [
+        orderId
+    ]);
     return result.rows[0] || null;
 }
-//# sourceMappingURL=getRefundTransactionByOrderId.js.map

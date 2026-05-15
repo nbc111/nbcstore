@@ -2,4 +2,3 @@ import { reconcileWalletLedger } from '../services/wallet/reconcileWalletLedger.
 export default async function runNbcWalletReconciliation() {
     await reconcileWalletLedger();
 }
-//# sourceMappingURL=reconcileWalletLedger.js.map
