@@ -5,7 +5,9 @@ import { recordOnchainDeposit } from './recordOnchainDeposit.js';
 import { setSyncState } from './setSyncState.js';
 import { settleOnchainDeposit } from './settleOnchainDeposit.js';
 const TRANSFER_EVENT = 'event Transfer(address indexed from, address indexed to, uint256 value)';
-const transferInterface = new Interface([TRANSFER_EVENT]);
+const transferInterface = new Interface([
+    TRANSFER_EVENT
+]);
 const TRANSFER_TOPIC = id('Transfer(address,address,uint256)');
 function topicAddress(address) {
     return zeroPadValue(address, 32);
@@ -44,13 +46,19 @@ export async function processOnchainDeposits() {
         address: config.tokenAddress,
         fromBlock,
         toBlock,
-        topics: [TRANSFER_TOPIC, null, topicAddress(config.treasuryAddress)]
+        topics: [
+            TRANSFER_TOPIC,
+            null,
+            topicAddress(config.treasuryAddress)
+        ]
     });
     let processed = 0;
     let settled = 0;
-    for (const log of logs) {
+    for (const log of logs){
         const parsed = transferInterface.parseLog({
-            topics: [...log.topics],
+            topics: [
+                ...log.topics
+            ],
             data: log.data
         });
         if (!parsed) {
@@ -90,4 +98,3 @@ export async function processOnchainDeposits() {
         settled
     };
 }
-//# sourceMappingURL=processOnchainDeposits.js.map

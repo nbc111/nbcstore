@@ -18,19 +18,25 @@ function buildWalletLookup(input) {
     if (input.walletId) {
         return {
             sql: 'wallet_id = $1',
-            params: [input.walletId]
+            params: [
+                input.walletId
+            ]
         };
     }
     if (input.customerId) {
         return {
             sql: 'customer_id = $1',
-            params: [input.customerId]
+            params: [
+                input.customerId
+            ]
         };
     }
     if (input.walletAddress) {
         return {
             sql: 'wallet_address = $1',
-            params: [normalizeWalletAddress(input.walletAddress)]
+            params: [
+                normalizeWalletAddress(input.walletAddress)
+            ]
         };
     }
     throw new Error('walletId, customerId or walletAddress is required');
@@ -59,9 +65,11 @@ export async function adjustWalletBalance(input) {
         await connection.query(`UPDATE nbc_wallet
           SET balance = $1,
               updated_at = NOW()
-        WHERE wallet_id = $2`, [balanceAfter, wallet.wallet_id]);
-        const transaction = await insert('nbc_wallet_transaction')
-            .given({
+        WHERE wallet_id = $2`, [
+            balanceAfter,
+            wallet.wallet_id
+        ]);
+        const transaction = await insert('nbc_wallet_transaction').given({
             wallet_id: wallet.wallet_id,
             order_id: null,
             transaction_type: type === 'credit' ? 'admin_credit' : 'admin_debit',
@@ -77,8 +85,7 @@ export async function adjustWalletBalance(input) {
                 performed_by: input.performedBy,
                 reason
             }
-        })
-            .execute(connection);
+        }).execute(connection);
         await commit(connection);
         return {
             walletId: wallet.wallet_id,
@@ -92,10 +99,8 @@ export async function adjustWalletBalance(input) {
             reason,
             reference: input.reference || null
         };
-    }
-    catch (error) {
+    } catch (error) {
         await rollback(connection);
         throw error;
     }
 }
-//# sourceMappingURL=adjustWalletBalance.js.map

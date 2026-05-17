@@ -1,1 +1,0 @@
-{"version":3,"file":"isValidWalletAddress.js","sourceRoot":"","sources":["../../../src/services/wallet/isValidWalletAddress.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,QAAQ,CAAC;AAEhC,MAAM,UAAU,oBAAoB,CAAC,aAAqB;IACxD,OAAO,MAAM,CAAC,SAAS,CAAC,aAAa,CAAC,CAAC;AACzC,CAAC"}
