@@ -5,6 +5,7 @@
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { spawn } from 'child_process';
 import pg from 'pg';
 import { config as loadEnv } from 'dotenv';
 
@@ -24,6 +25,9 @@ const attributes = JSON.parse(
 );
 const productNames = JSON.parse(
   readFileSync(join(seedDir, 'products-zh-names.json'), 'utf-8')
+);
+const productContent = JSON.parse(
+  readFileSync(join(seedDir, 'products-zh-content.json'), 'utf-8')
 );
 
 const colorOptionMap = {
@@ -173,6 +177,28 @@ async function updateAttributes() {
   }
 }
 
+function translateDescriptionJson(description, paragraphMap) {
+  if (!description) {
+    return description;
+  }
+  const data =
+    typeof description === 'string' ? JSON.parse(description) : description;
+
+  const walk = (node) => {
+    if (!node || typeof node !== 'object') {
+      return;
+    }
+    if (typeof node.text === 'string' && paragraphMap[node.text]) {
+      node.text = paragraphMap[node.text];
+    }
+    for (const value of Object.values(node)) {
+      walk(value);
+    }
+  };
+  walk(data);
+  return JSON.stringify(data);
+}
+
 async function updateProductNames() {
   for (const [sku, name] of Object.entries(productNames)) {
     const res = await client.query(
@@ -187,7 +213,41 @@ async function updateProductNames() {
     if (res.rowCount === 0) {
       console.warn(`  ⊘ Product not found: ${sku}`);
     } else {
-      console.log(`  ✓ Updated product: ${sku}`);
+      console.log(`  ✓ Updated product name: ${sku}`);
+    }
+  }
+}
+
+async function updateProductContent() {
+  const { paragraphs, metaBySku } = productContent;
+
+  const products = await client.query(
+    `SELECT p.sku, pd.description, pd.meta_description, pd.meta_keywords
+     FROM product p
+     INNER JOIN product_description pd
+       ON pd.product_description_product_id = p.product_id`
+  );
+
+  for (const row of products.rows) {
+    const meta = metaBySku[row.sku];
+    const description = translateDescriptionJson(row.description, paragraphs);
+    const metaDescription = meta?.meta_description ?? row.meta_description;
+    const metaKeywords = meta?.meta_keywords ?? row.meta_keywords;
+
+    const res = await client.query(
+      `UPDATE product_description pd
+       SET description = $1::json,
+           meta_description = $2,
+           meta_keywords = $3
+       FROM product p
+       WHERE pd.product_description_product_id = p.product_id
+         AND p.sku = $4`,
+      [description, metaDescription, metaKeywords, row.sku]
+    );
+    if (res.rowCount === 0) {
+      console.warn(`  ⊘ Product content not updated: ${row.sku}`);
+    } else {
+      console.log(`  ✓ Updated product content: ${row.sku}`);
     }
   }
 }
@@ -237,8 +297,24 @@ async function updateStoreSettings() {
   await upsertSetting('storeName', 'NBCStore');
 }
 
+function runSeedDefaultShipping() {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      process.execPath,
+      [join(__dirname, 'seed-default-shipping.mjs')],
+      { cwd: root, stdio: 'inherit' }
+    );
+    child.on('close', (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`seed-default-shipping exited with ${code}`));
+    });
+  });
+}
+
 async function main() {
   await client.connect();
+  console.log('Seeding default shipping (if needed)…');
+  await runSeedDefaultShipping();
   console.log('Updating CMS pages…');
   await updatePages();
   console.log('Updating widgets…');
@@ -251,6 +327,8 @@ async function main() {
   await updateAttributes();
   console.log('Updating product names…');
   await updateProductNames();
+  console.log('Updating product descriptions and meta…');
+  await updateProductContent();
   console.log('Updating payment display names…');
   await updatePaymentDisplayNames();
   console.log('Updating store settings…');

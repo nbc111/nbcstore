@@ -1,12 +1,13 @@
 import Area from '@components/common/Area.js';
 import { useProduct } from '@components/frontStore/catalog/ProductContext.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 export const ProductSingleAttributes = ()=>{
     const { attributes, sku } = useProduct();
     const list = attributes ? [
         {
             attributeCode: 'sku',
-            attributeName: 'SKU',
+            attributeName: _('SKU'),
             optionText: sku
         },
         ...attributes

@@ -1,0 +1,76 @@
+{
+  "paragraphs": {
+    "Start your day right with our elegant Ceramic Coffee Cup. Crafted from high-quality ceramic, this cup features a smooth finish and comfortable grip.": "用这款优雅的陶瓷咖啡杯开启美好一天。优质陶瓷材质，表面光滑，握感舒适。",
+    "The classic design makes it perfect for both home and office use. Holds 12oz of your favorite beverage and is both microwave and dishwasher safe.": "经典设计适合居家与办公。容量约 12 盎司，可微波加热，亦可洗碗机清洗。",
+    "Keep your desk tidy and organized with our modern Desk Pen Holder. Features multiple compartments for pens, pencils, scissors, and other office supplies.": "现代笔筒让桌面整洁有序，多格收纳钢笔、铅笔、剪刀及其他办公用品。",
+    "Made from durable materials with a sleek finish that complements any workspace. Perfect for home office or corporate settings.": "耐用材质搭配简洁外观，适配各类办公环境，家用或公司皆宜。",
+    "Add a touch of elegance to your table with our Ceramic Candy Bowl. Perfect for serving candy, nuts, or small snacks at parties and gatherings.": "陶瓷糖果碗为餐桌增添雅致，聚会时分装糖果、坚果或小食皆宜。",
+    "The smooth ceramic finish and timeless design make it both functional and decorative. Also great for holding keys, jewelry, or other small items.": "光滑陶瓷与经典造型兼具实用与装饰，亦可收纳钥匙、首饰等小物。",
+    "Elevate your home decor with our Modern Ceramic Vase. The sleek, contemporary design complements any interior style, from minimalist to traditional.": "现代陶瓷花瓶提升家居格调，简约当代设计百搭从极简到传统风格。",
+    "Perfect for displaying fresh flowers, dried arrangements, or as a standalone decorative piece. The sturdy ceramic construction ensures long-lasting beauty.": "适合鲜花、干花或单独陈设；坚固陶瓷经久耐用。",
+    "Keep your beverages at the perfect temperature with our Stainless Steel Thermos. Double-wall vacuum insulation keeps drinks hot for 12 hours or cold for 24 hours.": "不锈钢保温杯双层真空保温，热饮约 12 小时、冷饮约 24 小时。",
+    "The leak-proof lid and durable stainless steel construction make it perfect for travel, work, or outdoor activities. BPA-free and easy to clean.": "防漏杯盖与耐用不锈钢机身，适合通勤、办公与户外；不含 BPA，易于清洁。"
+  },
+  "metaBySku": {
+    "CUP-001-WHT": {
+      "meta_description": "白色陶瓷咖啡杯，适合清晨享用您喜爱的饮品",
+      "meta_keywords": "咖啡杯, 陶瓷杯, 白色, 饮具"
+    },
+    "CUP-001-BLK": {
+      "meta_description": "黑色陶瓷咖啡杯，适合清晨享用您喜爱的饮品",
+      "meta_keywords": "咖啡杯, 陶瓷杯, 黑色, 饮具"
+    },
+    "CUP-001-YEL": {
+      "meta_description": "黄色陶瓷咖啡杯，适合清晨享用您喜爱的饮品",
+      "meta_keywords": "咖啡杯, 陶瓷杯, 黄色, 饮具"
+    },
+    "PEN-002-WHT": {
+      "meta_description": "白色桌面笔筒，多格收纳让办公区整洁有序",
+      "meta_keywords": "笔筒, 收纳, 白色, 办公用品"
+    },
+    "PEN-002-BLK": {
+      "meta_description": "黑色桌面笔筒，多格收纳让办公区整洁有序",
+      "meta_keywords": "笔筒, 收纳, 黑色, 办公用品"
+    },
+    "PEN-002-YEL": {
+      "meta_description": "黄色桌面笔筒，多格收纳让办公区整洁有序",
+      "meta_keywords": "笔筒, 收纳, 黄色, 办公用品"
+    },
+    "BOWL-003-WHT": {
+      "meta_description": "白色陶瓷糖果碗，聚会分装零食的理想之选",
+      "meta_keywords": "糖果碗, 陶瓷碗, 白色, 餐具"
+    },
+    "BOWL-003-BLK": {
+      "meta_description": "黑色陶瓷糖果碗，聚会分装零食的理想之选",
+      "meta_keywords": "糖果碗, 陶瓷碗, 黑色, 餐具"
+    },
+    "BOWL-003-YEL": {
+      "meta_description": "黄色陶瓷糖果碗，聚会分装零食的理想之选",
+      "meta_keywords": "糖果碗, 陶瓷碗, 黄色, 餐具"
+    },
+    "VASE-004-WHT": {
+      "meta_description": "白色现代陶瓷花瓶，为家居增添当代气息",
+      "meta_keywords": "花瓶, 陶瓷, 白色, 家居装饰"
+    },
+    "VASE-004-BLK": {
+      "meta_description": "黑色现代陶瓷花瓶，为家居增添当代气息",
+      "meta_keywords": "花瓶, 陶瓷, 黑色, 家居装饰"
+    },
+    "VASE-004-YEL": {
+      "meta_description": "绿色现代陶瓷花瓶，为家居增添当代气息",
+      "meta_keywords": "花瓶, 陶瓷, 绿色, 家居装饰"
+    },
+    "THERMO-005-WHT": {
+      "meta_description": "双层真空不锈钢保温杯，饮品可长时间保温或保冷",
+      "meta_keywords": "保温杯, 保温瓶, 水壶, 白色, 饮具"
+    },
+    "THERMO-005-BLK": {
+      "meta_description": "双层真空不锈钢保温杯，饮品可长时间保温或保冷",
+      "meta_keywords": "保温杯, 保温瓶, 水壶, 黑色, 饮具"
+    },
+    "THERMO-005-YEL": {
+      "meta_description": "双层真空不锈钢保温杯，饮品可长时间保温或保冷",
+      "meta_keywords": "保温杯, 保温瓶, 水壶, 黄色, 饮具"
+    }
+  }
+}

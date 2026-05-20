@@ -1,8 +1,21 @@
 import { select } from '@evershop/postgres-query-builder';
 import { buildUrl } from '../../../../../lib/router/buildUrl.js';
+import { translate } from '../../../../../lib/locale/translate/translate.js';
 import { camelCase } from '../../../../../lib/util/camelCase.js';
 import { getConfig } from '../../../../../lib/util/getConfig.js';
 import { getOrdersBaseQuery } from '../../../services/getOrdersBaseQuery.js';
+function localizedStatus(statusList, code, fallbackName = 'Unknown') {
+    const status = statusList[code] || {
+        name: fallbackName,
+        code,
+        badge: 'default'
+    };
+    return {
+        ...status,
+        name: translate(status.name),
+        code
+    };
+}
 export default {
     Query: {
         order: async (_, { uuid }, { pool })=>{
@@ -45,39 +58,15 @@ export default {
         },
         shipmentStatus: ({ shipmentStatus })=>{
             const statusList = getConfig('oms.order.shipmentStatus', {});
-            const status = statusList[shipmentStatus] || {
-                name: 'Unknown',
-                code: shipmentStatus,
-                badge: 'default'
-            };
-            return {
-                ...status,
-                code: shipmentStatus
-            };
+            return localizedStatus(statusList, shipmentStatus);
         },
         paymentStatus: ({ paymentStatus })=>{
             const statusList = getConfig('oms.order.paymentStatus', {});
-            const status = statusList[paymentStatus] || {
-                name: 'Unknown',
-                code: paymentStatus,
-                badge: 'default'
-            };
-            return {
-                ...status,
-                code: paymentStatus
-            };
+            return localizedStatus(statusList, paymentStatus);
         },
         status: ({ status })=>{
             const statusList = getConfig('oms.order.status', {});
-            const statusObj = statusList[status] || {
-                name: 'Unknown',
-                code: status,
-                badge: 'default'
-            };
-            return {
-                ...statusObj,
-                code: status
-            };
+            return localizedStatus(statusList, status);
         }
     },
     Customer: {
