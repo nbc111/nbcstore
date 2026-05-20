@@ -3,9 +3,10 @@ import { Button } from '@components/common/ui/Button.js';
 import { cn } from '@evershop/evershop/lib/util/cn';
 import { XIcon } from 'lucide-react';
 import * as React from 'react';
-function Dialog({ ...props }) {
+function Dialog({ modal = 'trap-focus', ...props }) {
     return /*#__PURE__*/ React.createElement(DialogPrimitive.Root, {
         "data-slot": "dialog",
+        modal: modal,
         ...props
     });
 }

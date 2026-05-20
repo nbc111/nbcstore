@@ -17,8 +17,11 @@ export default {
       const allowedCountries = await select('country')
         .from('shipping_zone')
         .execute(pool);
+      if (allowedCountries.length === 0) {
+        return countries;
+      }
       return countries.filter((c) =>
-        allowedCountries.find((p) => p.country === c.code)
+        allowedCountries.some((p) => p.country === c.code)
       );
     }
   },

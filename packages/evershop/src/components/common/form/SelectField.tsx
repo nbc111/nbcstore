@@ -9,6 +9,7 @@ import {
   SelectValue
 } from '@components/common/ui/Select.js';
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
+import { cn } from '@evershop/evershop/lib/util/cn';
 import React from 'react';
 import {
   useFormContext,
@@ -112,39 +113,39 @@ export function SelectField<T extends FieldValues = FieldValues>({
         defaultValue={hasDefaultValue ? defaultValue : ('' as any)}
         render={({ field }) => (
           <Select
-            value={options.find((o) => o.value === field.value) ?? null}
+            items={options}
+            value={
+              field.value === '' || field.value === null || field.value === undefined
+                ? null
+                : field.value
+            }
             onValueChange={(value) => {
-              const newValue = value?.value === '' ? '' : value?.value;
+              const newValue =
+                value === null || value === undefined || value === ''
+                  ? ''
+                  : value;
               field.onChange(newValue);
-              if (onChangeCallback && value !== null) {
-                onChangeCallback(value.value);
+              if (onChangeCallback && newValue !== '') {
+                onChangeCallback(newValue);
               }
             }}
             disabled={disabled}
           >
             <SelectTrigger
               id={fieldId}
-              className={className}
+              className={cn('w-full', className)}
               aria-invalid={fieldError !== undefined ? 'true' : 'false'}
               aria-describedby={
                 fieldError !== undefined ? `${fieldId}-error` : undefined
               }
             >
-              <SelectValue>
-                {options.find((o) => String(o.value) === String(field.value))
-                  ?.label || placeholder}
-              </SelectValue>
+              <SelectValue placeholder={placeholder ? _(placeholder) : undefined} />
             </SelectTrigger>
             <SelectContent>
-              {placeholder && (
-                <SelectItem value="" disabled>
-                  {placeholder}
-                </SelectItem>
-              )}
               {options.map((option) => (
                 <SelectItem
-                  key={option.value}
-                  value={option}
+                  key={String(option.value)}
+                  value={option.value}
                   disabled={option.disabled}
                 >
                   {option.label}

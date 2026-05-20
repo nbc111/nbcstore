@@ -3,6 +3,7 @@ import { getNestedError } from '@components/common/form/utils/getNestedError.js'
 import { Field, FieldError, FieldLabel } from '@components/common/ui/Field.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/common/ui/Select.js';
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
+import { cn } from '@evershop/evershop/lib/util/cn';
 import React from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 export function SelectField({ name, label, error, helperText, required, validation, options, placeholder, wrapperClassName, className, defaultValue, disabled, id, onChange: onChangeCallback }) {
@@ -48,26 +49,26 @@ export function SelectField({ name, label, error, helperText, required, validati
         rules: validationRules,
         defaultValue: hasDefaultValue ? defaultValue : '',
         render: ({ field })=>/*#__PURE__*/ React.createElement(Select, {
-                value: options.find((o)=>o.value === field.value) ?? null,
+                items: options,
+                value: field.value === '' || field.value === null || field.value === undefined ? null : field.value,
                 onValueChange: (value)=>{
-                    const newValue = value?.value === '' ? '' : value?.value;
+                    const newValue = value === null || value === undefined || value === '' ? '' : value;
                     field.onChange(newValue);
-                    if (onChangeCallback && value !== null) {
-                        onChangeCallback(value.value);
+                    if (onChangeCallback && newValue !== '') {
+                        onChangeCallback(newValue);
                     }
                 },
                 disabled: disabled
             }, /*#__PURE__*/ React.createElement(SelectTrigger, {
                 id: fieldId,
-                className: className,
+                className: cn('w-full', className),
                 "aria-invalid": fieldError !== undefined ? 'true' : 'false',
                 "aria-describedby": fieldError !== undefined ? `${fieldId}-error` : undefined
-            }, /*#__PURE__*/ React.createElement(SelectValue, null, options.find((o)=>String(o.value) === String(field.value))?.label || placeholder)), /*#__PURE__*/ React.createElement(SelectContent, null, placeholder && /*#__PURE__*/ React.createElement(SelectItem, {
-                value: "",
-                disabled: true
-            }, placeholder), options.map((option)=>/*#__PURE__*/ React.createElement(SelectItem, {
-                    key: option.value,
-                    value: option,
+            }, /*#__PURE__*/ React.createElement(SelectValue, {
+                placeholder: placeholder ? _(placeholder) : undefined
+            })), /*#__PURE__*/ React.createElement(SelectContent, null, options.map((option)=>/*#__PURE__*/ React.createElement(SelectItem, {
+                    key: String(option.value),
+                    value: option.value,
                     disabled: option.disabled
                 }, option.label))))
     }), fieldError && /*#__PURE__*/ React.createElement(FieldError, null, fieldError));

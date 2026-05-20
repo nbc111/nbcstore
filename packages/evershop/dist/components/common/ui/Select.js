@@ -2,7 +2,12 @@ import { Select as SelectPrimitive } from '@base-ui/react/select';
 import { cn } from '@evershop/evershop/lib/util/cn';
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from 'lucide-react';
 import * as React from 'react';
-const Select = SelectPrimitive.Root;
+function Select({ modal = false, ...props }) {
+    return /*#__PURE__*/ React.createElement(SelectPrimitive.Root, {
+        modal: modal,
+        ...props
+    });
+}
 function SelectGroup({ className, ...props }) {
     return /*#__PURE__*/ React.createElement(SelectPrimitive.Group, {
         "data-slot": "select-group",
@@ -29,17 +34,17 @@ function SelectTrigger({ className, size = 'default', children, ...props }) {
         })
     }));
 }
-function SelectContent({ className, children, side = 'bottom', sideOffset = 4, align = 'center', alignOffset = 0, alignItemWithTrigger = true, ...props }) {
+function SelectContent({ className, children, side = 'bottom', sideOffset = 4, align = 'center', alignOffset = 0, alignItemWithTrigger = false, ...props }) {
     return /*#__PURE__*/ React.createElement(SelectPrimitive.Portal, null, /*#__PURE__*/ React.createElement(SelectPrimitive.Positioner, {
         side: side,
         sideOffset: sideOffset,
         align: align,
         alignOffset: alignOffset,
         alignItemWithTrigger: alignItemWithTrigger,
-        className: "isolate z-5000"
+        className: "isolate z-[1100]"
     }, /*#__PURE__*/ React.createElement(SelectPrimitive.Popup, {
         "data-slot": "select-content",
-        className: cn('bg-popover text-popover-foreground data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 min-w-36 rounded-md shadow-md ring-1 duration-100 relative isolate z-5000 max-h-(--available-height) w-(--anchor-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto', className),
+        className: cn('bg-popover text-popover-foreground data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 min-w-36 rounded-md shadow-md ring-1 duration-100 relative isolate z-[1100] max-h-(--available-height) w-(--anchor-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto', className),
         ...props
     }, /*#__PURE__*/ React.createElement(SelectScrollUpButton, null), /*#__PURE__*/ React.createElement(SelectPrimitive.List, null, children), /*#__PURE__*/ React.createElement(SelectScrollDownButton, null))));
 }
