@@ -1,4 +1,5 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/common/ui/Dialog.js';
 import React from 'react';
 import { VariantModal } from './VariantModal.js';
@@ -11,9 +12,9 @@ export const CreateVariant = ({ variantGroup, createProductApi, refresh })=>{
         onOpenChange: setDialogOpen
     }, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, {
         variant: 'outline'
-    }, "Add Variant")), /*#__PURE__*/ React.createElement(DialogContent, {
+    }, _('Add Variant'))), /*#__PURE__*/ React.createElement(DialogContent, {
         className: 'sm:max-w-212.5'
-    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "New Variant"), /*#__PURE__*/ React.createElement(DialogDescription, null, "Create a new variant for this product.")), /*#__PURE__*/ React.createElement(VariantModal, {
+    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('New Variant')), /*#__PURE__*/ React.createElement(DialogDescription, null, "Create a new variant for this product.")), /*#__PURE__*/ React.createElement(VariantModal, {
         refresh: refresh,
         closeDialog: ()=>setDialogOpen(false),
         variantGroup: variantGroup,

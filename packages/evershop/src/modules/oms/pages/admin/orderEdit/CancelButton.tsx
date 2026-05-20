@@ -1,4 +1,5 @@
 import { Form } from '@components/common/form/Form.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { TextareaField } from '@components/common/form/TextareaField.js';
 import RenderIfTrue from '@components/common/RenderIfTrue.js';
 import { Button } from '@components/common/ui/Button.js';
@@ -41,11 +42,11 @@ export default function CancelButton({
     >
       <Dialog>
         <DialogTrigger>
-          <Button variant="destructive">Cancel Order</Button>
+          <Button variant="destructive">{_('Cancel Order')}</Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cancel Order</DialogTitle>
+            <DialogTitle>{_('Cancel Order')}</DialogTitle>
           </DialogHeader>
           <Form
             form={form}
@@ -65,8 +66,8 @@ export default function CancelButton({
             <div>
               <TextareaField
                 name="reason"
-                label="Reason for cancellation"
-                placeholder="Reason for cancellation"
+                label={_('Reason for cancellation')}
+                placeholder={_('Reason for cancellation')}
                 required
                 validation={{
                   required: 'Reason is required'
@@ -76,7 +77,7 @@ export default function CancelButton({
           </Form>
           <DialogFooter>
             <DialogClose>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">{_('Cancel')}</Button>
             </DialogClose>
             <Button
               variant="default"

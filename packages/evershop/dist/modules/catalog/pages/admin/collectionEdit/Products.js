@@ -1,6 +1,7 @@
 import { ProductListSkeleton } from '@components/admin/ProductListSkeleton.js';
 import { ProductSelector } from '@components/admin/ProductSelector.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/common/ui/Dialog.js';
 import { Input } from '@components/common/ui/Input.js';
@@ -137,16 +138,16 @@ export default function Products({ collection: { code, addProductApi } }) {
         page
     ]);
     const { data, fetching, error } = result;
-    return /*#__PURE__*/ React.createElement(Dialog, null, /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Products"), /*#__PURE__*/ React.createElement(CardDescription, null, "Manage the products assigned to this collection."), /*#__PURE__*/ React.createElement(CardAction, null, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, {
+    return /*#__PURE__*/ React.createElement(Dialog, null, /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Products')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Manage the products assigned to this collection.')), /*#__PURE__*/ React.createElement(CardAction, null, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, {
         variant: "link"
-    }, "Add Products")))), error && /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("span", {
+    }, _('Add Products'))))), error && /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("span", {
         className: "text-destructive"
     }, error.message)), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", {
         className: "mb-5"
     }, /*#__PURE__*/ React.createElement(Input, {
         type: "text",
         value: keyword,
-        placeholder: "Search products",
+        placeholder: _('Search products'),
         onChange: (e)=>{
             setLoading(true);
             setKeyword(e.target.value);
@@ -207,7 +208,7 @@ export default function Products({ collection: { code, addProductApi } }) {
             isLoading: removing.includes(p.uuid)
         }, "Remove")))))), (fetching || loading) && /*#__PURE__*/ React.createElement(ProductListSkeleton, null)))), /*#__PURE__*/ React.createElement(DialogContent, {
         className: "sm:max-w-[90vw] lg:max-w-200"
-    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Add Products"), /*#__PURE__*/ React.createElement(DialogDescription, null, "Select products to add to this collection.")), data && /*#__PURE__*/ React.createElement(ProductSelector, {
+    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Add Products')), /*#__PURE__*/ React.createElement(DialogDescription, null, "Select products to add to this collection.")), data && /*#__PURE__*/ React.createElement(ProductSelector, {
         onSelect: addProductFunction,
         selectedProducts: data.collection.products.items.map((p)=>({
                 sku: p.sku,

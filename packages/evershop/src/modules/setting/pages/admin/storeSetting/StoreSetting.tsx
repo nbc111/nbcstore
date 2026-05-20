@@ -1,4 +1,6 @@
 import { SettingMenu } from '@components/admin/SettingMenu.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
+import { localizeGeoName } from '@evershop/evershop/lib/locale/translate/localizeGeoName';
 import Spinner from '@components/admin/Spinner.js';
 import Area from '@components/common/Area.js';
 import { EmailField } from '@components/common/form/EmailField.js';
@@ -44,7 +46,7 @@ const Province: React.FC<{
   allowedCountries?: string[];
   fieldName?: string;
 }> = ({
-  selectedCountry = 'US',
+  selectedCountry = 'CN',
   selectedProvince,
   allowedCountries = [],
   fieldName = 'storeProvince'
@@ -88,10 +90,13 @@ const Province: React.FC<{
         id="storeProvince"
         defaultValue={selectedProvince}
         name={fieldName}
-        label="Province"
-        placeholder="Province"
+        label={_('Province')}
+        placeholder={_('Province')}
         required
-        options={provinces.map((p) => ({ value: p.code, label: p.name }))}
+        options={provinces.map((p) => ({
+          value: p.code,
+          label: localizeGeoName(p.name)
+        }))}
       />
     </div>
   );
@@ -133,11 +138,14 @@ const Country: React.FC<{
       <SelectField
         defaultValue={selectedCountry}
         name={fieldName}
-        label="Country"
-        placeholder="Country"
+        label={_('Country')}
+        placeholder={_('Country')}
         onChange={onChange}
         required
-        options={data.countries.map((c) => ({ value: c.code, label: c.name }))}
+        options={data.countries.map((c) => ({
+          value: c.code,
+          label: localizeGeoName(c.name)
+        }))}
       />
     </div>
   );
@@ -150,8 +158,8 @@ const StorePhoneNumber: React.FC<{ storePhoneNumber: string }> = ({
     <div>
       <TelField
         name="storePhoneNumber"
-        label="Store Phone Number"
-        placeholder="Store Phone Number"
+        label={_('Store Phone Number')}
+        placeholder={_('Store Phone Number')}
         defaultValue={storePhoneNumber}
       />
     </div>
@@ -163,8 +171,8 @@ const StoreEmail: React.FC<{ storeEmail: string }> = ({ storeEmail }) => {
     <div>
       <EmailField
         name="storeEmail"
-        label="Store Email"
-        placeholder="Store Email"
+        label={_('Store Email')}
+        placeholder={_('Store Email')}
         defaultValue={storeEmail}
       />
     </div>
@@ -203,10 +211,9 @@ export default function StoreSetting({
   const [selectedCountry, setSelectedCountry] = React.useState(() => {
     const country = storeCountry;
     if (!country) {
-      return 'US';
-    } else {
-      return country;
+      return 'CN';
     }
+    return country;
   });
 
   return (
@@ -219,10 +226,8 @@ export default function StoreSetting({
           <Form method="POST" id="storeSetting" action={saveSettingApi}>
             <Card>
               <CardHeader>
-                <CardTitle>Store Settings</CardTitle>
-                <CardDescription>
-                  Configure your store information
-                </CardDescription>
+                <CardTitle>{_('Store Settings')}</CardTitle>
+                <CardDescription>{_('Configure your store information')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <Area
@@ -234,9 +239,9 @@ export default function StoreSetting({
                         default: (
                           <InputField
                             name="storeName"
-                            label="Store Name"
+                            label={_('Store Name')}
                             required
-                            placeholder="Store Name"
+                            placeholder={_('Store Name')}
                             defaultValue={storeName}
                           />
                         )
@@ -248,8 +253,8 @@ export default function StoreSetting({
                         default: (
                           <TextareaField
                             name="storeDescription"
-                            label="Store Description"
-                            placeholder="Store Description"
+                            label={_('Store Description')}
+                            placeholder={_('Store Description')}
                             defaultValue={storeDescription}
                             required
                           />
@@ -261,7 +266,7 @@ export default function StoreSetting({
                 />
               </CardContent>
               <CardContent className="pt-3 border-t border-border">
-                <CardTitle>Contact Information</CardTitle>
+                <CardTitle>{_('Contact Information')}</CardTitle>
                 <Area
                   id="storeContactSetting"
                   coreComponents={[
@@ -288,7 +293,7 @@ export default function StoreSetting({
                 />
               </CardContent>
               <CardContent className="pt-3 border-t border-border">
-                <CardTitle>Address</CardTitle>
+                <CardTitle>{_('Address')}</CardTitle>
                 <div className="space-y-3">
                   <Country
                     selectedCountry={storeCountry}
@@ -296,18 +301,18 @@ export default function StoreSetting({
                   />
                   <InputField
                     name="storeAddress"
-                    label="Address"
+                    label={_('Address')}
                     defaultValue={storeAddress}
-                    placeholder="Store Address"
+                    placeholder={_('Store Address')}
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-5 mt-5">
                   <div>
                     <InputField
                       name="storeCity"
-                      label="City"
+                      label={_('City')}
                       defaultValue={storeCity}
-                      placeholder="City"
+                      placeholder={_('City')}
                     />
                   </div>
                   <Province
@@ -317,9 +322,9 @@ export default function StoreSetting({
                   <div>
                     <InputField
                       name="storePostalCode"
-                      label="Postal Code"
+                      label={_('Postal Code')}
                       defaultValue={storePostalCode}
-                      placeholder="Postal Code"
+                      placeholder={_('Postal Code')}
                     />
                   </div>
                 </div>

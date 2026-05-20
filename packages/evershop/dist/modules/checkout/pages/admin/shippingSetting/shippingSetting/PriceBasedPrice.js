@@ -1,5 +1,6 @@
 import { NumberField } from '@components/common/form/NumberField.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@components/common/ui/Table.js';
 import React from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
@@ -49,14 +50,14 @@ export function PriceBasedPrice({ lines }) {
             className: "border-border py-5"
         }, /*#__PURE__*/ React.createElement(TableCell, null, /*#__PURE__*/ React.createElement(NumberField, {
             name: `price_based_cost.${index}.min_price`,
-            placeholder: "Min Price",
+            placeholder: _('Min Price'),
             required: true,
             validation: {
                 required: 'Min price is required'
             }
         })), /*#__PURE__*/ React.createElement(TableCell, null, /*#__PURE__*/ React.createElement(NumberField, {
             name: `price_based_cost.${index}.cost`,
-            placeholder: "Shipping Cost",
+            placeholder: _('Shipping Cost'),
             required: true,
             validation: {
                 required: 'Shipping cost is required'

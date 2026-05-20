@@ -1,4 +1,5 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -60,7 +61,7 @@ export function Rates({ getTaxClasses, rates, addRateApi }: RatesProps) {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add Tax Rate</DialogTitle>
+              <DialogTitle>{_('Add Tax Rate')}</DialogTitle>
             </DialogHeader>
             <RateForm
               saveRateApi={addRateApi}

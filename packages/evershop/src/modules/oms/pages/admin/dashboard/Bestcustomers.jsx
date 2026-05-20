@@ -1,4 +1,5 @@
 import { useAppState } from '@components/common/context/app';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Card,
   CardAction,
@@ -25,13 +26,11 @@ export default function BestCustomers({ listUrl, setting }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Best customers</CardTitle>
-        <CardDescription>
-          A list of customers who have placed the most orders
-        </CardDescription>
+        <CardTitle>{_('Best customers')}</CardTitle>
+        <CardDescription>{_('A list of customers who have placed the most orders')}</CardDescription>
         <CardAction>
           <a href={listUrl} className="text-sm text-primary hover:underline">
-            View all customers
+            {_('View all customers')}
           </a>
         </CardAction>
       </CardHeader>
@@ -39,14 +38,14 @@ export default function BestCustomers({ listUrl, setting }) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Full name</TableHead>
-              <TableHead>Orders</TableHead>
-              <TableHead>Total</TableHead>
+              <TableHead>{_('Full name')}</TableHead>
+              <TableHead>{_('Orders')}</TableHead>
+              <TableHead>{_('Total')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {customers.map((c, i) => {
-              const grandTotal = new Intl.NumberFormat('en', {
+              const grandTotal = new Intl.NumberFormat('zh-CN', {
                 style: 'currency',
                 currency: setting.storeCurrency
               }).format(c.total);
@@ -79,6 +78,6 @@ export const query = `
     setting {
       storeCurrency
     }
-    listUrl: url(routeId: "productGrid")
+    listUrl: url(routeId: "customerGrid")
   }
 `;

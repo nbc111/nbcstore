@@ -1,4 +1,5 @@
 import React from 'react';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { useQuery } from 'urql';
 import './CategoryTree.scss';
 import RenderIfTrue from '@components/common/RenderIfTrue.jsx';
@@ -138,7 +139,7 @@ function CategoryTree({ selectedCategories, onSelect }) {
     if (!data || !data.categories || data.categories.items.length === 0) {
         return /*#__PURE__*/ React.createElement("div", {
             className: "text-gray-400 text-md"
-        }, "There is no category");
+        }, _('There is no category'));
     }
     return /*#__PURE__*/ React.createElement("ul", {
         className: "category-tree"

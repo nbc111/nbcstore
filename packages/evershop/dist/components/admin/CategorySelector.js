@@ -5,6 +5,7 @@ import { Skeleton } from '@components/common/ui/Skeleton.js';
 import { Check } from 'lucide-react';
 import React from 'react';
 import { useQuery } from 'urql';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 const SearchQuery = `
   query Query ($filters: [FilterInput!]) {
     categories(filters: $filters) {
@@ -111,7 +112,7 @@ const CategorySelector = ({ onSelect, onUnSelect, selectedCategories })=>{
     }, /*#__PURE__*/ React.createElement(Input, {
         type: "text",
         value: inputValue || '',
-        placeholder: "Search categories",
+        placeholder: _('Search categories'),
         onChange: (e)=>{
             setInputValue(e.target.value);
             setLoading(true);
@@ -120,7 +121,7 @@ const CategorySelector = ({ onSelect, onUnSelect, selectedCategories })=>{
         className: "divide-y"
     }, data.categories.items.length === 0 && /*#__PURE__*/ React.createElement("div", {
         className: "p-2 border border-divider rounded flex justify-center items-center"
-    }, inputValue ? /*#__PURE__*/ React.createElement("p", null, 'No categories found for query "', inputValue, "”") : /*#__PURE__*/ React.createElement("p", null, "You have no categories to display")), data.categories.items.map((cat)=>/*#__PURE__*/ React.createElement("div", {
+    }, inputValue ? /*#__PURE__*/ React.createElement("p", null, 'No categories found for query "', inputValue, "”") : /*#__PURE__*/ React.createElement("p", null, _('You have no categories to display'))), data.categories.items.map((cat)=>/*#__PURE__*/ React.createElement("div", {
             key: cat.uuid,
             className: "grid grid-cols-8 gap-5 py-2 border-divider items-center"
         }, /*#__PURE__*/ React.createElement("div", {

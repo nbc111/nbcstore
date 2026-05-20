@@ -5,6 +5,7 @@ import { Skeleton } from '@components/common/ui/Skeleton.js';
 import { Check } from 'lucide-react';
 import React from 'react';
 import { useQuery } from 'urql';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 const SearchQuery = `
   query Query ($filters: [FilterInput!]) {
     attributeGroups(filters: $filters) {
@@ -101,14 +102,14 @@ const AttributeGroupSelector = ({ onSelect, onUnSelect, selectedAttributeGroups 
     if (error) {
         return /*#__PURE__*/ React.createElement("p", {
             className: "text-destructive"
-        }, "There was an error fetching attribute groups.", error.message);
+        }, _('There was an error fetching attribute groups.'), error.message);
     }
     return /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", {
         className: "mb-5"
     }, /*#__PURE__*/ React.createElement(Input, {
         type: "text",
         value: inputValue || '',
-        placeholder: "Search attribute groups",
+        placeholder: _('Search attribute groups'),
         onChange: (e)=>{
             setInputValue(e.target.value);
             setLoading(true);
@@ -117,7 +118,9 @@ const AttributeGroupSelector = ({ onSelect, onUnSelect, selectedAttributeGroups 
         className: "divide-y"
     }, data.attributeGroups.items.length === 0 && /*#__PURE__*/ React.createElement("div", {
         className: "p-2 border border-divider rounded flex justify-center items-center"
-    }, inputValue ? /*#__PURE__*/ React.createElement("p", null, 'No attribute groups found for query "', inputValue, "”") : /*#__PURE__*/ React.createElement("p", null, "You have no attribute groups to display")), data.attributeGroups.items.map((a)=>/*#__PURE__*/ React.createElement("div", {
+    }, inputValue ? /*#__PURE__*/ React.createElement("p", null, _('No attribute groups found for query "${query}"', {
+        query: inputValue
+    })) : /*#__PURE__*/ React.createElement("p", null, _('You have no attribute groups to display'))), data.attributeGroups.items.map((a)=>/*#__PURE__*/ React.createElement("div", {
             key: a.uuid,
             className: "grid grid-cols-8 gap-5 py-2 border-divider items-center"
         }, /*#__PURE__*/ React.createElement("div", {
@@ -138,7 +141,7 @@ const AttributeGroupSelector = ({ onSelect, onUnSelect, selectedAttributeGroups 
                     ]);
                 onSelect(a.attributeGroupId, a.uuid, a.groupName);
             }
-        }, "Select"), isAttributeGroupSelected(a, internalSelectedAttributeGroups) && /*#__PURE__*/ React.createElement(Button, {
+        }, _('Select')), isAttributeGroupSelected(a, internalSelectedAttributeGroups) && /*#__PURE__*/ React.createElement(Button, {
             onClick: (e)=>{
                 e.preventDefault();
                 setInternalSelectedAttributeGroups((prev)=>prev.filter((c)=>c.attributeGroupId !== a.attributeGroupId && c.uuid !== a.uuid));

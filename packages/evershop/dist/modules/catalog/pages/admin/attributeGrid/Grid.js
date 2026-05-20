@@ -1,4 +1,5 @@
 import { GridPagination } from '@components/admin/grid/GridPagination.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { DummyColumnHeader } from '@components/admin/grid/header/Dummy';
 import { SortableHeader } from '@components/admin/grid/header/Sortable';
 import Area from '@components/common/Area.js';
@@ -44,18 +45,20 @@ function Actions({ attributes = [], selectedIds = [] }) {
     };
     const actions = [
         {
-            name: 'Delete',
+            name: _('Delete'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Delete ${selectedIds.length} attributes`,
-                    content: /*#__PURE__*/ React.createElement("div", null, "Can't be undone"),
+                    heading: _('Delete ${count} attributes', {
+                        count: String(selectedIds.length)
+                    }),
+                    content: _('Can\'t be undone'),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Delete',
+                        title: _('Delete'),
                         onAction: async ()=>{
                             await deleteAttributes();
                         },
@@ -83,6 +86,15 @@ Actions.propTypes = {
         deleteApi: PropTypes.string.isRequired
     })).isRequired
 };
+const attributeTypeLabel = (type)=>{
+    const labels = {
+        text: _('Text'),
+        select: _('Select list'),
+        multiselect: _('Multiselect'),
+        textarea: _('Textarea')
+    };
+    return labels[type] || type;
+};
 export default function AttributeGrid({ attributes: { items: attributes, total, currentFilters = [] } }) {
     const page = currentFilters.find((filter)=>filter.key === 'page') ? parseInt(currentFilters.find((filter)=>filter.key === 'page').value, 10) : 1;
     const limit = currentFilters.find((filter)=>filter.key === 'limit') ? parseInt(currentFilters.find((filter)=>filter.key === 'limit').value, 10) : 20;
@@ -94,7 +106,7 @@ export default function AttributeGrid({ attributes: { items: attributes, total, 
         id: "attributeGridFilter"
     }, /*#__PURE__*/ React.createElement(InputField, {
         name: "name",
-        placeholder: "Search",
+        placeholder: _('Search'),
         defaultValue: currentFilters.find((f)=>f.key === 'name')?.value,
         onKeyPress: (e)=>{
             // If the user press enter, we should submit the form
@@ -119,7 +131,7 @@ export default function AttributeGrid({ attributes: { items: attributes, total, 
             url.search = '';
             window.location.href = url.href;
         }
-    }, "Clear Filters"))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("div", {
+    }, _('Clear Filters')))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("div", {
         className: "form-field mb-0"
     }, /*#__PURE__*/ React.createElement(Checkbox, {
         onCheckedChange: (checked)=>{
@@ -135,7 +147,7 @@ export default function AttributeGrid({ attributes: { items: attributes, total, 
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(SortableHeader, {
                             name: "name",
-                            title: "Attribute Name",
+                            title: _('Attribute Name'),
                             currentFilters: currentFilters
                         })
                 },
@@ -144,7 +156,7 @@ export default function AttributeGrid({ attributes: { items: attributes, total, 
             {
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(DummyColumnHeader, {
-                            title: "Groups"
+                            title: _('Attribute groups')
                         })
                 },
                 sortOrder: 15
@@ -153,7 +165,7 @@ export default function AttributeGrid({ attributes: { items: attributes, total, 
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(SortableHeader, {
                             name: "type",
-                            title: "Type",
+                            title: _('Type'),
                             currentFilters: currentFilters
                         })
                 },
@@ -163,7 +175,7 @@ export default function AttributeGrid({ attributes: { items: attributes, total, 
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(SortableHeader, {
                             name: "is_required",
-                            title: "Is Required?",
+                            title: _('Is Required?'),
                             currentFilters: currentFilters
                         })
                 },
@@ -173,7 +185,7 @@ export default function AttributeGrid({ attributes: { items: attributes, total, 
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(SortableHeader, {
                             name: "is_filterable",
-                            title: "Is Filterable?",
+                            title: _('Is Filterable?'),
                             currentFilters: currentFilters
                         })
                 },
@@ -227,26 +239,26 @@ export default function AttributeGrid({ attributes: { items: attributes, total, 
                     component: {
                         default: ({ areaProps })=>/*#__PURE__*/ React.createElement(TableCell, null, /*#__PURE__*/ React.createElement(Badge, {
                                 variant: "outline"
-                            }, areaProps.row.type))
+                            }, attributeTypeLabel(areaProps.row.type)))
                     },
                     sortOrder: 20
                 },
                 {
                     component: {
-                        default: ()=>/*#__PURE__*/ React.createElement(TableCell, null, a.isRequired ? 'Yes' : 'No')
+                        default: ()=>/*#__PURE__*/ React.createElement(TableCell, null, a.isRequired ? _('Yes') : _('No'))
                     },
                     sortOrder: 25
                 },
                 {
                     component: {
-                        default: ()=>/*#__PURE__*/ React.createElement(TableCell, null, a.isFilterable ? 'Yes' : 'No')
+                        default: ()=>/*#__PURE__*/ React.createElement(TableCell, null, a.isFilterable ? _('Yes') : _('No'))
                     },
                     sortOrder: 30
                 }
             ]
         }))))), attributes.length === 0 && /*#__PURE__*/ React.createElement("div", {
         className: "flex w-full justify-center mt-2"
-    }, "There is no attribute to display"), /*#__PURE__*/ React.createElement(GridPagination, {
+    }, _('There is no attribute to display')), /*#__PURE__*/ React.createElement(GridPagination, {
         total: total,
         limit: limit,
         page: page

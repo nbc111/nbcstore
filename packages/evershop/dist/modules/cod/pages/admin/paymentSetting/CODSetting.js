@@ -1,13 +1,14 @@
 import { InputField } from '@components/common/form/InputField.js';
 import { ToggleField } from '@components/common/form/ToggleField.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import React from 'react';
 export default function CODPayment({ setting: { codPaymentStatus, codDisplayName } }) {
-    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Cash On Delivery Payment"), /*#__PURE__*/ React.createElement(CardDescription, null, "Configure your Cash On Delivery payment gateway settings")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
+    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Cash On Delivery Payment')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Configure your Cash On Delivery payment gateway settings'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
         className: "grid grid-cols-3 gap-5"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "col-span-1 items-center flex"
-    }, /*#__PURE__*/ React.createElement("h4", null, "Enable?")), /*#__PURE__*/ React.createElement("div", {
+    }, /*#__PURE__*/ React.createElement("h4", null, _('Enable?'))), /*#__PURE__*/ React.createElement("div", {
         className: "col-span-2 flex justify-start"
     }, /*#__PURE__*/ React.createElement(ToggleField, {
         name: "codPaymentStatus",
@@ -20,11 +21,11 @@ export default function CODPayment({ setting: { codPaymentStatus, codDisplayName
         className: "grid grid-cols-3 gap-5"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "col-span-1 items-center flex"
-    }, /*#__PURE__*/ React.createElement("h4", null, "Dislay Name")), /*#__PURE__*/ React.createElement("div", {
+    }, /*#__PURE__*/ React.createElement("h4", null, _('Dislay Name'))), /*#__PURE__*/ React.createElement("div", {
         className: "col-span-2"
     }, /*#__PURE__*/ React.createElement(InputField, {
         name: "codDisplayName",
-        placeholder: "Display Name",
+        placeholder: _('Display Name'),
         defaultValue: codDisplayName
     })))));
 }

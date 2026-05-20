@@ -1,4 +1,5 @@
 import { Form } from '@components/common/form/Form.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputField } from '@components/common/form/InputField.js';
 import { SelectField } from '@components/common/form/SelectField.js';
 import { Button } from '@components/common/ui/Button.js';
@@ -54,7 +55,7 @@ export default function AddTrackingButton({
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Edit Tracking Info</DialogTitle>
+              <DialogTitle>{_('Edit Tracking Info')}</DialogTitle>
             </DialogHeader>
             <Form
               form={form}
@@ -71,8 +72,8 @@ export default function AddTrackingButton({
                   <InputField
                     type="text"
                     name="tracking_number"
-                    label="Tracking number"
-                    placeholder="Tracking number"
+                    label={_('Tracking number')}
+                    placeholder={_('Tracking number')}
                     defaultValue={shipment.trackingNumber || ''}
                     required
                     validation={{
@@ -83,7 +84,7 @@ export default function AddTrackingButton({
                 <div>
                   <SelectField
                     name="carrier"
-                    label="Carrier"
+                    label={_('Carrier')}
                     defaultValue={shipment.carrier || ''}
                     required
                     options={carriers}

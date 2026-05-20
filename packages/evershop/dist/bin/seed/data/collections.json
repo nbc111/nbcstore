@@ -1,6 +1,6 @@
 [
   {
-    "name": "Featured Products",
+    "name": "精选商品",
     "code": "homepage",
     "description": [
       {
@@ -16,7 +16,7 @@
                   "id": "fp_block_1",
                   "type": "paragraph",
                   "data": {
-                    "text": "Featured products displayed on the homepage"
+                    "text": "首页展示的精选商品"
                   }
                 }
               ],
@@ -30,7 +30,7 @@
     ]
   },
   {
-    "name": "Summer Collection",
+    "name": "夏季系列",
     "code": "summer-2024",
     "description": [
       {
@@ -46,7 +46,7 @@
                   "id": "sc_block_1",
                   "type": "paragraph",
                   "data": {
-                    "text": "Hot picks for the summer season"
+                    "text": "夏季热门精选"
                   }
                 }
               ],
@@ -60,7 +60,7 @@
     ]
   },
   {
-    "name": "Winter Essentials",
+    "name": "冬季必备",
     "code": "winter-essentials",
     "description": [
       {
@@ -76,7 +76,7 @@
                   "id": "we_block_1",
                   "type": "paragraph",
                   "data": {
-                    "text": "Stay warm and stylish this winter"
+                    "text": "温暖过冬，时尚随行"
                   }
                 }
               ],
@@ -90,7 +90,7 @@
     ]
   },
   {
-    "name": "Trending Now",
+    "name": "当下热卖",
     "code": "trending",
     "description": [
       {
@@ -106,7 +106,7 @@
                   "id": "tn_block_1",
                   "type": "paragraph",
                   "data": {
-                    "text": "What's hot and trending right now"
+                    "text": "当前最受欢迎的商品"
                   }
                 }
               ],

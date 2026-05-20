@@ -1,4 +1,5 @@
 import { useAppDispatch } from '@components/common/context/app.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Pagination as PaginationUI, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@components/common/ui/Pagination.js';
 import React, { useState, useEffect, useCallback } from 'react';
 export const PaginationContext = /*#__PURE__*/ React.createContext(null);
@@ -100,7 +101,11 @@ export const usePaginationLogic = (total, limit, initialPage, onPageChange, scro
     const getDisplayText = useCallback(()=>{
         const start = (page - 1) * limit + 1;
         const end = Math.min(page * limit, total);
-        return `Showing ${start}-${end} of ${total} results`;
+        return _('Showing ${start}-${end} of ${total} results', {
+            start: String(start),
+            end: String(end),
+            total: String(total)
+        });
     }, [
         page,
         limit,
@@ -244,19 +249,25 @@ export const CompactPaginationRenderer = ({ renderProps, className = '' })=>{
         className: `compact-pagination flex items-center justify-between ${className}`
     }, /*#__PURE__*/ React.createElement("div", {
         className: "pagination-info text-sm text-gray-600"
-    }, "Showing ", showing, " of ", total), /*#__PURE__*/ React.createElement("div", {
+    }, _('Showing ${showing} of ${total}', {
+        showing,
+        total
+    })), /*#__PURE__*/ React.createElement("div", {
         className: "pagination-controls flex items-center space-x-2"
     }, /*#__PURE__*/ React.createElement("button", {
         onClick: goToPrev,
         disabled: !hasPrev || isLoading,
         className: "px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-    }, "Previous"), /*#__PURE__*/ React.createElement("span", {
+    }, _('Previous')), /*#__PURE__*/ React.createElement("span", {
         className: "text-sm text-gray-600"
-    }, "Page ", currentPage, " of ", totalPages), /*#__PURE__*/ React.createElement("button", {
+    }, _('Page ${current} of ${total}', {
+        current: String(currentPage),
+        total: String(totalPages)
+    })), /*#__PURE__*/ React.createElement("button", {
         onClick: goToNext,
         disabled: !hasNext || isLoading,
         className: "px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-    }, "Next")));
+    }, _('Next'))));
 };
 export const InputPaginationRenderer = ({ renderProps, className = '' })=>{
     const { currentPage, totalPages, hasNext, hasPrev, goToNext, goToPrev, goToPage, goToFirst, goToLast, getDisplayText, isLoading } = renderProps;

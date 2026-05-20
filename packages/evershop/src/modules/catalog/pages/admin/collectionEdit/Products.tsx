@@ -1,6 +1,7 @@
 import { ProductListSkeleton } from '@components/admin/ProductListSkeleton.js';
 import { ProductSelector } from '@components/admin/ProductSelector.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Card,
   CardAction,
@@ -140,13 +141,11 @@ export default function Products({
     <Dialog>
       <Card>
         <CardHeader>
-          <CardTitle>Products</CardTitle>
-          <CardDescription>
-            Manage the products assigned to this collection.
-          </CardDescription>
+          <CardTitle>{_('Products')}</CardTitle>
+          <CardDescription>{_('Manage the products assigned to this collection.')}</CardDescription>
           <CardAction>
             <DialogTrigger>
-              <Button variant="link">Add Products</Button>
+              <Button variant="link">{_('Add Products')}</Button>
             </DialogTrigger>
           </CardAction>
         </CardHeader>
@@ -162,7 +161,7 @@ export default function Products({
               <Input
                 type="text"
                 value={keyword}
-                placeholder="Search products"
+                placeholder={_('Search products')}
                 onChange={(e) => {
                   setLoading(true);
                   setKeyword(e.target.value);
@@ -276,7 +275,7 @@ export default function Products({
       </Card>
       <DialogContent className="sm:max-w-[90vw] lg:max-w-200">
         <DialogHeader>
-          <DialogTitle>Add Products</DialogTitle>
+          <DialogTitle>{_('Add Products')}</DialogTitle>
           <DialogDescription>
             Select products to add to this collection.
           </DialogDescription>

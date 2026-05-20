@@ -103,10 +103,10 @@ export function NumberField({ name, label, placeholder, className = '', wrapperC
         className: wrapperClassName
     }, label && /*#__PURE__*/ React.createElement(FieldLabel, {
         htmlFor: fieldId
-    }, /*#__PURE__*/ React.createElement(React.Fragment, null, label, required && /*#__PURE__*/ React.createElement("span", {
+    }, /*#__PURE__*/ React.createElement(React.Fragment, null, _(label), required && /*#__PURE__*/ React.createElement("span", {
         className: "text-destructive"
     }, "*"), helperText && /*#__PURE__*/ React.createElement(Tooltip, {
-        content: helperText,
+        content: _(helperText),
         position: "top"
     }))), /*#__PURE__*/ React.createElement(InputGroup, null, renderInput(), prefixIcon && /*#__PURE__*/ React.createElement(InputGroupAddon, {
         align: 'inline-start'

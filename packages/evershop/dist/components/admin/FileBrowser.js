@@ -4,6 +4,7 @@ import './FileBrowser.scss';
 import { useQuery } from 'urql';
 import Spinner from '@components/admin/Spinner.js';
 import { Input } from '@components/common/ui/Input.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 const GetApisQuery = `
   query Query ($filters: [FilterInput!]) {
     browserApi: url(routeId: "fileBrowser", params: [{key: "0", value: ""}])
@@ -280,7 +281,7 @@ const FileBrowser = ({ onInsert, isMultiple, close })=>{
         className: "flex"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "pr-2"
-    }, "You are here:"), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("a", {
+    }, _('You are here:')), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("a", {
         href: "#",
         onClick: (e)=>onSelectFolderFromBreadcrumb(e, 0),
         className: "text-primary hover:underline"
@@ -316,16 +317,16 @@ const FileBrowser = ({ onInsert, isMultiple, close })=>{
             onClick: (e)=>onSelectFolder(e, f)
         }, f))), folders.length === 0 && /*#__PURE__*/ React.createElement("li", {
         className: "list-group-item"
-    }, /*#__PURE__*/ React.createElement("span", null, "There is no sub folder."))), /*#__PURE__*/ React.createElement("div", {
+    }, /*#__PURE__*/ React.createElement("span", null, _('There is no sub folder.')))), /*#__PURE__*/ React.createElement("div", {
         className: "justify-start items-center gap-2 flex"
     }, /*#__PURE__*/ React.createElement(Input, {
         type: "text",
-        placeholder: "New folder",
+        placeholder: _('New folder'),
         ref: newFolderRefInput
     }), /*#__PURE__*/ React.createElement(Button, {
         onClick: (e)=>createFolder(e, newFolderRefInput.current?.value),
         variant: 'outline'
-    }, "Create"))), /*#__PURE__*/ React.createElement("div", {
+    }, _('Create')))), /*#__PURE__*/ React.createElement("div", {
         className: "col-span-3"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "error text-destructive mb-5"
@@ -333,18 +334,18 @@ const FileBrowser = ({ onInsert, isMultiple, close })=>{
         className: "tool-bar grid grid-cols-3 gap-2 mb-5"
     }, /*#__PURE__*/ React.createElement(Button, {
         variant: "destructive",
-        title: "Delete image",
+        title: _('Delete image'),
         onClick: ()=>deleteFile()
-    }, "Delete"), /*#__PURE__*/ React.createElement(Button, {
+    }, _('Delete')), /*#__PURE__*/ React.createElement(Button, {
         variant: "default",
-        title: "Insert image",
+        title: _('Insert image'),
         onClick: ()=>insertFile()
-    }, "Insert"), /*#__PURE__*/ React.createElement(Button, {
+    }, _('Insert')), /*#__PURE__*/ React.createElement(Button, {
         variant: "outline",
         onClick: ()=>{
             document.getElementById('upload-image').click();
         }
-    }, "Upload"), /*#__PURE__*/ React.createElement("label", {
+    }, _('Upload')), /*#__PURE__*/ React.createElement("label", {
         className: "self-center",
         id: "upload-image-label",
         htmlFor: "upload-image"
@@ -355,7 +356,7 @@ const FileBrowser = ({ onInsert, isMultiple, close })=>{
         type: "file",
         multiple: true,
         onChange: onUpload
-    })))), files.length === 0 && /*#__PURE__*/ React.createElement("div", null, "There is no file to display."), /*#__PURE__*/ React.createElement("div", {
+    })))), files.length === 0 && /*#__PURE__*/ React.createElement("div", null, _('There is no file to display.')), /*#__PURE__*/ React.createElement("div", {
         className: "grid grid-cols-9 gap-2"
     }, files.map((f)=>/*#__PURE__*/ React.createElement(File, {
             file: f,

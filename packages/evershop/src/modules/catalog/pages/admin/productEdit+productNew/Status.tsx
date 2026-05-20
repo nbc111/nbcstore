@@ -1,4 +1,5 @@
 import { RadioGroupField } from '@components/common/form/RadioGroupField.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Card,
   CardHeader,
@@ -21,15 +22,13 @@ export default function Status({ product }: StatusProps) {
   return (
     <Card className="bg-popover">
       <CardHeader>
-        <CardTitle>Product Status</CardTitle>
-        <CardDescription>
-          Set the status and visibility of the product.
-        </CardDescription>
+        <CardTitle>{_('Product Status')}</CardTitle>
+        <CardDescription>{_('Set the status and visibility of the product.')}</CardDescription>
       </CardHeader>
       <CardContent>
         <RadioGroupField
           name="status"
-          label="Status"
+          label={_('Status')}
           options={[
             { value: 0, label: 'Disabled' },
             { value: 1, label: 'Enabled' }
@@ -42,7 +41,7 @@ export default function Status({ product }: StatusProps) {
       <CardContent className="border-t border-t-border pt-6">
         <RadioGroupField
           name="visibility"
-          label="Visibility"
+          label={_('Visibility')}
           options={[
             { value: 0, label: 'Not visible individually' },
             { value: 1, label: 'Catalog, Search' }

@@ -114,7 +114,7 @@ export function ShippingMethods({ methods, shippingAddress, isLoading, onSelect 
             disabled: isProcessing
         }), /*#__PURE__*/ React.createElement(Label, {
             htmlFor: `shipping-method-${method.code}`
-        }, method.name))), method.description && /*#__PURE__*/ React.createElement(ItemDescription, null, method.description)), /*#__PURE__*/ React.createElement(ItemActions, null, method.cost ? /*#__PURE__*/ React.createElement(React.Fragment, null, method.cost.value > 0 ? /*#__PURE__*/ React.createElement("div", {
+        }, _(method.name)))), method.description && /*#__PURE__*/ React.createElement(ItemDescription, null, method.description)), /*#__PURE__*/ React.createElement(ItemActions, null, method.cost ? /*#__PURE__*/ React.createElement(React.Fragment, null, method.cost.value > 0 ? /*#__PURE__*/ React.createElement("div", {
             className: "font-medium"
         }, method.cost.text) : /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("div", {
             className: "text-sm text-gray-500 line-through"

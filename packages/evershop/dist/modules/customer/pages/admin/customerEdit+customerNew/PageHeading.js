@@ -1,9 +1,12 @@
 import { PageHeading } from '@components/admin/PageHeading.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 export default function CustomerEditPageHeading({ backUrl, customer }) {
     return /*#__PURE__*/ React.createElement(PageHeading, {
         backUrl: backUrl,
-        heading: customer ? `Editing ${customer.fullName}` : 'Create A New Customer'
+        heading: customer ? _('Editing ${name}', {
+            name: customer.fullName
+        }) : _('Create A New Customer')
     });
 }
 CustomerEditPageHeading.defaultProps = {

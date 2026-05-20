@@ -1,5 +1,25 @@
 {
+  "shop": {
+    "language": "zh",
+    "currency": "CNY",
+    "timezone": "Asia/Shanghai"
+  },
+  "themeConfig": {
+    "copyRight": "© 2025 NBCStore. 保留所有权利。"
+  },
   "system": {
+    "cod": {
+      "status": 1,
+      "codDisplayName": "货到付款"
+    },
+    "stripe": {
+      "status": 0,
+      "stripeDisplayName": "Stripe 支付"
+    },
+    "paypal": {
+      "status": 0,
+      "paypalDisplayName": "PayPal"
+    },
     "extensions": [
       {
         "name": "nbc-wallet",
@@ -9,12 +29,42 @@
       }
     ]
   },
+  "oms": {
+    "order": {
+      "shipmentStatus": {
+        "pending": { "name": "待发货" },
+        "processing": { "name": "配送中" },
+        "shipped": { "name": "已发货" },
+        "delivered": { "name": "已送达" },
+        "canceled": { "name": "已取消" }
+      },
+      "paymentStatus": {
+        "pending": { "name": "待付款" },
+        "paid": { "name": "已付款" },
+        "canceled": { "name": "已取消" },
+        "paypal_authorized": { "name": "PayPal 已授权" },
+        "paypal_captured": { "name": "PayPal 已收款" },
+        "nbc_pending": { "name": "NBC 待确认" },
+        "nbc_paid": { "name": "NBC 已付款" },
+        "nbc_failed": { "name": "NBC 付款失败" },
+        "nbc_refunded": { "name": "NBC 已退款" },
+        "nbc_partial_refunded": { "name": "NBC 部分退款" }
+      },
+      "status": {
+        "new": { "name": "新建" },
+        "processing": { "name": "处理中" },
+        "completed": { "name": "已完成" },
+        "canceled": { "name": "已取消" },
+        "closed": { "name": "已关闭" }
+      }
+    }
+  },
   "nbcWallet": {
     "status": 1,
-    "displayName": "NBC Wallet",
+    "displayName": "NBC 钱包",
     "auth": {
       "nonceTtlSeconds": 600,
-      "messagePrefix": "Sign this message to authenticate with NBC Store."
+      "messagePrefix": "请签名以登录 NBC 商城。"
     },
     "exchangeRate": {
       "NBC_TO_CNY": 0.01

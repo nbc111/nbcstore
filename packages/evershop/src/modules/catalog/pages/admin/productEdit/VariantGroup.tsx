@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Card,
   CardDescription,
@@ -47,10 +48,8 @@ const VariantGroup: React.FC<VariantGroupProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Variant Group</CardTitle>
-        <CardDescription>
-          Manage the variant group of the product.
-        </CardDescription>
+        <CardTitle>{_('Variant Group')}</CardTitle>
+        <CardDescription>{_('Manage the variant group of the product.')}</CardDescription>
       </CardHeader>
       {!group && (
         <New

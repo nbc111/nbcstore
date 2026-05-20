@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -62,7 +63,7 @@ function Rate({ rate, getTaxClasses }: RateProps) {
         </td>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Tax Rate</DialogTitle>
+            <DialogTitle>{_('Edit Tax Rate')}</DialogTitle>
           </DialogHeader>
           <RateForm
             saveRateApi={rate.updateApi}

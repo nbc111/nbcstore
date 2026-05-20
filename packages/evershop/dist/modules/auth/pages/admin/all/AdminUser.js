@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@components/common/ui/DropdownMenu.js';
 import { LogOut } from 'lucide-react';
 import PropTypes from 'prop-types';
@@ -14,7 +15,7 @@ export default function AdminUser({ adminUser, logoutUrl, loginPage }) {
         if (response.status === 200) {
             window.location.href = loginPage;
         } else {
-            toast.error('Logout failed');
+            toast.error(_('Logout failed'));
         }
     };
     if (!adminUser) {
@@ -33,7 +34,7 @@ export default function AdminUser({ adminUser, logoutUrl, loginPage }) {
         className: "w-45"
     }, /*#__PURE__*/ React.createElement(DropdownMenuLabel, {
         className: "text-base font-normal"
-    }, "Hello ", /*#__PURE__*/ React.createElement("span", {
+    }, _('Hello'), " ", /*#__PURE__*/ React.createElement("span", {
         className: "text-primary"
     }, fullName, "!")), /*#__PURE__*/ React.createElement(DropdownMenuSeparator, null), /*#__PURE__*/ React.createElement(DropdownMenuItem, {
         className: "text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer",
@@ -45,7 +46,7 @@ export default function AdminUser({ adminUser, logoutUrl, loginPage }) {
         className: "flex justify-start items-center gap-2"
     }, /*#__PURE__*/ React.createElement(LogOut, {
         className: "w-4 h-4"
-    }), /*#__PURE__*/ React.createElement("span", null, "Logout")))))));
+    }), /*#__PURE__*/ React.createElement("span", null, _('Logout'))))))));
 }
 AdminUser.propTypes = {
     adminUser: PropTypes.shape({

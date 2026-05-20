@@ -1,4 +1,5 @@
 import { GridPagination } from '@components/admin/grid/GridPagination';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { SortableHeader } from '@components/admin/grid/header/Sortable';
 import { Status } from '@components/admin/Status.js';
 import Area from '@components/common/Area';
@@ -28,18 +29,20 @@ function Actions({ categories = [], selectedIds = [] }) {
     };
     const actions = [
         {
-            name: 'Delete',
+            name: _('Delete'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Delete ${selectedIds.length} categories`,
-                    content: /*#__PURE__*/ React.createElement("div", null, "Can't be undone"),
+                    heading: _('Delete ${count} categories', {
+                        count: String(selectedIds.length)
+                    }),
+                    content: _('Can\'t be undone'),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Delete',
+                        title: _('Delete'),
                         onAction: async ()=>{
                             await deleteCategories();
                         },
@@ -77,7 +80,7 @@ export default function CategoryGrid({ categories: { items: categories, total, c
         id: "categoryGridFilter"
     }, /*#__PURE__*/ React.createElement(InputField, {
         name: "name",
-        placeholder: "Search",
+        placeholder: _('Search'),
         defaultValue: currentFilters.find((f)=>f.key === 'name')?.value,
         onKeyPress: (e)=>{
             // If the user press enter, we should submit the form
@@ -102,7 +105,7 @@ export default function CategoryGrid({ categories: { items: categories, total, c
             url.search = '';
             window.location.href = url.href;
         }
-    }, "Clear filters"))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("div", {
+    }, _('Clear Filters')))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("div", {
         className: "form-field mb-0"
     }, /*#__PURE__*/ React.createElement(Checkbox, {
         onCheckedChange: (checked)=>{
@@ -120,7 +123,7 @@ export default function CategoryGrid({ categories: { items: categories, total, c
             {
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(SortableHeader, {
-                            title: "Category Name",
+                            title: _('Category Name'),
                             name: "name",
                             currentFilters: currentFilters
                         })
@@ -131,7 +134,7 @@ export default function CategoryGrid({ categories: { items: categories, total, c
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(SortableHeader, {
                             name: "status",
-                            title: "Status",
+                            title: _('Status'),
                             currentFilters: currentFilters
                         })
                 },
@@ -141,7 +144,7 @@ export default function CategoryGrid({ categories: { items: categories, total, c
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(SortableHeader, {
                             name: "include_in_nav",
-                            title: "Include In Menu",
+                            title: _('Include In Menu'),
                             currentFilters: currentFilters
                         })
                 },
@@ -193,14 +196,14 @@ export default function CategoryGrid({ categories: { items: categories, total, c
                 },
                 {
                     component: {
-                        default: ()=>/*#__PURE__*/ React.createElement(TableCell, null, c.includeInNav ? 'Yes' : 'No')
+                        default: ()=>/*#__PURE__*/ React.createElement(TableCell, null, c.includeInNav ? _('Yes') : _('No'))
                     },
                     sortOrder: 30
                 }
             ]
         }))))), categories.length === 0 && /*#__PURE__*/ React.createElement("div", {
         className: "flex w-full justify-center mt-2"
-    }, "There is no category to display"), /*#__PURE__*/ React.createElement(GridPagination, {
+    }, _('There is no category to display')), /*#__PURE__*/ React.createElement(GridPagination, {
         total: total,
         limit: limit,
         page: page

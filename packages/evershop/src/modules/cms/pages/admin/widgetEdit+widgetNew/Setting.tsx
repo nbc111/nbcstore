@@ -1,4 +1,5 @@
 import Area from '@components/common/Area.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Card,
   CardContent,
@@ -20,7 +21,7 @@ export default function Setting({ type }: SettingProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Widget Settings</CardTitle>
+        <CardTitle>{_('Widget Settings')}</CardTitle>
         <CardDescription>
           Configure the settings for the {type.name} widget.
         </CardDescription>

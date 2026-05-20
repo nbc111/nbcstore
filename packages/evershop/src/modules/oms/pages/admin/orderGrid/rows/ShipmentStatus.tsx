@@ -1,5 +1,6 @@
 import { Badge, badgeVariants } from '@components/common/ui/Badge.js';
 import { TableCell } from '@components/common/ui/Table.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 
 interface ShipmentStatusProps {
@@ -12,7 +13,7 @@ interface ShipmentStatusProps {
 export function ShipmentStatus({ status }: ShipmentStatusProps) {
   return (
     <TableCell>
-      <Badge variant={status.badge || 'default'}>{status.name}</Badge>
+      <Badge variant={status.badge || 'default'}>{_(status.name)}</Badge>
     </TableCell>
   );
 }

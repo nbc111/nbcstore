@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Card,
   CardAction,
@@ -49,10 +50,8 @@ export default function SaleStatistic({ api }) {
     return (
       <Card title="Sale Statistics">
         <CardHeader>
-          <CardTitle>Sale Statistics</CardTitle>
-          <CardDescription>
-            Overview of sales data over selected periods
-          </CardDescription>
+          <CardTitle>{_('Sale Statistics')}</CardTitle>
+          <CardDescription>{_('Overview of sales data over selected periods')}</CardDescription>
         </CardHeader>
         <div className="skeleton-wrapper-statistic">
           <div className="skeleton" />
@@ -63,31 +62,29 @@ export default function SaleStatistic({ api }) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Sale Statistics</CardTitle>
-          <CardDescription>
-            Overview of sales data over selected periods
-          </CardDescription>
+          <CardTitle>{_('Sale Statistics')}</CardTitle>
+          <CardDescription>{_('Overview of sales data over selected periods')}</CardDescription>
           <CardAction>
             <ButtonGroup>
               <Button onClick={() => setPeriod('daily')} variant={'outline'}>
                 {period === 'daily' ? (
-                  <span className="text-primary">Daily</span>
+                  <span className="text-primary">{_('Daily')}</span>
                 ) : (
-                  'Daily'
+                  _('Daily')
                 )}
               </Button>
               <Button onClick={() => setPeriod('weekly')} variant={'outline'}>
                 {period === 'weekly' ? (
-                  <span className="text-primary">Weekly</span>
+                  <span className="text-primary">{_('Weekly')}</span>
                 ) : (
-                  'Weekly'
+                  _('Weekly')
                 )}
               </Button>
               <Button onClick={() => setPeriod('monthly')} variant={'outline'}>
                 {period === 'monthly' ? (
-                  <span className="text-primary">Monthly</span>
+                  <span className="text-primary">{_('Monthly')}</span>
                 ) : (
-                  'Monthly'
+                  _('Monthly')
                 )}
               </Button>
             </ButtonGroup>

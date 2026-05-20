@@ -1,4 +1,5 @@
 import { FormButtons } from '@components/admin/FormButtons.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import Area from '@components/common/Area.js';
 import { Form } from '@components/common/form/Form.js';
 import React from 'react';
@@ -9,7 +10,7 @@ export default function AttributeNewForm({ action, gridUrl }) {
         method: "POST",
         id: "attributeNewForm",
         onSuccess: (response)=>{
-            toast.success('Attribute created successfully!');
+            toast.success(_('Attribute created successfully!'));
             setTimeout(()=>{
                 const editUrl = response.data.links.find((link)=>link.rel === 'edit').href;
                 window.location.href = editUrl;

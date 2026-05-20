@@ -1,4 +1,5 @@
 import Spinner from '@components/admin/Spinner.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Form } from '@components/common/form/Form.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { NumberField } from '@components/common/form/NumberField.js';
@@ -75,18 +76,18 @@ function RateForm({
           <div>
             <InputField
               name="name"
-              placeholder="Name"
+              placeholder={_('Name')}
               required
               validation={{ required: 'Name is required' }}
-              label="Name"
+              label={_('Name')}
               defaultValue={rate?.name}
             />
           </div>
           <div>
             <NumberField
               name="rate"
-              label="Rate"
-              placeholder="Rate"
+              label={_('Rate')}
+              placeholder={_('Rate')}
               required
               validation={{ required: 'Rate is required' }}
               defaultValue={rate?.rate}
@@ -99,8 +100,8 @@ function RateForm({
           <div>
             <InputField
               name="country"
-              label="Country"
-              placeholder="Country"
+              label={_('Country')}
+              placeholder={_('Country')}
               required
               validation={{ required: 'Country is required' }}
               defaultValue={rate?.country}
@@ -110,8 +111,8 @@ function RateForm({
           <div>
             <InputField
               name="province"
-              label="Provinces"
-              placeholder="Provinces"
+              label={_('Provinces')}
+              placeholder={_('Provinces')}
               required
               validation={{ required: 'Provinces is required' }}
               defaultValue={rate?.province}
@@ -121,8 +122,8 @@ function RateForm({
           <div>
             <InputField
               name="postcode"
-              label="Postcode"
-              placeholder="Postcode"
+              label={_('Postcode')}
+              placeholder={_('Postcode')}
               required
               validation={{ required: 'Postcode is required' }}
               defaultValue={rate?.postcode}
@@ -134,7 +135,7 @@ function RateForm({
           <div>
             <ToggleField
               name="is_compound"
-              label="Is compound"
+              label={_('Is compound')}
               defaultValue={rate?.isCompound || false}
             />
           </div>
@@ -144,8 +145,8 @@ function RateForm({
           <div>
             <NumberField
               name="priority"
-              label="Priority"
-              placeholder="Priority"
+              label={_('Priority')}
+              placeholder={_('Priority')}
               validation={{ required: 'Priority is required' }}
               required
               defaultValue={rate?.priority}
@@ -155,9 +156,7 @@ function RateForm({
         </div>
       </div>
       <div className="flex justify-end gap-2">
-        <Button title="Cancel" variant="secondary" onClick={closeModal}>
-          Cancel
-        </Button>
+        <Button title="Cancel" variant="secondary" onClick={closeModal}>{_('Cancel')}</Button>
         <Button
           title="Save"
           variant="default"

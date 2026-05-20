@@ -1,4 +1,5 @@
 import { InputField } from '@components/common/form/InputField.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { NumberField } from '@components/common/form/NumberField.js';
 import { RadioGroupField } from '@components/common/form/RadioGroupField.js';
 import { Card, CardContent } from '@components/common/ui/Card.js';
@@ -51,7 +52,7 @@ const AreaInput = ({ values, control })=>{
                         const stringArray = newOptions.map((option)=>option.value);
                         field.onChange(stringArray);
                     }, field.value ? field.value.map((val)=>typeof val === 'string' ? createOption(val) : val) : []),
-                placeholder: "Type area and press enter...",
+                placeholder: _('Type area and press enter...'),
                 value: field.value ? field.value.map((val)=>typeof val === 'string' ? createOption(val) : val) : []
             })
     });
@@ -73,17 +74,17 @@ export default function General({ widget, routes }) {
     return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(InputField, {
         name: "name",
         defaultValue: widget?.name,
-        label: "Name",
+        label: _('Name'),
         required: true,
         validation: {
             required: 'Name is required'
         },
-        placeholder: "Name"
+        placeholder: _('Name')
     })), /*#__PURE__*/ React.createElement(CardContent, {
         className: "pt-3 border-t border-border"
     }, /*#__PURE__*/ React.createElement(RadioGroupField, {
         name: "status",
-        label: "Status",
+        label: _('Status'),
         defaultValue: widget?.status,
         required: true,
         validation: {
@@ -134,7 +135,7 @@ export default function General({ widget, routes }) {
                 options: allRoutes.filter((r)=>r.isApi === false && r.isAdmin === false && r.method.includes('GET') && r.method.length === 1),
                 hideSelectedOptions: true,
                 isMulti: true,
-                "aria-label": "Select pages",
+                "aria-label": _('Select pages'),
                 onChange: (selectedOptions)=>{
                     const stringArray = selectedOptions ? selectedOptions.map((option)=>option.value) : [];
                     field.onChange(stringArray);
@@ -146,9 +147,9 @@ export default function General({ widget, routes }) {
         className: "pt-3 border-t border-border"
     }, /*#__PURE__*/ React.createElement(NumberField, {
         name: "sort_order",
-        label: "Sort Order",
+        label: _('Sort Order'),
         defaultValue: widget?.sortOrder,
-        placeholder: "Sort Order",
+        placeholder: _('Sort Order'),
         validation: {
             required: 'Sort order is required',
             min: {

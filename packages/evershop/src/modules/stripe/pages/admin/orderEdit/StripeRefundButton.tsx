@@ -1,4 +1,5 @@
 import { Form } from '@components/common/form/Form.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputField } from '@components/common/form/InputField.js';
 import { NumberField } from '@components/common/form/NumberField.js';
 import { useAlertContext } from '@components/common/modal/Alert.js';
@@ -75,8 +76,8 @@ export default function StripeRefundButton({
                       <div>
                         <NumberField
                           name="amount"
-                          label="Refund amount"
-                          placeholder="Refund amount"
+                          label={_('Refund amount')}
+                          placeholder={_('Refund amount')}
                           defaultValue={grandTotal.value}
                           required
                           validation={{
@@ -104,12 +105,12 @@ export default function StripeRefundButton({
                   </div>
                 ),
                 primaryAction: {
-                  title: 'Cancel',
+                  title: _('Cancel'),
                   onAction: closeAlert,
                   variant: ''
                 },
                 secondaryAction: {
-                  title: 'Refund',
+                  title: _('Refund'),
                   onAction: () => {
                     setLoading(true);
                     dispatchAlert({

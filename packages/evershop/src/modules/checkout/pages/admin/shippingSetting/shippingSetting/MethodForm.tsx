@@ -1,4 +1,5 @@
 import Spinner from '@components/admin/Spinner.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Form, useFormContext } from '@components/common/form/Form.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { NumberField } from '@components/common/form/NumberField.js';
@@ -118,9 +119,9 @@ const CostSetting: React.FC<{
     <>
       {typeWatch === 'flat_rate' && (
         <NumberField
-          label="Flat rate cost"
+          label={_('Flat rate cost')}
           name="cost"
-          placeholder="Shipping cost"
+          placeholder={_('Shipping cost')}
           required
           validation={{ required: 'Shipping cost is required' }}
           helperText="This is the flat rate cost for shipping."
@@ -136,7 +137,7 @@ const CostSetting: React.FC<{
       {typeWatch === 'api' && (
         <InputField
           name="calculate_api"
-          placeholder="Calculate API endpoint"
+          placeholder={_('Calculate API endpoint')}
           required
           validation={{ required: 'Calculate API is required' }}
           defaultValue={method?.calculateApi || ''}
@@ -232,8 +233,8 @@ function MethodForm({
           {!method ? (
             <ReactSelectCreatableField
               name="method_id"
-              label="Shipping Method"
-              placeholder="Select or create shipping method"
+              label={_('Shipping Method')}
+              placeholder={_('Select or create shipping method')}
               isClearable
               isDisabled={isLoading}
               isLoading={isLoading}
@@ -248,8 +249,8 @@ function MethodForm({
                 <div className="flex-1">
                   <InputField
                     name="method_name"
-                    label="Method name"
-                    placeholder="Method name"
+                    label={_('Method name')}
+                    placeholder={_('Method name')}
                     required
                     defaultValue={method?.name || ''}
                     disabled={!shippingMethod.updatingName}
@@ -305,7 +306,7 @@ function MethodForm({
           )}
           <ToggleField
             name="is_enabled"
-            label="Status"
+            label={_('Status')}
             trueLabel="Enable"
             falseLabel="Disable"
             defaultValue={method?.isEnabled || 0}
@@ -321,7 +322,7 @@ function MethodForm({
         <div className="border-border py-3 space-y-3">
           <RadioGroupField
             name="calculation_type"
-            label="Calculation Type"
+            label={_('Calculation Type')}
             options={[
               { label: 'Flat rate', value: 'flat_rate' },
               { label: 'Price based rate', value: 'price_based_rate' },

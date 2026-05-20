@@ -1,4 +1,5 @@
 import { GridPagination } from '@components/admin/grid/GridPagination';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { SortableHeader } from '@components/admin/grid/header/Sortable';
 import { Status } from '@components/admin/Status.js';
 import Area from '@components/common/Area';
@@ -44,18 +45,18 @@ function Actions({ categories = [], selectedIds = [] }) {
 
   const actions = [
     {
-      name: 'Delete',
+      name: _('Delete'),
       onAction: () => {
         openAlert({
-          heading: `Delete ${selectedIds.length} categories`,
-          content: <div>Can&apos;t be undone</div>,
+          heading: _('Delete ${count} categories', { count: String(selectedIds.length) }),
+          content: _('Can\'t be undone'),
           primaryAction: {
-            title: 'Cancel',
+            title: _('Cancel'),
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Delete',
+            title: _('Delete'),
             onAction: async () => {
               await deleteCategories();
             },
@@ -120,7 +121,7 @@ export default function CategoryGrid({
         <Form submitBtn={false} id="categoryGridFilter">
           <InputField
             name="name"
-            placeholder="Search"
+            placeholder={_('Search')}
             defaultValue={currentFilters.find((f) => f.key === 'name')?.value}
             onKeyPress={(e) => {
               // If the user press enter, we should submit the form
@@ -149,7 +150,7 @@ export default function CategoryGrid({
               window.location.href = url.href;
             }}
           >
-            Clear filters
+            {_('Clear Filters')}
           </Button>
         </CardAction>
       </CardHeader>
@@ -179,7 +180,7 @@ export default function CategoryGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Category Name"
+                          title={_('Category Name')}
                           name="name"
                           currentFilters={currentFilters}
                         />
@@ -192,7 +193,7 @@ export default function CategoryGrid({
                       default: () => (
                         <SortableHeader
                           name="status"
-                          title="Status"
+                          title={_('Status')}
                           currentFilters={currentFilters}
                         />
                       )
@@ -204,7 +205,7 @@ export default function CategoryGrid({
                       default: () => (
                         <SortableHeader
                           name="include_in_nav"
-                          title="Include In Menu"
+                          title={_('Include In Menu')}
                           currentFilters={currentFilters}
                         />
                       )
@@ -263,7 +264,9 @@ export default function CategoryGrid({
                     {
                       component: {
                         default: () => (
-                          <TableCell>{c.includeInNav ? 'Yes' : 'No'}</TableCell>
+                          <TableCell>
+                            {c.includeInNav ? _('Yes') : _('No')}
+                          </TableCell>
                         )
                       },
                       sortOrder: 30
@@ -276,7 +279,7 @@ export default function CategoryGrid({
         </Table>
         {categories.length === 0 && (
           <div className="flex w-full justify-center mt-2">
-            There is no category to display
+            {_('There is no category to display')}
           </div>
         )}
         <GridPagination total={total} limit={limit} page={page} />

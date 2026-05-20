@@ -62,7 +62,7 @@ export default function Attributes({ product, groups: { items } }) {
         remove,
         unregister
     ]);
-    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Attribute group"), /*#__PURE__*/ React.createElement(CardDescription, null, "Manage the attributes.")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", null, product?.variantGroupId && /*#__PURE__*/ React.createElement("div", {
+    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Attribute group')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Manage the attributes.'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", null, product?.variantGroupId && /*#__PURE__*/ React.createElement("div", {
         className: "flex flex-col"
     }, /*#__PURE__*/ React.createElement(InputField, {
         type: "hidden",
@@ -74,7 +74,7 @@ export default function Attributes({ product, groups: { items } }) {
         className: "text-muted-foreground italic"
     }, "Can not change the attribute group of a product that is already in a variant group."))), !product?.variantGroupId && /*#__PURE__*/ React.createElement(SelectField, {
         name: "group_id",
-        label: "Attribute group",
+        label: _('Attribute group'),
         options: items.map((group)=>({
                 value: group.groupId,
                 label: group.groupName
@@ -105,7 +105,7 @@ export default function Attributes({ product, groups: { items } }) {
                 Field = /*#__PURE__*/ React.createElement(SelectField, {
                     name: `attributes.${index}.value`,
                     options: getAttributeOptions(items, attribute.attribute_id),
-                    placeholder: "Select an option",
+                    placeholder: _('Select an option'),
                     validation: validation
                 });
                 break;
@@ -113,7 +113,7 @@ export default function Attributes({ product, groups: { items } }) {
                 Field = /*#__PURE__*/ React.createElement(ReactSelectField, {
                     name: `attributes.${index}.value`,
                     options: getAttributeOptions(items, attribute.attribute_id),
-                    placeholder: "Select options",
+                    placeholder: _('Select options'),
                     required: attribute.is_required === 1,
                     validation: validation,
                     isMulti: true

@@ -6,6 +6,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { toast } from 'react-toastify';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 
 export default function StripeCaptureButton({
   captureAPI,
@@ -38,9 +39,7 @@ export default function StripeCaptureButton({
     >
       <CardContent>
         <div className="flex justify-end">
-          <Button onClick={onAction} isLoading={isLoading}>
-            Capture Payment
-          </Button>
+          <Button onClick={onAction} isLoading={isLoading}>{_('Capture Payment')}</Button>
         </div>
       </CardContent>
     </RenderIfTrue>

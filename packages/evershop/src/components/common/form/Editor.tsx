@@ -272,7 +272,7 @@ export const Editor: React.FC<EditorProps> = ({ name, value = [], label }) => {
 
   return (
     <Field className="editor form-field-container">
-      <FieldLabel htmlFor="description mt-4">{label}</FieldLabel>
+      <FieldLabel htmlFor="description mt-4">{_(label)}</FieldLabel>
       <div className="prose prose-xl max-w-none">
         <DndContext
           sensors={sensors}

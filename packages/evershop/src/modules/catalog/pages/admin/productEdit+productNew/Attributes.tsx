@@ -152,8 +152,8 @@ export default function Attributes({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Attribute group</CardTitle>
-        <CardDescription>Manage the attributes.</CardDescription>
+        <CardTitle>{_('Attribute group')}</CardTitle>
+        <CardDescription>{_('Manage the attributes.')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div>
@@ -178,7 +178,7 @@ export default function Attributes({
           {!product?.variantGroupId && (
             <SelectField
               name="group_id"
-              label="Attribute group"
+              label={_('Attribute group')}
               options={items.map((group) => ({
                 value: group.groupId,
                 label: group.groupName
@@ -227,7 +227,7 @@ export default function Attributes({
                         items,
                         attribute.attribute_id
                       )}
-                      placeholder="Select an option"
+                      placeholder={_('Select an option')}
                       validation={validation}
                     />
                   );
@@ -240,7 +240,7 @@ export default function Attributes({
                         items,
                         attribute.attribute_id
                       )}
-                      placeholder="Select options"
+                      placeholder={_('Select options')}
                       required={attribute.is_required === 1}
                       validation={validation}
                       isMulti

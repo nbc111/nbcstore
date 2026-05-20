@@ -1,5 +1,6 @@
 import { CollectionSelector } from '@components/admin/CollectionSelector.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@components/common/ui/Dialog.js';
 import React from 'react';
 export const CollectionConditionValueSelector = ({ selectedValues, updateCondition, isMulti })=>{
@@ -41,7 +42,7 @@ export const CollectionConditionValueSelector = ({ selectedValues, updateConditi
             key: id
         }, index === 0 && /*#__PURE__*/ React.createElement("span", {
             className: "italic"
-        }, "‘", id, "’"), index === 1 && /*#__PURE__*/ React.createElement("span", null, " and ", selectedIds.current.length - 1, " more"))), selectedIds.current.length === 0 && /*#__PURE__*/ React.createElement("span", null, "Choose Collections"))), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Choose Collections")), /*#__PURE__*/ React.createElement(CollectionSelector, {
+        }, "‘", id, "’"), index === 1 && /*#__PURE__*/ React.createElement("span", null, " and ", selectedIds.current.length - 1, " more"))), selectedIds.current.length === 0 && /*#__PURE__*/ React.createElement("span", null, "Choose Collections"))), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Choose Collections'))), /*#__PURE__*/ React.createElement(CollectionSelector, {
         onSelect: onSelect,
         onUnSelect: onUnSelect,
         selectedCollections: selectedIds.current.map((id)=>({

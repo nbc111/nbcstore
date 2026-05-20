@@ -1,4 +1,5 @@
 import { TableCell } from '@components/common/ui/Table.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 function Up() {
     return /*#__PURE__*/ React.createElement("svg", {
@@ -88,7 +89,7 @@ export function SortableHeader({ title, name, currentFilters = [] }) {
         className: "table-header flex justify-start gap-2 content-center"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "font-medium uppercase text-xs"
-    }, /*#__PURE__*/ React.createElement("span", null, title)), /*#__PURE__*/ React.createElement("div", {
+    }, /*#__PURE__*/ React.createElement("span", null, _(title))), /*#__PURE__*/ React.createElement("div", {
         className: "sort flex items-center"
     }, /*#__PURE__*/ React.createElement("button", {
         type: "button",

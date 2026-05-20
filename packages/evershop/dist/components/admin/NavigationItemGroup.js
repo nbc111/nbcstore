@@ -1,4 +1,5 @@
 import { NavigationItem } from '@components/admin/NavigationItem.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import Area from '@components/common/Area.jsx';
 import React from 'react';
 import './NavigationItemGroup.scss';
@@ -9,9 +10,9 @@ export function NavigationItemGroup({ id, name, items = [], Icon = null, url = n
         className: "flex justify-between items-center"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "root-label flex justify-between items-center"
-    }, Icon && /*#__PURE__*/ React.createElement("span", null, /*#__PURE__*/ React.createElement(Icon, null)), !url && /*#__PURE__*/ React.createElement("span", null, name), url && /*#__PURE__*/ React.createElement("a", {
+    }, Icon && /*#__PURE__*/ React.createElement("span", null, /*#__PURE__*/ React.createElement(Icon, null)), !url && /*#__PURE__*/ React.createElement("span", null, _(name)), url && /*#__PURE__*/ React.createElement("a", {
         href: url
-    }, name))), /*#__PURE__*/ React.createElement("ul", {
+    }, _(name)))), /*#__PURE__*/ React.createElement("ul", {
         className: "item-group"
     }, /*#__PURE__*/ React.createElement(Area, {
         id: id,

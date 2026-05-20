@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import React from 'react';
 import './Bestsellers.scss';
@@ -5,12 +6,12 @@ import { Image } from '@components/common/Image.js';
 import { ProductNoThumbnail } from '@components/common/ProductNoThumbnail.js';
 import { Table, TableRow, TableBody, TableCell } from '@components/common/ui/Table.js';
 export default function BestSellers({ bestSellers, listUrl }) {
-    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Best Sellers"), /*#__PURE__*/ React.createElement(CardDescription, null, "A list of best selling products"), /*#__PURE__*/ React.createElement(CardAction, null, /*#__PURE__*/ React.createElement("a", {
+    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Best Sellers')), /*#__PURE__*/ React.createElement(CardDescription, null, _('A list of best selling products')), /*#__PURE__*/ React.createElement(CardAction, null, /*#__PURE__*/ React.createElement("a", {
         href: listUrl,
         className: "text-sm text-primary hover:underline"
-    }, "View All Products"))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableBody, null, bestSellers.length === 0 && /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableCell, {
+    }, _('View All Products')))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableBody, null, bestSellers.length === 0 && /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableCell, {
         align: "left"
-    }, "Look like you just started. No bestsellers yet."), /*#__PURE__*/ React.createElement(TableCell, null, " ")), bestSellers.map((p, i)=>/*#__PURE__*/ React.createElement(TableRow, {
+    }, _('Look like you just started. No bestsellers yet.')), /*#__PURE__*/ React.createElement(TableCell, null, " ")), bestSellers.map((p, i)=>/*#__PURE__*/ React.createElement(TableRow, {
             key: i
         }, /*#__PURE__*/ React.createElement(TableCell, null, /*#__PURE__*/ React.createElement("div", {
             className: " flex justify-left"
@@ -29,7 +30,9 @@ export default function BestSellers({ bestSellers, listUrl }) {
         })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("a", {
             href: p.editUrl || '',
             className: "font-semibold hover:underline"
-        }, p.name))))), /*#__PURE__*/ React.createElement(TableCell, null), /*#__PURE__*/ React.createElement(TableCell, null, p.price.regular.text), /*#__PURE__*/ React.createElement(TableCell, null, p.soldQty, " sold")))))));
+        }, p.name))))), /*#__PURE__*/ React.createElement(TableCell, null), /*#__PURE__*/ React.createElement(TableCell, null, p.price.regular.text), /*#__PURE__*/ React.createElement(TableCell, null, _('${qty} sold', {
+            qty: String(p.soldQty)
+        }))))))));
 }
 export const layout = {
     areaId: 'leftSide',

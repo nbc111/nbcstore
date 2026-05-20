@@ -1,7 +1,8 @@
 import { setPageMetaInfo } from '../../../../cms/services/pageMetaInfo.js';
+import { translate } from '../../../../../lib/locale/translate/translate.js';
 export default ((request)=>{
     setPageMetaInfo(request, {
-        title: 'Create a new coupon',
-        description: 'Create a new coupon'
+        title: translate('Create a new coupon'),
+        description: translate('Create a new coupon')
     });
 });

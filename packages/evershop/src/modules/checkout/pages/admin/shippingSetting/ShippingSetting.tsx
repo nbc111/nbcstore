@@ -1,4 +1,5 @@
 import { SettingMenu } from '@components/admin/SettingMenu.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Card,
   CardDescription,
@@ -22,10 +23,8 @@ export default function ShippingSetting({
         <div className="col-span-4">
           <Card>
             <CardHeader>
-              <CardTitle>Shipping</CardTitle>
-              <CardDescription>
-                Choose where you ship and how much you charge for shipping.
-              </CardDescription>
+              <CardTitle>{_('Shipping')}</CardTitle>
+              <CardDescription>{_('Choose where you ship and how much you charge for shipping.')}</CardDescription>
             </CardHeader>
             <Zones createShippingZoneApi={createShippingZoneApi} />
           </Card>

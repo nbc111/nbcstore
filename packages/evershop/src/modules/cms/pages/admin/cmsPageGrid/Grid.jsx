@@ -1,4 +1,5 @@
 import { GridPagination } from '@components/admin/grid/GridPagination';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { SortableHeader } from '@components/admin/grid/header/Sortable';
 import { Status } from '@components/admin/Status.js';
 import Area from '@components/common/Area';
@@ -58,18 +59,18 @@ function Actions({ pages = [], selectedIds = [] }) {
 
   const actions = [
     {
-      name: 'Disable',
+      name: _('Disable'),
       onAction: () => {
         openAlert({
-          heading: `Disable ${selectedIds.length} pages`,
-          content: 'Are you sure?',
+          heading: _('Disable ${count} pages', { count: String(selectedIds.length) }),
+          content: _('Are you sure?'),
           primaryAction: {
-            title: 'Cancel',
+            title: _('Cancel'),
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Disable',
+            title: _('Disable'),
             onAction: async () => {
               await updatePages(0);
             },
@@ -79,18 +80,18 @@ function Actions({ pages = [], selectedIds = [] }) {
       }
     },
     {
-      name: 'Enable',
+      name: _('Enable'),
       onAction: () => {
         openAlert({
-          heading: `Enable ${selectedIds.length} pages`,
-          content: 'Are you sure?',
+          heading: _('Enable ${count} pages', { count: String(selectedIds.length) }),
+          content: _('Are you sure?'),
           primaryAction: {
-            title: 'Cancel',
+            title: _('Cancel'),
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Enable',
+            title: _('Enable'),
             onAction: async () => {
               await updatePages(1);
             },
@@ -100,18 +101,18 @@ function Actions({ pages = [], selectedIds = [] }) {
       }
     },
     {
-      name: 'Delete',
+      name: _('Delete'),
       onAction: () => {
         openAlert({
-          heading: `Delete ${selectedIds.length} pages`,
-          content: <div>Can&apos;t be undone</div>,
+          heading: _('Delete ${count} pages', { count: String(selectedIds.length) }),
+          content: _('Can\'t be undone'),
           primaryAction: {
-            title: 'Cancel',
+            title: _('Cancel'),
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Delete',
+            title: _('Delete'),
             onAction: async () => {
               await deletePages();
             },
@@ -186,7 +187,7 @@ export default function CMSPageGrid({
                   default: () => (
                     <InputField
                       name="name"
-                      placeholder="Search"
+                      placeholder={_('Search')}
                       defaultValue={
                         currentFilters.find((f) => f.key === 'name')?.value
                       }

@@ -1,4 +1,5 @@
 import { GridPagination } from '@components/admin/grid/GridPagination';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { SortableHeader } from '@components/admin/grid/header/Sortable';
 import { Status } from '@components/admin/Status.js';
 import Area from '@components/common/Area';
@@ -54,18 +55,18 @@ function Actions({ customers = [], selectedIds = [] }) {
 
   const actions = [
     {
-      name: 'Disable',
+      name: _('Disable'),
       onAction: () => {
         openAlert({
-          heading: `Disable ${selectedIds.length} customers`,
-          content: 'Are you sure?',
+          heading: _('Disable ${count} customers', { count: String(selectedIds.length) }),
+          content: _('Are you sure?'),
           primaryAction: {
-            title: 'Cancel',
+            title: _('Cancel'),
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Disable',
+            title: _('Disable'),
             onAction: async () => {
               await updateCustomers(0);
             },
@@ -75,18 +76,18 @@ function Actions({ customers = [], selectedIds = [] }) {
       }
     },
     {
-      name: 'Enable',
+      name: _('Enable'),
       onAction: () => {
         openAlert({
-          heading: `Enable ${selectedIds.length} customers`,
-          content: 'Are you sure?',
+          heading: _('Enable ${count} customers', { count: String(selectedIds.length) }),
+          content: _('Are you sure?'),
           primaryAction: {
-            title: 'Cancel',
+            title: _('Cancel'),
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Enable',
+            title: _('Enable'),
             onAction: async () => {
               await updateCustomers(1);
             },
@@ -160,7 +161,7 @@ export default function CustomerGrid({
                     default: () => (
                       <InputField
                         name="keyword"
-                        placeholder="Search"
+                        placeholder={_('Search')}
                         defaultValue={
                           currentFilters.find((f) => f.key === 'keyword')?.value
                         }
@@ -196,13 +197,13 @@ export default function CustomerGrid({
                         }}
                       >
                         <SelectTrigger>
-                          <SelectValue>Status</SelectValue>
+                          <SelectValue>{_('Status')}</SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectLabel>Status</SelectLabel>
-                            <SelectItem value="1">Enabled</SelectItem>
-                            <SelectItem value="0">Disabled</SelectItem>
+                            <SelectLabel>{_('Status')}</SelectLabel>
+                            <SelectItem value="1">{_('Enabled')}</SelectItem>
+                            <SelectItem value="0">{_('Disabled')}</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -225,7 +226,7 @@ export default function CustomerGrid({
               window.location.href = url.href;
             }}
           >
-            Clear filter
+            {_('Clear filter')}
           </Button>
         </CardAction>
       </CardHeader>
@@ -369,7 +370,7 @@ export default function CustomerGrid({
         </Table>
         {customers.length === 0 && (
           <div className="flex w-full justify-center mt-3">
-            There is no customer to display
+            {_('There is no customer to display')}
           </div>
         )}
         <GridPagination total={total} limit={limit} page={page} />

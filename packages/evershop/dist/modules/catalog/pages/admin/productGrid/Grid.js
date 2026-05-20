@@ -1,4 +1,5 @@
 import { GridPagination } from '@components/admin/grid/GridPagination.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { DummyColumnHeader } from '@components/admin/grid/header/Dummy';
 import { SortableHeader } from '@components/admin/grid/header/Sortable.js';
 import { Thumbnail } from '@components/admin/grid/Thumbnail.js';
@@ -40,18 +41,20 @@ function Actions({ products = [], selectedIds = [] }) {
     };
     const actions = [
         {
-            name: 'Disable',
+            name: _('Disable'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Disable ${selectedIds.length} products`,
-                    content: 'Are you sure?',
+                    heading: _('Disable ${count} products', {
+                        count: String(selectedIds.length)
+                    }),
+                    content: _('Are you sure?'),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Disable',
+                        title: _('Disable'),
                         onAction: async ()=>{
                             await updateProducts(0);
                         },
@@ -62,18 +65,20 @@ function Actions({ products = [], selectedIds = [] }) {
             }
         },
         {
-            name: 'Enable',
+            name: _('Enable'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Enable ${selectedIds.length} products`,
-                    content: 'Are you sure?',
+                    heading: _('Enable ${count} products', {
+                        count: String(selectedIds.length)
+                    }),
+                    content: _('Are you sure?'),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Enable',
+                        title: _('Enable'),
                         onAction: async ()=>{
                             await updateProducts(1);
                         },
@@ -84,18 +89,20 @@ function Actions({ products = [], selectedIds = [] }) {
             }
         },
         {
-            name: 'Delete',
+            name: _('Delete'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Delete ${selectedIds.length} products`,
-                    content: /*#__PURE__*/ React.createElement("div", null, "Can't be undone"),
+                    heading: _('Delete ${count} products', {
+                        count: String(selectedIds.length)
+                    }),
+                    content: _('Can\'t be undone'),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Delete',
+                        title: _('Delete'),
                         onAction: async ()=>{
                             await deleteProducts();
                         },
@@ -147,7 +154,7 @@ export default function ProductGrid({ products: { items: products, total, curren
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(InputField, {
                             name: "keyword",
-                            placeholder: "Search",
+                            placeholder: _('Search'),
                             defaultValue: currentFilters.find((f)=>f.key === 'keyword')?.value,
                             onKeyPress: (e)=>{
                                 // If the user press enter, we should submit the form
@@ -175,11 +182,11 @@ export default function ProductGrid({ products: { items: products, total, curren
                                 url.searchParams.set('status', value);
                                 window.location.href = url.href;
                             }
-                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, "Status")), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, "Status"), /*#__PURE__*/ React.createElement(SelectItem, {
+                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, _('Status'))), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, _('Status')), /*#__PURE__*/ React.createElement(SelectItem, {
                             value: "1"
-                        }, "Enabled"), /*#__PURE__*/ React.createElement(SelectItem, {
+                        }, _('Enabled')), /*#__PURE__*/ React.createElement(SelectItem, {
                             value: "0"
-                        }, "Disabled"))))
+                        }, _('Disabled')))))
                 },
                 sortOrder: 10
             },
@@ -192,11 +199,11 @@ export default function ProductGrid({ products: { items: products, total, curren
                                 url.searchParams.set('type', value);
                                 window.location.href = url.href;
                             }
-                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, "Product type")), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, "Product type"), /*#__PURE__*/ React.createElement(SelectItem, {
+                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, _('Product type'))), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, _('Product type')), /*#__PURE__*/ React.createElement(SelectItem, {
                             value: "simple"
-                        }, "Simple"), /*#__PURE__*/ React.createElement(SelectItem, {
+                        }, _('Simple')), /*#__PURE__*/ React.createElement(SelectItem, {
                             value: "configurable"
-                        }, "Configurable"))))
+                        }, _('Configurable')))))
                 },
                 sortOrder: 15
             }
@@ -210,7 +217,7 @@ export default function ProductGrid({ products: { items: products, total, curren
             url.search = '';
             window.location.href = url.href;
         }
-    }, "Clear Filters"))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement(Checkbox, {
+    }, _('Clear Filters')))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement(Checkbox, {
         onCheckedChange: (checked)=>{
             if (checked) {
                 setSelectedRows(products.map((p)=>p.uuid));
@@ -228,7 +235,7 @@ export default function ProductGrid({ products: { items: products, total, curren
                             className: "table-header id-header"
                         }, /*#__PURE__*/ React.createElement("div", {
                             className: "font-medium uppercase text-xs"
-                        }, /*#__PURE__*/ React.createElement("span", null, "Thumbnail"))))
+                        }, /*#__PURE__*/ React.createElement("span", null, _('Thumbnail')))))
                 },
                 sortOrder: 5
             },

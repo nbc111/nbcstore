@@ -1,16 +1,17 @@
 import { Editor } from '@components/common/form/Editor.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputField } from '@components/common/form/InputField.js';
 import { RadioGroupField } from '@components/common/form/RadioGroupField.js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import React from 'react';
 export default function General({ page }) {
-    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "General Information"), /*#__PURE__*/ React.createElement(CardDescription, null, "Provide the basic information for the CMS page.")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
+    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('General Information')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Provide the basic information for the CMS page.'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
         className: "space-y-3"
     }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(InputField, {
         id: "cms_page_name",
         name: "name",
-        label: "Page Name",
-        placeholder: "Enter page name",
+        label: _('Page Name'),
+        placeholder: _('Enter page name'),
         defaultValue: page?.name,
         required: true,
         validation: {
@@ -21,7 +22,7 @@ export default function General({ page }) {
         className: "space-y-2"
     }, /*#__PURE__*/ React.createElement(RadioGroupField, {
         name: "status",
-        label: "Status",
+        label: _('Status'),
         options: [
             {
                 value: 1,

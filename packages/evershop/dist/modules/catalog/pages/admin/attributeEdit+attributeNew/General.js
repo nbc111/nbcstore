@@ -1,4 +1,5 @@
 import Spinner from '@components/admin/Spinner.jsx';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputField } from '@components/common/form/InputField.js';
 import { RadioGroupField } from '@components/common/form/RadioGroupField.js';
 import { Button } from '@components/common/ui/Button.js';
@@ -33,7 +34,7 @@ const Groups = ({ groups, createGroupApi })=>{
     const { data, fetching, error } = result;
     const createGroup = ()=>{
         if (!newGroup.current?.value) {
-            setCreateGroupError('Group name is required');
+            setCreateGroupError(_('Group name is required'));
             return;
         }
         fetch(createGroupApi, {
@@ -67,7 +68,7 @@ const Groups = ({ groups, createGroupApi })=>{
     }
     return /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", {
         className: "mb-2"
-    }, "Select groups the attribute belongs to"), /*#__PURE__*/ React.createElement("div", {
+    }, _('Select groups the attribute belongs to')), /*#__PURE__*/ React.createElement("div", {
         className: "grid gap-5 grid-cols-2"
     }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(Controller, {
         name: "groups",
@@ -91,7 +92,7 @@ const Groups = ({ groups, createGroupApi })=>{
         className: "max-w-xs"
     }, /*#__PURE__*/ React.createElement(InputGroupInput, {
         type: "text",
-        placeholder: "Create a new group",
+        placeholder: _('Create a new group'),
         ref: newGroup
     }), /*#__PURE__*/ React.createElement(InputGroupAddon, {
         align: "inline-end"
@@ -139,9 +140,9 @@ const Options = ({ originOptions = [] })=>{
             className: "flex-1"
         }, /*#__PURE__*/ React.createElement(InputField, {
             name: `options.${index}.option_text`,
-            placeholder: "Option text",
+            placeholder: _('Option text'),
             validation: {
-                required: 'Option text is required'
+                required: _('Option text is required')
             }
         }), /*#__PURE__*/ React.createElement(InputField, {
             type: "hidden",
@@ -155,76 +156,76 @@ const Options = ({ originOptions = [] })=>{
                 remove(index);
             },
             variant: 'destructive'
-        }, "Remove")));
+        }, _('Remove'))));
     }), /*#__PURE__*/ React.createElement("div", {
         className: "mt-2"
     }, /*#__PURE__*/ React.createElement(Button, {
         type: "button",
         onClick: addOption,
         variant: 'outline'
-    }, "Add option")));
+    }, _('Add option'))));
 };
 export default function General({ attribute, createGroupApi }) {
     const [type] = React.useState(attribute?.type || 'text');
-    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "General"), /*#__PURE__*/ React.createElement(CardDescription, null, "Manage the general information of the attribute.")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
+    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('General')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Manage the general information of the attribute.'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
         className: "space-y-2"
     }, /*#__PURE__*/ React.createElement(InputField, {
         name: "attribute_name",
-        label: "Name",
-        placeholder: "Enter attribute name",
+        label: _('Name'),
+        placeholder: _('Enter attribute name'),
         required: true,
         defaultValue: attribute?.attributeName,
         validation: {
-            required: 'Attribute name is required'
+            required: _('Attribute name is required')
         }
     }), /*#__PURE__*/ React.createElement(InputField, {
         name: "attribute_code",
-        label: "Code",
-        placeholder: "Enter attribute code",
+        label: _('Code'),
+        placeholder: _('Enter attribute code'),
         required: true,
         defaultValue: attribute?.attributeCode,
         validation: {
-            required: 'Attribute code is required'
+            required: _('Attribute code is required')
         },
-        helperText: "Attribute code is used in API and must be unique"
+        helperText: _('Attribute code is used in API and must be unique')
     }), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", {
         className: "space-y-2"
     }, /*#__PURE__*/ React.createElement(RadioGroupField, {
         name: "type",
         options: [
             {
-                label: 'Text',
+                label: _('Text'),
                 value: 'text'
             },
             {
-                label: 'Select',
+                label: _('Select list'),
                 value: 'select'
             },
             {
-                label: 'Multiselect',
+                label: _('Multiselect'),
                 value: 'multiselect'
             },
             {
-                label: 'Textarea',
+                label: _('Textarea'),
                 value: 'textarea'
             }
         ],
-        label: "Type",
+        label: _('Type'),
         defaultValue: attribute?.type,
         required: true,
         disabled: !!attribute?.attributeId,
         validation: {
-            required: 'Type is required'
+            required: _('Type is required')
         }
     }))))), [
         'select',
         'multiselect'
     ].includes(type) && /*#__PURE__*/ React.createElement(CardContent, {
-        title: "Attribute options"
+        title: _('Attribute options')
     }, /*#__PURE__*/ React.createElement(Options, {
         originOptions: get(attribute, 'options', [])
     })), /*#__PURE__*/ React.createElement(CardContent, {
-        title: "Attribute Group"
+        title: _('Attribute Group')
     }, /*#__PURE__*/ React.createElement(Groups, {
         groups: get(attribute, 'groups.items', []),
         createGroupApi: createGroupApi

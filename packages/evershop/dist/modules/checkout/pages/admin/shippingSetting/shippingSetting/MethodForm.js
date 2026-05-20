@@ -1,4 +1,5 @@
 import Spinner from '@components/admin/Spinner.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Form, useFormContext } from '@components/common/form/Form.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { NumberField } from '@components/common/form/NumberField.js';
@@ -85,9 +86,9 @@ const CostSetting = ({ method })=>{
     const { watch } = useFormContext();
     const typeWatch = watch('calculation_type');
     return /*#__PURE__*/ React.createElement(React.Fragment, null, typeWatch === 'flat_rate' && /*#__PURE__*/ React.createElement(NumberField, {
-        label: "Flat rate cost",
+        label: _('Flat rate cost'),
         name: "cost",
-        placeholder: "Shipping cost",
+        placeholder: _('Shipping cost'),
         required: true,
         validation: {
             required: 'Shipping cost is required'
@@ -100,7 +101,7 @@ const CostSetting = ({ method })=>{
         lines: method?.weightBasedCost || []
     }), typeWatch === 'api' && /*#__PURE__*/ React.createElement(InputField, {
         name: "calculate_api",
-        placeholder: "Calculate API endpoint",
+        placeholder: _('Calculate API endpoint'),
         required: true,
         validation: {
             required: 'Calculate API is required'
@@ -181,8 +182,8 @@ function MethodForm({ saveMethodApi, onSuccess, reload, method }) {
         className: "border-border py-3 space-y-3"
     }, !method ? /*#__PURE__*/ React.createElement(ReactSelectCreatableField, {
         name: "method_id",
-        label: "Shipping Method",
-        placeholder: "Select or create shipping method",
+        label: _('Shipping Method'),
+        placeholder: _('Select or create shipping method'),
         isClearable: true,
         isDisabled: isLoading,
         isLoading: isLoading,
@@ -200,8 +201,8 @@ function MethodForm({ saveMethodApi, onSuccess, reload, method }) {
         className: "flex-1"
     }, /*#__PURE__*/ React.createElement(InputField, {
         name: "method_name",
-        label: "Method name",
-        placeholder: "Method name",
+        label: _('Method name'),
+        placeholder: _('Method name'),
         required: true,
         defaultValue: method?.name || '',
         disabled: !shippingMethod.updatingName,
@@ -251,7 +252,7 @@ function MethodForm({ saveMethodApi, onSuccess, reload, method }) {
         isLoading: isLoading
     }, shippingMethod.updatingName ? 'Save' : 'Edit name'))), /*#__PURE__*/ React.createElement(ToggleField, {
         name: "is_enabled",
-        label: "Status",
+        label: _('Status'),
         trueLabel: "Enable",
         falseLabel: "Disable",
         defaultValue: method?.isEnabled || 0
@@ -263,7 +264,7 @@ function MethodForm({ saveMethodApi, onSuccess, reload, method }) {
         className: "border-border py-3 space-y-3"
     }, /*#__PURE__*/ React.createElement(RadioGroupField, {
         name: "calculation_type",
-        label: "Calculation Type",
+        label: _('Calculation Type'),
         options: [
             {
                 label: 'Flat rate',

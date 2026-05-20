@@ -1,4 +1,5 @@
 import { useAppDispatch } from '@components/common/context/app.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Pagination as PaginationUI,
   PaginationContent,
@@ -182,7 +183,11 @@ export const usePaginationLogic = (
   const getDisplayText = useCallback(() => {
     const start = (page - 1) * limit + 1;
     const end = Math.min(page * limit, total);
-    return `Showing ${start}-${end} of ${total} results`;
+    return _('Showing ${start}-${end} of ${total} results', {
+      start: String(start),
+      end: String(end),
+      total: String(total)
+    });
   }, [page, limit, total]);
 
   const getPageInfo = useCallback(() => {
@@ -437,7 +442,7 @@ export const CompactPaginationRenderer: React.FC<{
       className={`compact-pagination flex items-center justify-between ${className}`}
     >
       <div className="pagination-info text-sm text-gray-600">
-        Showing {showing} of {total}
+        {_('Showing ${showing} of ${total}', { showing, total })}
       </div>
 
       <div className="pagination-controls flex items-center space-x-2">
@@ -446,11 +451,14 @@ export const CompactPaginationRenderer: React.FC<{
           disabled={!hasPrev || isLoading}
           className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Previous
+          {_('Previous')}
         </button>
 
         <span className="text-sm text-gray-600">
-          Page {currentPage} of {totalPages}
+          {_('Page ${current} of ${total}', {
+            current: String(currentPage),
+            total: String(totalPages)
+          })}
         </span>
 
         <button
@@ -458,7 +466,7 @@ export const CompactPaginationRenderer: React.FC<{
           disabled={!hasNext || isLoading}
           className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Next
+          {_('Next')}
         </button>
       </div>
     </div>

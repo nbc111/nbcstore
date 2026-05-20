@@ -5,6 +5,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { toast } from 'react-toastify';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 export default function CaptureButton({ captureAPI, order: { paymentStatus, uuid, paymentMethod } }) {
     const [isLoading, setIsLoading] = React.useState(false);
     const onAction = async ()=>{
@@ -30,7 +31,7 @@ export default function CaptureButton({ captureAPI, order: { paymentStatus, uuid
     }, /*#__PURE__*/ React.createElement(Button, {
         onClick: onAction,
         isLoading: isLoading
-    }, "Capture Payment"))));
+    }, _('Capture Payment')))));
 }
 CaptureButton.propTypes = {
     captureAPI: PropTypes.string.isRequired,

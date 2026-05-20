@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { useQuery } from 'urql';
 import { AtLeastOne } from '../../types/atLeastOne.js';
 import { ProductListSkeleton } from './ProductListSkeleton.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 
 const SearchQuery = `
   query Query ($filters: [FilterInput!]) {
@@ -149,7 +150,7 @@ const ProductSelector: React.FC<{
         <Input
           type="text"
           value={inputValue || ''}
-          placeholder="Search products"
+          placeholder={_('Search products')}
           onChange={(e) => {
             setInputValue(e.target.value);
             setLoading(true);
@@ -164,7 +165,7 @@ const ProductSelector: React.FC<{
               {inputValue ? (
                 <p>No products found for query &quot;{inputValue}&rdquo;</p>
               ) : (
-                <p>You have no products to display</p>
+                <p>{_('You have no products to display')}</p>
               )}
             </div>
           )}

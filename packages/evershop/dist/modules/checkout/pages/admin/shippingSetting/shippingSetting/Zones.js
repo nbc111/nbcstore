@@ -1,5 +1,6 @@
 import Spinner from '@components/admin/Spinner.jsx';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Dialog, DialogContent, DialogTrigger } from '@components/common/ui/Dialog.js';
 import React from 'react';
 import { useQuery } from 'urql';
@@ -88,7 +89,7 @@ export function Zones({ createShippingZoneApi }) {
         onOpenChange: setDialogOpen
     }, /*#__PURE__*/ React.createElement("div", {
         className: "flex justify-end pr-5"
-    }, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, null, "Create New Zone"))), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(ZoneForm, {
+    }, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, null, _('Create New Zone')))), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(ZoneForm, {
         formMethod: "POST",
         saveZoneApi: createShippingZoneApi,
         onSuccess: ()=>{

@@ -1,4 +1,5 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/common/ui/Tabs.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import PropTypes from 'prop-types';
 import React from 'react';
 export function Results({ keyword, results = {} }) {
@@ -14,17 +15,25 @@ export function Results({ keyword, results = {} }) {
         className: "space-y-3"
     }, /*#__PURE__*/ React.createElement("h3", {
         className: "text-xl font-semibold"
-    }, 'Results for "', keyword, '"'), /*#__PURE__*/ React.createElement(Tabs, {
+    }, _('Results for "${keyword}"', {
+        keyword
+    })), /*#__PURE__*/ React.createElement(Tabs, {
         defaultValue: defaultTab
     }, /*#__PURE__*/ React.createElement(TabsList, {
         variant: "line"
     }, products.items.length > 0 && /*#__PURE__*/ React.createElement(TabsTrigger, {
         value: "products"
-    }, "Products (", products.items.length, ")"), customers.items.length > 0 && /*#__PURE__*/ React.createElement(TabsTrigger, {
+    }, _('Products (${count})', {
+        count: String(products.items.length)
+    })), customers.items.length > 0 && /*#__PURE__*/ React.createElement(TabsTrigger, {
         value: "customers"
-    }, "Customers (", customers.items.length, ")"), orders.items.length > 0 && /*#__PURE__*/ React.createElement(TabsTrigger, {
+    }, _('Customers (${count})', {
+        count: String(customers.items.length)
+    })), orders.items.length > 0 && /*#__PURE__*/ React.createElement(TabsTrigger, {
         value: "orders"
-    }, "Orders (", orders.items.length, ")")), products.items.length > 0 && /*#__PURE__*/ React.createElement(TabsContent, {
+    }, _('Orders (${count})', {
+        count: String(orders.items.length)
+    }))), products.items.length > 0 && /*#__PURE__*/ React.createElement(TabsContent, {
         value: "products",
         className: "max-h-60 overflow-y-auto"
     }, /*#__PURE__*/ React.createElement("div", {

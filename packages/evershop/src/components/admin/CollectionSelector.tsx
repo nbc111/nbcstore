@@ -6,6 +6,7 @@ import { Check } from 'lucide-react';
 import React from 'react';
 import { useQuery } from 'urql';
 import { AtLeastOne } from '../../types/atLeastOne.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 
 const SearchQuery = `
   query Query ($filters: [FilterInput!]) {
@@ -136,7 +137,7 @@ const CollectionSelector: React.FC<{
           <Input
             type="text"
             value={inputValue || ''}
-            placeholder="Search collections"
+            placeholder={_('Search collections')}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setInputValue(e.target.value);
               setLoading(true);
@@ -153,7 +154,7 @@ const CollectionSelector: React.FC<{
                     No collections found for query &quot;{inputValue}&rdquo;
                   </p>
                 ) : (
-                  <p>You have no collections to display</p>
+                  <p>{_('You have no collections to display')}</p>
                 )}
               </div>
             )}

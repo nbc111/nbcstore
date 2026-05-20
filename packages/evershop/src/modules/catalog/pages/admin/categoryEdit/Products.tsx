@@ -1,6 +1,7 @@
 import { ProductListSkeleton } from '@components/admin/ProductListSkeleton.js';
 import { ProductSelector } from '@components/admin/ProductSelector.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Card,
   CardContent,
@@ -139,13 +140,11 @@ export default function Products({
     <Dialog>
       <Card>
         <CardHeader>
-          <CardTitle>Products</CardTitle>
-          <CardDescription>
-            Manage the products assigned to this category.
-          </CardDescription>
+          <CardTitle>{_('Products')}</CardTitle>
+          <CardDescription>{_('Manage the products assigned to this category.')}</CardDescription>
           <CardAction>
             <DialogTrigger>
-              <Button variant="link">Add Products</Button>
+              <Button variant="link">{_('Add Products')}</Button>
             </DialogTrigger>
           </CardAction>
         </CardHeader>
@@ -162,7 +161,7 @@ export default function Products({
                 <Input
                   type="text"
                   value={keyword}
-                  placeholder="Search products"
+                  placeholder={_('Search products')}
                   onChange={(e) => {
                     setLoading(true);
                     setKeyword(e.target.value);
@@ -173,11 +172,15 @@ export default function Products({
             {data && !loading && (
               <>
                 {data.category.products.items.length === 0 && (
-                  <div>No product to display.</div>
+                  <div>{_('No product to display.')}</div>
                 )}
                 <div className="flex justify-between">
                   <div>
-                    <i>{data.category.products.total} items</i>
+                    <i>
+                      {_('${count} items', {
+                        count: String(data.category.products.total)
+                      })}
+                    </i>
                   </div>
                   <div>
                     {data.category.products.total > 10 && (
@@ -191,7 +194,7 @@ export default function Products({
                               setPage(page - 1);
                             }}
                           >
-                            Previous
+                            {_('Previous')}
                           </a>
                         )}
                         {page < data.category.products.total / 10 && (
@@ -203,7 +206,7 @@ export default function Products({
                               setPage(page + 1);
                             }}
                           >
-                            Next
+                            {_('Next')}
                           </a>
                         )}
                       </div>
@@ -263,7 +266,7 @@ export default function Products({
                           }}
                           isLoading={removing.includes(p.uuid)}
                         >
-                          Remove
+                          {_('Remove')}
                         </Button>
                       </div>
                     </div>
@@ -277,9 +280,11 @@ export default function Products({
       </Card>
       <DialogContent className="sm:max-w-[90vw] lg:max-w-200">
         <DialogHeader>
-          <DialogTitle>Add Products</DialogTitle>
+          <DialogTitle>{_('Add Products')}</DialogTitle>
           <DialogDescription>
-            Add products to this category by selecting them from the list below.
+            {_(
+              'Add products to this category by selecting them from the list below.'
+            )}
           </DialogDescription>
           {data && (
             <ProductSelector

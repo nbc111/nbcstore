@@ -1,4 +1,5 @@
 import { NumberField } from '@components/common/form/NumberField.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { RadioGroupField } from '@components/common/form/RadioGroupField.js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import React from 'react';
@@ -10,9 +11,9 @@ export default function Inventory({ product }) {
     };
     return /*#__PURE__*/ React.createElement(Card, {
         className: "bg-popover"
-    }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Inventory"), /*#__PURE__*/ React.createElement(CardDescription, null, "Manage the inventory settings of the product.")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(RadioGroupField, {
+    }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Inventory')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Manage the inventory settings of the product.'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(RadioGroupField, {
         name: "manage_stock",
-        label: "Manage Stock",
+        label: _('Manage Stock'),
         options: [
             {
                 value: 1,
@@ -29,7 +30,7 @@ export default function Inventory({ product }) {
         className: "border-t border-t-border pt-6"
     }, /*#__PURE__*/ React.createElement(RadioGroupField, {
         name: "stock_availability",
-        label: "Stock Availability",
+        label: _('Stock Availability'),
         options: [
             {
                 value: 1,
@@ -47,8 +48,8 @@ export default function Inventory({ product }) {
     }, /*#__PURE__*/ React.createElement(NumberField, {
         name: "qty",
         defaultValue: inventory.qty,
-        placeholder: "Quantity",
-        label: "Quantity",
+        placeholder: _('Quantity'),
+        label: _('Quantity'),
         required: true
     })));
 }

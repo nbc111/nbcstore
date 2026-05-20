@@ -2,6 +2,7 @@ import { InputField } from '@components/common/form/InputField.js';
 import { NumberField } from '@components/common/form/NumberField.js';
 import { SelectField } from '@components/common/form/SelectField.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/common/ui/Table.js';
 import React, { useEffect } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
@@ -21,7 +22,7 @@ export function RequiredProducts({ requiredProducts = [] }) {
             marginTop: '1rem',
             marginBottom: '1rem'
         }
-    }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("span", null, "Order must contains product matched bellow conditions(All)")), /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "Key")), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "Operator")), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "Value")), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "Minimum quantity")), /*#__PURE__*/ React.createElement(TableHead, null, " "))), /*#__PURE__*/ React.createElement(TableBody, null, fields.map((p, i)=>/*#__PURE__*/ React.createElement(TableRow, {
+    }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("span", null, _('Order must contain products matching all of the following conditions'))), /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, _('Key'))), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, _('Operator'))), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, _('Value'))), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, _('Minimum quantity'))), /*#__PURE__*/ React.createElement(TableHead, null, " "))), /*#__PURE__*/ React.createElement(TableBody, null, fields.map((p, i)=>/*#__PURE__*/ React.createElement(TableRow, {
             key: p.id
         }, /*#__PURE__*/ React.createElement(TableCell, null, p.editable ? /*#__PURE__*/ React.createElement(SelectField, {
             name: `condition.required_products.${i}.key`,
@@ -82,7 +83,7 @@ export function RequiredProducts({ requiredProducts = [] }) {
         }, /*#__PURE__*/ React.createElement(NumberField, {
             name: `condition.required_products.${i}.qty`,
             defaultValue: typeof p.qty === 'number' ? p.qty : parseInt(p.qty, 10) || 1,
-            placeholder: "Enter the quantity",
+            placeholder: _('Enter the quantity'),
             required: true,
             validation: {
                 required: 'Minimum quantity is required',
@@ -127,5 +128,5 @@ export function RequiredProducts({ requiredProducts = [] }) {
                 editable: true
             });
         }
-    }, /*#__PURE__*/ React.createElement("span", null, "Add product")))));
+    }, /*#__PURE__*/ React.createElement("span", null, _('Add product'))))));
 }

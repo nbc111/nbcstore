@@ -1,4 +1,5 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -22,11 +23,11 @@ export const CreateVariant: React.FC<{
     <div className="mt-3">
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger>
-          <Button variant={'outline'}>Add Variant</Button>
+          <Button variant={'outline'}>{_('Add Variant')}</Button>
         </DialogTrigger>
         <DialogContent className={'sm:max-w-212.5'}>
           <DialogHeader>
-            <DialogTitle>New Variant</DialogTitle>
+            <DialogTitle>{_('New Variant')}</DialogTitle>
             <DialogDescription>
               Create a new variant for this product.
             </DialogDescription>

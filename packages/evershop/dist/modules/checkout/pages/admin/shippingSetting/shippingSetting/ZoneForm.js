@@ -1,4 +1,5 @@
 import Spinner from '@components/admin/Spinner.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Form } from '@components/common/form/Form.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { ReactSelectField } from '@components/common/form/ReactSelectField.js';
@@ -57,9 +58,9 @@ function ZoneForm({ formMethod, saveZoneApi, onSuccess, reload, zone }) {
         className: "space-y-3"
     }, /*#__PURE__*/ React.createElement(InputField, {
         name: "name",
-        label: "Zone Name",
-        "aria-label": "Zone Name",
-        placeholder: "Enter zone name",
+        label: _('Zone Name'),
+        "aria-label": _('Zone Name'),
+        placeholder: _('Enter zone name'),
         required: true,
         validation: {
             required: 'Zone name is required'
@@ -67,9 +68,9 @@ function ZoneForm({ formMethod, saveZoneApi, onSuccess, reload, zone }) {
         defaultValue: zone?.name
     }), /*#__PURE__*/ React.createElement(ReactSelectField, {
         name: "country",
-        label: "Country",
-        "aria-label": "Country",
-        placeholder: "Select country",
+        label: _('Country'),
+        "aria-label": _('Country'),
+        placeholder: _('Select country'),
         required: true,
         validation: {
             required: 'Country is required'
@@ -80,9 +81,9 @@ function ZoneForm({ formMethod, saveZoneApi, onSuccess, reload, zone }) {
         defaultValue: zone?.country?.code
     }), /*#__PURE__*/ React.createElement(ReactSelectField, {
         name: "provinces",
-        label: "Provinces/States",
-        "aria-label": "Provinces/States",
-        placeholder: "Select provinces/states",
+        label: _('Provinces/States'),
+        "aria-label": _('Provinces/States'),
+        placeholder: _('Select provinces/states'),
         options: data.countries.find((c)=>c.value === countryWatch)?.provinces || [],
         hideSelectedOptions: true,
         isMulti: true,

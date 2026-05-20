@@ -1,4 +1,5 @@
 import { Form } from '@components/common/form/Form.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputField } from '@components/common/form/InputField.js';
 import { Button } from '@components/common/ui/Button.js';
 import React from 'react';
@@ -17,9 +18,9 @@ function TaxClassForm({ saveTaxClassApi, closeModal, getTaxClasses }) {
     }, /*#__PURE__*/ React.createElement(InputField, {
         name: "name",
         type: "text",
-        label: "Tax class name",
+        label: _('Tax class name'),
         defaultValue: "",
-        placeholder: "Enter tax class name",
+        placeholder: _('Enter tax class name'),
         required: true,
         validation: {
             required: 'Tax class name is required'
@@ -30,7 +31,7 @@ function TaxClassForm({ saveTaxClassApi, closeModal, getTaxClasses }) {
         title: "Cancel",
         variant: "secondary",
         onClick: closeModal
-    }, "Cancel"), /*#__PURE__*/ React.createElement(Button, {
+    }, _('Cancel')), /*#__PURE__*/ React.createElement(Button, {
         title: "Save",
         variant: "default",
         onClick: ()=>{

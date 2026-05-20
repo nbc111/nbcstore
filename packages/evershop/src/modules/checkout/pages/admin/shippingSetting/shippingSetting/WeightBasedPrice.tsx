@@ -1,5 +1,6 @@
 import { NumberField } from '@components/common/form/NumberField.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Table,
   TableRow,
@@ -64,7 +65,7 @@ export function WeightBasedPrice({ lines }: WeightBasedPriceProps) {
               <TableCell className="border-none">
                 <NumberField
                   name={`weight_based_cost.${index}.min_weight`}
-                  placeholder="Min Weight"
+                  placeholder={_('Min Weight')}
                   required
                   validation={{ required: 'Min weight is required' }}
                 />
@@ -72,7 +73,7 @@ export function WeightBasedPrice({ lines }: WeightBasedPriceProps) {
               <TableCell className="border-none">
                 <NumberField
                   name={`weight_based_cost.${index}.cost`}
-                  placeholder="Shipping Cost"
+                  placeholder={_('Shipping Cost')}
                   required
                   validation={{ required: 'Shipping cost is required' }}
                 />

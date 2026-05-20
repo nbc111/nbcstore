@@ -1,6 +1,7 @@
 import { NumberField } from '@components/common/form/NumberField.js';
 import React from 'react';
 import { Operator } from './conditionCriterias.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 
 export const PriceConditionValueSelector = ({
   updateCondition,
@@ -21,7 +22,7 @@ export const PriceConditionValueSelector = ({
         name={`dummy__` + Math.random().toString(36).substring(2, 15)}
         wrapperClassName="form-field mb-0"
         defaultValue={condition.value}
-        placeholder="Value"
+        placeholder={_('Value')}
         required
         validation={{
           required: 'Value is required'

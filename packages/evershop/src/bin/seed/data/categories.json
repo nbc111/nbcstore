@@ -1,6 +1,6 @@
 [
   {
-    "name": "Accessories",
+    "name": "配件",
     "url_key": "accessories",
     "description": [
       {
@@ -16,7 +16,7 @@
                   "id": "acc_block_1",
                   "type": "paragraph",
                   "data": {
-                    "text": "Complete your look with our stylish accessories"
+                    "text": "用时尚配件完善您的造型"
                   }
                 }
               ],
@@ -28,9 +28,9 @@
         "className": "md:grid-cols-1"
       }
     ],
-    "meta_title": "Fashion Accessories",
-    "meta_description": "Browse our collection of fashion accessories",
-    "meta_keywords": "accessories, fashion accessories, style",
+    "meta_title": "时尚配件",
+    "meta_description": "浏览我们的时尚配件系列",
+    "meta_keywords": "配件, 时尚配件, 风格",
     "status": 1,
     "include_in_nav": 1
   }

@@ -1,4 +1,5 @@
 import { InputField } from '@components/common/form/InputField.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { TextareaField } from '@components/common/form/TextareaField.js';
 import {
   Card,
@@ -22,18 +23,16 @@ export default function Seo({ page }: CmsPageSeoProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>SEO Information</CardTitle>
-        <CardDescription>
-          Provide the SEO details for the CMS page.
-        </CardDescription>
+        <CardTitle>{_('SEO Information')}</CardTitle>
+        <CardDescription>{_('Provide the SEO details for the CMS page.')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
           <InputField
             id="urlKey"
             name="url_key"
-            label="URL Key"
-            placeholder="Enter URL key"
+            label={_('URL Key')}
+            placeholder={_('Enter URL key')}
             defaultValue={page?.urlKey}
             required
             validation={{ required: 'URL key is required' }}
@@ -43,8 +42,8 @@ export default function Seo({ page }: CmsPageSeoProps) {
           <InputField
             id="metaTitle"
             name="meta_title"
-            label="Meta Title"
-            placeholder="Enter meta title"
+            label={_('Meta Title')}
+            placeholder={_('Enter meta title')}
             defaultValue={page?.metaTitle}
             required
             validation={{ required: 'Meta title is required' }}
@@ -53,8 +52,8 @@ export default function Seo({ page }: CmsPageSeoProps) {
 
           <TextareaField
             name="meta_description"
-            label="Meta Description"
-            placeholder="Enter meta description"
+            label={_('Meta Description')}
+            placeholder={_('Enter meta description')}
             defaultValue={page?.metaDescription}
           />
         </div>

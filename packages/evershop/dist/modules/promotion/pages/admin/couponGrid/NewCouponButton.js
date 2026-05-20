@@ -1,10 +1,11 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 export default function NewCouponButton({ newCouponUrl }) {
     return /*#__PURE__*/ React.createElement(Button, {
         onClick: ()=>window.location.href = newCouponUrl,
-        title: "New Coupon"
-    }, ' ', "New Coupon", ' ');
+        title: _('New Coupon')
+    }, _('New Coupon'));
 }
 export const layout = {
     areaId: 'pageHeadingRight',

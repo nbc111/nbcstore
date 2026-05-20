@@ -1,4 +1,5 @@
 import { CardContent } from '@components/common/ui/Card.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -47,7 +48,7 @@ function Zone({ zone, reload }: ZoneProps) {
             <DialogTrigger>Edit Zone</DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Edit Shipping Zone</DialogTitle>
+                <DialogTitle>{_('Edit Shipping Zone')}</DialogTitle>
               </DialogHeader>
               <ZoneForm
                 formMethod="PATCH"

@@ -1,4 +1,5 @@
 import { ImageUploader } from '@components/admin/ImageUploader.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import Spinner from '@components/admin/Spinner.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { NumberField } from '@components/common/form/NumberField.js';
@@ -216,7 +217,7 @@ export const VariantModal: React.FC<
                 <SelectField
                   name={`variant_attributes.${a.attributeCode}`}
                   label={a.attributeName}
-                  placeholder="Select an option"
+                  placeholder={_('Select an option')}
                   required
                   validation={{
                     required: 'This field is required'
@@ -235,8 +236,8 @@ export const VariantModal: React.FC<
             <div>
               <InputField
                 name="variant_sku"
-                label="Sku"
-                placeholder="Enter SKU"
+                label={_('Sku')}
+                placeholder={_('Enter SKU')}
                 required
                 validation={{
                   required: 'SKU is required'
@@ -247,9 +248,9 @@ export const VariantModal: React.FC<
             <div>
               <NumberField
                 name="variant_qty"
-                label="Quantity"
+                label={_('Quantity')}
                 required
-                placeholder="Enter quantity"
+                placeholder={_('Enter quantity')}
                 validation={{
                   required: 'Qty is required'
                 }}
@@ -262,7 +263,7 @@ export const VariantModal: React.FC<
             <div>
               <ToggleField
                 name="variant_status"
-                label="Status"
+                label={_('Status')}
                 trueValue={true}
                 falseValue={false}
                 defaultValue={variant?.product.status === 1}
@@ -271,7 +272,7 @@ export const VariantModal: React.FC<
             <div>
               <ToggleField
                 name="variant_visibility"
-                label="Visibility"
+                label={_('Visibility')}
                 trueValue={true}
                 falseValue={false}
                 defaultValue={variant?.product.visibility === 1}
@@ -282,7 +283,7 @@ export const VariantModal: React.FC<
       </div>
       <DialogFooter>
         <DialogClose>
-          <Button variant="outline">Cancel</Button>
+          <Button variant="outline">{_('Cancel')}</Button>
         </DialogClose>
         <Button
           isLoading={saving}

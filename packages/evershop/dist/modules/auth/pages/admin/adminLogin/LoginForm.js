@@ -1,4 +1,5 @@
 import React from 'react';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import './LoginForm.scss';
 import Area from '@components/common/Area.js';
 import { EmailField } from '@components/common/form/EmailField.js';
@@ -14,7 +15,7 @@ const SubmitButton = ()=>{
         type: "submit",
         size: "lg",
         isLoading: isSubmitting
-    }, "SIGN IN"));
+    }, _('SIGN IN')));
 };
 export default function LoginForm({ authUrl, dashboardUrl }) {
     const [error, setError] = React.useState(null);
@@ -66,12 +67,12 @@ export default function LoginForm({ authUrl, dashboardUrl }) {
                         prefixIcon: /*#__PURE__*/ React.createElement(Mail, {
                             className: "h-5 w-5"
                         }),
-                        label: "Email",
+                        label: _('Email'),
                         name: "email",
-                        placeholder: "Email",
+                        placeholder: _('Email'),
                         required: true,
                         validation: {
-                            required: 'Email is required'
+                            required: _('Email is required')
                         }
                     })
                 },
@@ -83,12 +84,12 @@ export default function LoginForm({ authUrl, dashboardUrl }) {
                         prefixIcon: /*#__PURE__*/ React.createElement(LockKeyhole, {
                             className: "h-5 w-5"
                         }),
-                        label: "Password",
+                        label: _('Password'),
                         name: "password",
-                        placeholder: "Password",
+                        placeholder: _('Password'),
                         required: true,
                         validation: {
-                            required: 'Password is required'
+                            required: _('Password is required')
                         },
                         showToggle: true
                     })

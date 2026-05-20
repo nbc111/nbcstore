@@ -1,5 +1,6 @@
 import Area from '@components/common/Area.js';
 import { Toaster } from '@components/common/ui/Sonner.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 export function Footer({ copyRight }) {
     return /*#__PURE__*/ React.createElement("footer", {
@@ -99,7 +100,7 @@ export function Footer({ copyRight }) {
                         className: "self-center"
                     }, /*#__PURE__*/ React.createElement("div", {
                         className: "copyright text-center md:text-right text-textSubdued"
-                    }, /*#__PURE__*/ React.createElement("span", null, copyRight))))
+                    }, /*#__PURE__*/ React.createElement("span", null, _(copyRight)))))
                 },
                 sortOrder: 10
             }

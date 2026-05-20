@@ -1,4 +1,5 @@
 import { Editor, Row } from '@components/common/form/Editor.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputField } from '@components/common/form/InputField.js';
 import { RadioGroupField } from '@components/common/form/RadioGroupField.js';
 import {
@@ -24,10 +25,8 @@ export default function General({ page }: CmsPageGeneralProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>General Information</CardTitle>
-        <CardDescription>
-          Provide the basic information for the CMS page.
-        </CardDescription>
+        <CardTitle>{_('General Information')}</CardTitle>
+        <CardDescription>{_('Provide the basic information for the CMS page.')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -35,8 +34,8 @@ export default function General({ page }: CmsPageGeneralProps) {
             <InputField
               id="cms_page_name"
               name="name"
-              label="Page Name"
-              placeholder="Enter page name"
+              label={_('Page Name')}
+              placeholder={_('Enter page name')}
               defaultValue={page?.name}
               required
               validation={{ required: 'Page name is required' }}
@@ -46,7 +45,7 @@ export default function General({ page }: CmsPageGeneralProps) {
           <div className="space-y-2">
             <RadioGroupField
               name="status"
-              label="Status"
+              label={_('Status')}
               options={[
                 { value: 1, label: 'Enabled' },
                 { value: 0, label: 'Disabled' }

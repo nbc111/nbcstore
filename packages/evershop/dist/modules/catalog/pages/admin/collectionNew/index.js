@@ -1,7 +1,8 @@
 import { setPageMetaInfo } from '../../../../cms/services/pageMetaInfo.js';
+import { translate } from '../../../../../lib/locale/translate/translate.js';
 export default ((request, response)=>{
     setPageMetaInfo(request, {
-        title: 'Create a new collection',
-        description: 'Create a new collection'
+        title: translate('Create a new collection'),
+        description: translate('Create a new collection')
     });
 });

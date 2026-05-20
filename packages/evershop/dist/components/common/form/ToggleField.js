@@ -22,10 +22,10 @@ export function ToggleField({ name, label, error, helperText, required, validati
         className: wrapperClassName
     }, label && /*#__PURE__*/ React.createElement(FieldLabel, {
         htmlFor: fieldId
-    }, label, required && /*#__PURE__*/ React.createElement("span", {
+    }, _(label), required && /*#__PURE__*/ React.createElement("span", {
         className: "text-destructive ml-1"
     }, "*"), helperText && /*#__PURE__*/ React.createElement(Tooltip, {
-        content: helperText,
+        content: _(helperText),
         position: "top"
     })), /*#__PURE__*/ React.createElement(Controller, {
         name: name,

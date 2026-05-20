@@ -81,9 +81,9 @@ export function DateTimeLocalField<T extends FieldValues = FieldValues>({
       {label && (
         <FieldLabel htmlFor={fieldId}>
           <>
-            {label}
+            {_(label)}
             {required && <span className="text-destructive">*</span>}
-            {helperText && <Tooltip content={helperText} position="top" />}
+            {helperText && <Tooltip content={_(helperText)} position="top" />}
           </>
         </FieldLabel>
       )}

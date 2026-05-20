@@ -1,8 +1,9 @@
 import { setPageMetaInfo } from '../../../../cms/services/pageMetaInfo.js';
+import { translate } from '../../../../../lib/locale/translate/translate.js';
 
 export default (request, response) => {
   setPageMetaInfo(request, {
-    title: 'Create a new product',
-    description: 'Create a new product'
+    title: translate('Create a new product'),
+    description: translate('Create a new product')
   });
 };

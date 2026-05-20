@@ -1,15 +1,16 @@
 import { InputField } from '@components/common/form/InputField.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { TextareaField } from '@components/common/form/TextareaField.js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import React from 'react';
 export default function Seo({ page }) {
-    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "SEO Information"), /*#__PURE__*/ React.createElement(CardDescription, null, "Provide the SEO details for the CMS page.")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
+    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('SEO Information')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Provide the SEO details for the CMS page.'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
         className: "space-y-3"
     }, /*#__PURE__*/ React.createElement(InputField, {
         id: "urlKey",
         name: "url_key",
-        label: "URL Key",
-        placeholder: "Enter URL key",
+        label: _('URL Key'),
+        placeholder: _('Enter URL key'),
         defaultValue: page?.urlKey,
         required: true,
         validation: {
@@ -19,8 +20,8 @@ export default function Seo({ page }) {
     }), /*#__PURE__*/ React.createElement(InputField, {
         id: "metaTitle",
         name: "meta_title",
-        label: "Meta Title",
-        placeholder: "Enter meta title",
+        label: _('Meta Title'),
+        placeholder: _('Enter meta title'),
         defaultValue: page?.metaTitle,
         required: true,
         validation: {
@@ -29,8 +30,8 @@ export default function Seo({ page }) {
         helperText: "This is the meta title for the CMS page."
     }), /*#__PURE__*/ React.createElement(TextareaField, {
         name: "meta_description",
-        label: "Meta Description",
-        placeholder: "Enter meta description",
+        label: _('Meta Description'),
+        placeholder: _('Enter meta description'),
         defaultValue: page?.metaDescription
     }))));
 }

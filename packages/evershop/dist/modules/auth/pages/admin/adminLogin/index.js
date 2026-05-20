@@ -1,4 +1,5 @@
 import { buildUrl } from '../../../../../lib/router/buildUrl.js';
+import { translate } from '../../../../../lib/locale/translate/translate.js';
 import { setPageMetaInfo } from '../../../../cms/services/pageMetaInfo.js';
 export default ((request, response, next)=>{
     // Check if the user is logged in
@@ -8,8 +9,8 @@ export default ((request, response, next)=>{
         response.redirect(buildUrl('dashboard'));
     } else {
         setPageMetaInfo(request, {
-            title: 'Admin Login',
-            description: 'Admin Login'
+            title: translate('Admin Login'),
+            description: translate('Admin Login')
         });
         next();
     }

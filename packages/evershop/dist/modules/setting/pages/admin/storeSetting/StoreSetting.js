@@ -1,4 +1,6 @@
 import { SettingMenu } from '@components/admin/SettingMenu.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
+import { localizeGeoName } from '@evershop/evershop/lib/locale/translate/localizeGeoName';
 import Spinner from '@components/admin/Spinner.js';
 import Area from '@components/common/Area.js';
 import { EmailField } from '@components/common/form/EmailField.js';
@@ -29,7 +31,7 @@ const CountriesQuery = `
     }
   }
 `;
-const Province = ({ selectedCountry = 'US', selectedProvince, allowedCountries = [], fieldName = 'storeProvince' })=>{
+const Province = ({ selectedCountry = 'CN', selectedProvince, allowedCountries = [], fieldName = 'storeProvince' })=>{
     const { setValue } = useFormContext();
     const [result] = useQuery({
         query: ProvincesQuery,
@@ -68,12 +70,12 @@ const Province = ({ selectedCountry = 'US', selectedProvince, allowedCountries =
         id: "storeProvince",
         defaultValue: selectedProvince,
         name: fieldName,
-        label: "Province",
-        placeholder: "Province",
+        label: _('Province'),
+        placeholder: _('Province'),
         required: true,
         options: provinces.map((p)=>({
                 value: p.code,
-                label: p.name
+                label: localizeGeoName(p.name)
             }))
     }));
 };
@@ -106,29 +108,29 @@ const Country = ({ selectedCountry, setSelectedCountry, allowedCountries = [], f
     }, /*#__PURE__*/ React.createElement(SelectField, {
         defaultValue: selectedCountry,
         name: fieldName,
-        label: "Country",
-        placeholder: "Country",
+        label: _('Country'),
+        placeholder: _('Country'),
         onChange: onChange,
         required: true,
         options: data.countries.map((c)=>({
                 value: c.code,
-                label: c.name
+                label: localizeGeoName(c.name)
             }))
     }));
 };
 const StorePhoneNumber = ({ storePhoneNumber })=>{
     return /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(TelField, {
         name: "storePhoneNumber",
-        label: "Store Phone Number",
-        placeholder: "Store Phone Number",
+        label: _('Store Phone Number'),
+        placeholder: _('Store Phone Number'),
         defaultValue: storePhoneNumber
     }));
 };
 const StoreEmail = ({ storeEmail })=>{
     return /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(EmailField, {
         name: "storeEmail",
-        label: "Store Email",
-        placeholder: "Store Email",
+        label: _('Store Email'),
+        placeholder: _('Store Email'),
         defaultValue: storeEmail
     }));
 };
@@ -136,10 +138,9 @@ export default function StoreSetting({ saveSettingApi, setting: { storeName, sto
     const [selectedCountry, setSelectedCountry] = React.useState(()=>{
         const country = storeCountry;
         if (!country) {
-            return 'US';
-        } else {
-            return country;
+            return 'CN';
         }
+        return country;
     });
     return /*#__PURE__*/ React.createElement("div", {
         className: "main-content-inner"
@@ -153,7 +154,7 @@ export default function StoreSetting({ saveSettingApi, setting: { storeName, sto
         method: "POST",
         id: "storeSetting",
         action: saveSettingApi
-    }, /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Store Settings"), /*#__PURE__*/ React.createElement(CardDescription, null, "Configure your store information")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Area, {
+    }, /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Store Settings')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Configure your store information'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Area, {
         id: "storeInfoSetting",
         className: "space-y-3",
         coreComponents: [
@@ -161,9 +162,9 @@ export default function StoreSetting({ saveSettingApi, setting: { storeName, sto
                 component: {
                     default: /*#__PURE__*/ React.createElement(InputField, {
                         name: "storeName",
-                        label: "Store Name",
+                        label: _('Store Name'),
                         required: true,
-                        placeholder: "Store Name",
+                        placeholder: _('Store Name'),
                         defaultValue: storeName
                     })
                 },
@@ -173,8 +174,8 @@ export default function StoreSetting({ saveSettingApi, setting: { storeName, sto
                 component: {
                     default: /*#__PURE__*/ React.createElement(TextareaField, {
                         name: "storeDescription",
-                        label: "Store Description",
-                        placeholder: "Store Description",
+                        label: _('Store Description'),
+                        placeholder: _('Store Description'),
                         defaultValue: storeDescription,
                         required: true
                     })
@@ -184,7 +185,7 @@ export default function StoreSetting({ saveSettingApi, setting: { storeName, sto
         ]
     })), /*#__PURE__*/ React.createElement(CardContent, {
         className: "pt-3 border-t border-border"
-    }, /*#__PURE__*/ React.createElement(CardTitle, null, "Contact Information"), /*#__PURE__*/ React.createElement(Area, {
+    }, /*#__PURE__*/ React.createElement(CardTitle, null, _('Contact Information')), /*#__PURE__*/ React.createElement(Area, {
         id: "storeContactSetting",
         coreComponents: [
             {
@@ -209,31 +210,31 @@ export default function StoreSetting({ saveSettingApi, setting: { storeName, sto
         className: "grid grid-cols-2 gap-5 mt-5"
     })), /*#__PURE__*/ React.createElement(CardContent, {
         className: "pt-3 border-t border-border"
-    }, /*#__PURE__*/ React.createElement(CardTitle, null, "Address"), /*#__PURE__*/ React.createElement("div", {
+    }, /*#__PURE__*/ React.createElement(CardTitle, null, _('Address')), /*#__PURE__*/ React.createElement("div", {
         className: "space-y-3"
     }, /*#__PURE__*/ React.createElement(Country, {
         selectedCountry: storeCountry,
         setSelectedCountry: setSelectedCountry
     }), /*#__PURE__*/ React.createElement(InputField, {
         name: "storeAddress",
-        label: "Address",
+        label: _('Address'),
         defaultValue: storeAddress,
-        placeholder: "Store Address"
+        placeholder: _('Store Address')
     })), /*#__PURE__*/ React.createElement("div", {
         className: "grid grid-cols-3 gap-5 mt-5"
     }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(InputField, {
         name: "storeCity",
-        label: "City",
+        label: _('City'),
         defaultValue: storeCity,
-        placeholder: "City"
+        placeholder: _('City')
     })), /*#__PURE__*/ React.createElement(Province, {
         selectedProvince: storeProvince,
         selectedCountry: selectedCountry
     }), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(InputField, {
         name: "storePostalCode",
-        label: "Postal Code",
+        label: _('Postal Code'),
         defaultValue: storePostalCode,
-        placeholder: "Postal Code"
+        placeholder: _('Postal Code')
     })))))))));
 }
 export const layout = {

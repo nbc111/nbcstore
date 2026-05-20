@@ -1,5 +1,6 @@
 import { Button } from '@components/common/ui/Button.js';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@components/common/ui/Item.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { cn } from '@evershop/evershop/lib/util/cn';
 import { Settings } from 'lucide-react';
 import React from 'react';
@@ -12,7 +13,7 @@ export default function ShippingSettingMenu({ shippingSettingUrl }) {
     }, /*#__PURE__*/ React.createElement(ItemContent, null, /*#__PURE__*/ React.createElement(ItemTitle, null, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("a", {
         href: shippingSettingUrl,
         className: cn('uppercase text-xs font-semibold', isActive && 'text-primary')
-    }, "Shipping Setting"))), /*#__PURE__*/ React.createElement(ItemDescription, null, /*#__PURE__*/ React.createElement("div", null, "Where you ship, shipping methods and delivery fee"))), /*#__PURE__*/ React.createElement(ItemActions, null, /*#__PURE__*/ React.createElement(Button, {
+    }, _('Shipping Setting')))), /*#__PURE__*/ React.createElement(ItemDescription, null, /*#__PURE__*/ React.createElement("div", null, _('Where you ship, shipping methods and delivery fee')))), /*#__PURE__*/ React.createElement(ItemActions, null, /*#__PURE__*/ React.createElement(Button, {
         variant: "outline",
         size: "sm",
         onClick: ()=>window.location.href = shippingSettingUrl

@@ -1,4 +1,5 @@
 import { CheckboxField } from '@components/common/form/CheckboxField.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { NumberField } from '@components/common/form/NumberField.js';
 import {
   Card,
@@ -41,15 +42,13 @@ export default function Shipping({ product, setting }: ShippingProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Shipping</CardTitle>
-        <CardDescription>
-          Manage the shipping settings of the product.
-        </CardDescription>
+        <CardTitle>{_('Shipping')}</CardTitle>
+        <CardDescription>{_('Manage the shipping settings of the product.')}</CardDescription>
       </CardHeader>
       <CardContent>
         <CheckboxField
           name="no_shipping_required"
-          label="No shipping required?"
+          label={_('No shipping required?')}
           defaultValue={shipping.noShippingRequired === true}
           helperText="Select this option if the product is a digital product or service that does not require shipping."
           wrapperClassName="mb-0"
@@ -59,7 +58,7 @@ export default function Shipping({ product, setting }: ShippingProps) {
         {!noShippingRequired && (
           <NumberField
             name="weight"
-            placeholder="Enter weight"
+            placeholder={_('Enter weight')}
             label={`Weight`}
             defaultValue={shipping.weight?.value}
             unit={setting?.weightUnit}
@@ -76,7 +75,7 @@ export default function Shipping({ product, setting }: ShippingProps) {
         {noShippingRequired && (
           <NumberField
             name="weight_no_shipping"
-            placeholder="Enter weight"
+            placeholder={_('Enter weight')}
             label={`Weight`}
             defaultValue={shipping.weight?.value}
             unit={setting?.weightUnit}

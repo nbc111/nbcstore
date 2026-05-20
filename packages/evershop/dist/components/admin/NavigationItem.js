@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 import './NavigationItem.scss';
 export function NavigationItem({ Icon, url, title }) {
@@ -40,5 +41,5 @@ export function NavigationItem({ Icon, url, title }) {
         className: "flex justify-left"
     }, /*#__PURE__*/ React.createElement("i", {
         className: "menu-icon"
-    }, /*#__PURE__*/ React.createElement(Icon, null)), title));
+    }, /*#__PURE__*/ React.createElement(Icon, null)), _(title)));
 }

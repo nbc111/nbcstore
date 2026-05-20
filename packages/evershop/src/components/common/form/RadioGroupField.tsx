@@ -82,9 +82,9 @@ export function RadioGroupField<T extends FieldValues = FieldValues>({
       {label && (
         <FieldLabel>
           <>
-            {label}
+            {_(label)}
             {required && <span className="text-destructive">*</span>}
-            {helperText && <Tooltip content={helperText} position="top" />}
+            {helperText && <Tooltip content={_(helperText)} position="top" />}
           </>
         </FieldLabel>
       )}

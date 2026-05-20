@@ -1,5 +1,6 @@
 import { AttributeGroupSelector } from '@components/admin/AttributeGroupSelector.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -64,7 +65,7 @@ export const AttributeGroupConditionValueSelector: React.FC<{
       </DialogTrigger>
       <DialogContent className={'max-w-[60vw]'}>
         <DialogHeader>
-          <DialogTitle>Choose Attribute Groups</DialogTitle>
+          <DialogTitle>{_('Choose Attribute Groups')}</DialogTitle>
         </DialogHeader>
         <AttributeGroupSelector
           onSelect={onSelect}

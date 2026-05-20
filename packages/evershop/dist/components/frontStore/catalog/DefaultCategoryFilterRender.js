@@ -66,7 +66,7 @@ export const DefaultCategoryFilterRender = ({ categories, currentFilters })=>{
         className: "flex items-center justify-between text-left flex-1 hover:text-primary transition-colors"
     }, /*#__PURE__*/ React.createElement("span", {
         className: "font-medium"
-    }, "Categories"), /*#__PURE__*/ React.createElement("svg", {
+    }, _('Categories')), /*#__PURE__*/ React.createElement("svg", {
         className: `w-4 h-4 transition-transform ${isCollapsed ? 'rotate-180' : ''}`,
         fill: "none",
         stroke: "currentColor",
@@ -79,7 +79,7 @@ export const DefaultCategoryFilterRender = ({ categories, currentFilters })=>{
     }))), selectedCount > 0 && /*#__PURE__*/ React.createElement("button", {
         onClick: clearCategoryFilter,
         className: "text-muted-foreground hover:text-destructive text-sm transition-colors",
-        title: "Clear categories"
+        title: _('Clear categories')
     }, "✕")), !isCollapsed && /*#__PURE__*/ React.createElement("div", {
         className: "filter__content"
     }, /*#__PURE__*/ React.createElement("div", {

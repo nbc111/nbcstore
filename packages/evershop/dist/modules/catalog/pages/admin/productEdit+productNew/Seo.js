@@ -1,4 +1,5 @@
 import Area from '@components/common/Area.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputField } from '@components/common/form/InputField.js';
 import { TextareaField } from '@components/common/form/TextareaField.js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
@@ -9,8 +10,8 @@ export default function SEO({ product }) {
             component: {
                 default: /*#__PURE__*/ React.createElement(InputField, {
                     name: "url_key",
-                    label: "URL Key",
-                    placeholder: "Enter URL Key",
+                    label: _('URL Key'),
+                    placeholder: _('Enter URL Key'),
                     required: true,
                     defaultValue: product?.urlKey,
                     validation: {
@@ -28,8 +29,8 @@ export default function SEO({ product }) {
             component: {
                 default: /*#__PURE__*/ React.createElement(InputField, {
                     name: "meta_title",
-                    label: "Meta Title",
-                    placeholder: "Enter Meta Title",
+                    label: _('Meta Title'),
+                    placeholder: _('Enter Meta Title'),
                     required: true,
                     defaultValue: product?.metaTitle,
                     validation: {
@@ -53,15 +54,15 @@ export default function SEO({ product }) {
             component: {
                 default: /*#__PURE__*/ React.createElement(TextareaField, {
                     name: "meta_description",
-                    label: "Meta Description",
-                    placeholder: "Enter Meta Description",
+                    label: _('Meta Description'),
+                    placeholder: _('Enter Meta Description'),
                     defaultValue: product?.metaDescription || ''
                 })
             },
             sortOrder: 30
         }
     ];
-    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "SEO"), /*#__PURE__*/ React.createElement(CardDescription, null, "Manage the SEO settings.")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Area, {
+    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('SEO')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Manage the SEO settings.'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Area, {
         id: "productEditSeo",
         coreComponents: fields,
         className: "flex flex-col gap-2"

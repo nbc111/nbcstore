@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 export var Operator = /*#__PURE__*/ function(Operator) {
     Operator["EQUAL"] = "=";
     Operator["NOT_EQUAL"] = "!=";
@@ -9,7 +10,7 @@ export var Operator = /*#__PURE__*/ function(Operator) {
     Operator["NOT_IN"] = "NOT IN";
     return Operator;
 }({});
-const options = [
+const optionDefs = [
     {
         key: 'category',
         label: 'Category'
@@ -31,7 +32,7 @@ const options = [
         label: 'Price'
     }
 ];
-const operators = [
+const operatorDefs = [
     {
         key: "=",
         label: 'Equal'
@@ -65,4 +66,11 @@ const operators = [
         label: 'Not in'
     }
 ];
-export { options, operators };
+export const options = optionDefs.map((o)=>({
+        ...o,
+        label: _(o.label)
+    }));
+export const operators = operatorDefs.map((o)=>({
+        ...o,
+        label: _(o.label)
+    }));

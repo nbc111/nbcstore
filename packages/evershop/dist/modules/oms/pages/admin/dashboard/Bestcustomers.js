@@ -1,4 +1,5 @@
 import { useAppState } from '@components/common/context/app';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/common/ui/Table.js';
 import PropTypes from 'prop-types';
@@ -6,11 +7,11 @@ import React from 'react';
 export default function BestCustomers({ listUrl, setting }) {
     const context = useAppState();
     const customers = context.bestCustomers || [];
-    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Best customers"), /*#__PURE__*/ React.createElement(CardDescription, null, "A list of customers who have placed the most orders"), /*#__PURE__*/ React.createElement(CardAction, null, /*#__PURE__*/ React.createElement("a", {
+    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Best customers')), /*#__PURE__*/ React.createElement(CardDescription, null, _('A list of customers who have placed the most orders')), /*#__PURE__*/ React.createElement(CardAction, null, /*#__PURE__*/ React.createElement("a", {
         href: listUrl,
         className: "text-sm text-primary hover:underline"
-    }, "View all customers"))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, "Full name"), /*#__PURE__*/ React.createElement(TableHead, null, "Orders"), /*#__PURE__*/ React.createElement(TableHead, null, "Total"))), /*#__PURE__*/ React.createElement(TableBody, null, customers.map((c, i)=>{
-        const grandTotal = new Intl.NumberFormat('en', {
+    }, _('View all customers')))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, _('Full name')), /*#__PURE__*/ React.createElement(TableHead, null, _('Orders')), /*#__PURE__*/ React.createElement(TableHead, null, _('Total')))), /*#__PURE__*/ React.createElement(TableBody, null, customers.map((c, i)=>{
+        const grandTotal = new Intl.NumberFormat('zh-CN', {
             style: 'currency',
             currency: setting.storeCurrency
         }).format(c.total);
@@ -32,6 +33,6 @@ export const query = `
     setting {
       storeCurrency
     }
-    listUrl: url(routeId: "productGrid")
+    listUrl: url(routeId: "customerGrid")
   }
 `;

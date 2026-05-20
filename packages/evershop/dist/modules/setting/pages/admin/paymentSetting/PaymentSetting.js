@@ -1,6 +1,7 @@
 import { SettingMenu } from '@components/admin/SettingMenu.js';
 import Area from '@components/common/Area.js';
 import { Form } from '@components/common/form/Form.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 export default function PaymentSetting({ saveSettingApi }) {
     return /*#__PURE__*/ React.createElement("div", {
@@ -15,7 +16,7 @@ export default function PaymentSetting({ saveSettingApi }) {
         id: "paymentSettingForm",
         method: "POST",
         action: saveSettingApi,
-        successMessage: "Payment setting saved"
+        successMessage: _('Payment setting saved')
     }, /*#__PURE__*/ React.createElement(Area, {
         id: "paymentSetting",
         className: "grid gap-5"

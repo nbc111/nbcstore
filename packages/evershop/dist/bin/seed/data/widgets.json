@@ -1,6 +1,6 @@
 [
   {
-    "name": "Main menu",
+    "name": "主菜单",
     "type": "basic_menu",
     "route": ["all"],
     "area": ["headerMiddleLeft"],
@@ -10,14 +10,14 @@
         {
           "id": "hanhk3km0m8nt2b",
           "url": "#",
-          "name": "Shop",
+          "name": "商店",
           "type": "custom",
           "uuid": "#",
           "children": [
             {
               "id": "hanhk3km0m8nt2c",
               "url": "/accessories",
-              "name": "Accessories",
+              "name": "配件",
               "type": "custom",
               "uuid": "/accessories"
             }
@@ -26,7 +26,7 @@
         {
           "id": "hanhk3km0m8nt2e",
           "url": "/page/about-us",
-          "name": "About us",
+          "name": "关于我们",
           "type": "custom",
           "uuid": "/page/about-us",
           "children": []
@@ -38,7 +38,7 @@
     "status": true
   },
   {
-    "name": "Homepage Slideshow",
+    "name": "首页轮播",
     "type": "simple_slider",
     "route": ["homepage"],
     "area": ["content"],
@@ -52,10 +52,10 @@
           "image": "https://raw.githubusercontent.com/evershopcommerce/evershop/refs/heads/dev/seed/images/banner-one.jpg",
           "width": 2400,
           "height": 1200,
-          "subText": "Discover our exquisite collection of ceramic and stainless steel products",
-          "headline": "Premium Quality Products",
+          "subText": "探索我们精心打造的陶瓷与不锈钢精品系列",
+          "headline": "优质好物",
           "buttonLink": "/accessories",
-          "buttonText": "Shop Now",
+          "buttonText": "立即选购",
           "buttonColor": "#3a3a3a"
         },
         {
@@ -63,10 +63,10 @@
           "image": "https://raw.githubusercontent.com/evershopcommerce/evershop/refs/heads/dev/seed/images/banner-two.jpg",
           "width": 2400,
           "height": 1200,
-          "subText": "Elegant designs that enhance your daily life, from morning coffee to home organization",
-          "headline": "Crafted With Care",
+          "subText": "优雅设计点亮日常生活，从晨间咖啡到家居整理",
+          "headline": "用心打造",
           "buttonLink": "/accessories",
-          "buttonText": "View Collection",
+          "buttonText": "查看系列",
           "buttonColor": "#3a3a3a"
         }
       ],
@@ -78,7 +78,7 @@
     "status": true
   },
   {
-    "name": "Featured Products",
+    "name": "精选商品",
     "type": "collection_products",
     "route": ["homepage"],
     "area": ["content"],

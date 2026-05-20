@@ -126,7 +126,7 @@ export function ReactSelectCreatableField<T extends FieldValues = FieldValues>({
           >
             {label && (
               <FieldLabel htmlFor={fieldId}>
-                {label}
+                {_(label)}
                 {required && <span className="text-destructive">*</span>}
               </FieldLabel>
             )}
@@ -198,7 +198,7 @@ export function ReactSelectCreatableField<T extends FieldValues = FieldValues>({
 
             {helperText && !fieldError && (
               <p id={`${fieldId}-helper`} className="field-helper">
-                {helperText}
+                {_(helperText)}
               </p>
             )}
           </Field>

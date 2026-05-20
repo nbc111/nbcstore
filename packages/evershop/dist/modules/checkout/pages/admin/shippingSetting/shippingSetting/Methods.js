@@ -1,4 +1,5 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@components/common/ui/Dialog.js';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@components/common/ui/Table.js';
 import React from 'react';
@@ -36,7 +37,7 @@ export function Methods({ reload, methods, addMethodApi }) {
         onClick: (e)=>{
             e.preventDefault();
         }
-    }, "+ Add Method"))), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Add Shipping Method"), /*#__PURE__*/ React.createElement(MethodForm, {
+    }, "+ Add Method"))), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Add Shipping Method')), /*#__PURE__*/ React.createElement(MethodForm, {
         saveMethodApi: addMethodApi,
         onSuccess: ()=>{
             setDialogOpen(false);

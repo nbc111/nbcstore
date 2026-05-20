@@ -1,4 +1,5 @@
 import { GridPagination } from '@components/admin/grid/GridPagination';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { SortableHeader } from '@components/admin/grid/header/Sortable';
 import { Status } from '@components/admin/Status.js';
 import Area from '@components/common/Area';
@@ -38,18 +39,20 @@ function Actions({ widgets = [], selectedIds = [] }) {
     };
     const actions = [
         {
-            name: 'Disable',
+            name: _('Disable'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Disable ${selectedIds.length} widgets`,
-                    content: 'Are you sure?',
+                    heading: _('Disable ${count} widgets', {
+                        count: String(selectedIds.length)
+                    }),
+                    content: _('Are you sure?'),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Disable',
+                        title: _('Disable'),
                         onAction: async ()=>{
                             await updatePages(0);
                         },
@@ -59,18 +62,20 @@ function Actions({ widgets = [], selectedIds = [] }) {
             }
         },
         {
-            name: 'Enable',
+            name: _('Enable'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Enable ${selectedIds.length} widgets`,
-                    content: 'Are you sure?',
+                    heading: _('Enable ${count} widgets', {
+                        count: String(selectedIds.length)
+                    }),
+                    content: _('Are you sure?'),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Enable',
+                        title: _('Enable'),
                         onAction: async ()=>{
                             await updatePages(1);
                         },
@@ -80,18 +85,20 @@ function Actions({ widgets = [], selectedIds = [] }) {
             }
         },
         {
-            name: 'Delete',
+            name: _('Delete'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Delete ${selectedIds.length} widgets`,
-                    content: /*#__PURE__*/ React.createElement("div", null, "Can't be undone"),
+                    heading: _('Delete ${count} widgets', {
+                        count: String(selectedIds.length)
+                    }),
+                    content: _('Can\'t be undone'),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Delete',
+                        title: _('Delete'),
                         onAction: async ()=>{
                             await deletePages();
                         },
@@ -137,7 +144,7 @@ export default function WidgetGrid({ widgets: { items, total, currentFilters = [
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(InputField, {
                             name: "name",
-                            placeholder: "Search",
+                            placeholder: _('Search'),
                             defaultValue: currentFilters.find((f)=>f.key === 'name')?.value,
                             onKeyPress: (e)=>{
                                 // If the user press enter, we should submit the form
@@ -167,7 +174,7 @@ export default function WidgetGrid({ widgets: { items, total, currentFilters = [
             url.search = '';
             window.location.href = url.href;
         }
-    }, "Clear Filters"))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("div", {
+    }, _('Clear Filters')))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("div", {
         className: "form-field mb-0"
     }, /*#__PURE__*/ React.createElement(Checkbox, {
         onCheckedChange: (checked)=>{

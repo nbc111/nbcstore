@@ -1,5 +1,6 @@
 import Spinner from '@components/admin/Spinner.jsx';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -101,7 +102,7 @@ export function Zones({
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <div className="flex justify-end pr-5">
           <DialogTrigger>
-            <Button>Create New Zone</Button>
+            <Button>{_('Create New Zone')}</Button>
           </DialogTrigger>
         </div>
         <DialogContent>

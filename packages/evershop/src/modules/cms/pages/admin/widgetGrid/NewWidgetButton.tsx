@@ -1,4 +1,5 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -58,11 +59,11 @@ export default function NewWidgetButton({ widgetTypes }: NewWidgetButtonProps) {
   return (
     <Dialog>
       <DialogTrigger>
-        <Button>New Widget</Button>
+        <Button>{_('New Widget')}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New Widget</DialogTitle>
+          <DialogTitle>{_('New Widget')}</DialogTitle>
         </DialogHeader>
         <WidgetTypes types={widgetTypes} />
       </DialogContent>

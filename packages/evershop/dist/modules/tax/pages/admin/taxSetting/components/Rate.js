@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@components/common/ui/Dialog.js';
 import React from 'react';
 import { RateForm } from './RateForm.js';
@@ -35,7 +36,7 @@ function Rate({ rate, getTaxClasses }) {
                 requestPolicy: 'network-only'
             });
         }
-    }, "Delete")), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Edit Tax Rate")), /*#__PURE__*/ React.createElement(RateForm, {
+    }, "Delete")), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Edit Tax Rate'))), /*#__PURE__*/ React.createElement(RateForm, {
         saveRateApi: rate.updateApi,
         closeModal: ()=>setDialogOpen(false),
         getTaxClasses: getTaxClasses,

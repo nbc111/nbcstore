@@ -1,4 +1,5 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@components/common/ui/Dialog.js';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@components/common/ui/Table.js';
 import React from 'react';
@@ -35,7 +36,7 @@ export function Rates({ getTaxClasses, rates, addRateApi }) {
             e.preventDefault();
             setDialogOpen(true);
         }
-    }, "+ Add Rate")), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Add Tax Rate")), /*#__PURE__*/ React.createElement(RateForm, {
+    }, "+ Add Rate")), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Add Tax Rate'))), /*#__PURE__*/ React.createElement(RateForm, {
         saveRateApi: addRateApi,
         closeModal: ()=>setDialogOpen(false),
         getTaxClasses: getTaxClasses

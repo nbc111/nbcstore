@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Card,
   CardContent,
@@ -23,10 +24,8 @@ export default function Collections({
   return (
     <Card className="bg-popover">
       <CardHeader>
-        <CardTitle>Collections</CardTitle>
-        <CardDescription>
-          Manage the collections associated with this product.
-        </CardDescription>
+        <CardTitle>{_('Collections')}</CardTitle>
+        <CardDescription>{_('Manage the collections associated with this product.')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
         {collections.map((collection) => (

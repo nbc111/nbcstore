@@ -1,4 +1,5 @@
 import { ImageUploader } from '@components/admin/ImageUploader.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import React, { useEffect } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
@@ -16,7 +17,7 @@ export default function Media({ product }) {
     }, []);
     return /*#__PURE__*/ React.createElement(Card, {
         title: "Media"
-    }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Media"), /*#__PURE__*/ React.createElement(CardDescription, null, "Manage product images and gallery. Drag and drop to reorder images.")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(ImageUploader, {
+    }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Media')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Manage product images and gallery. Drag and drop to reorder images.'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(ImageUploader, {
         currentImages: product?.image ? [
             product.image
         ].concat(product?.gallery || []) : [],

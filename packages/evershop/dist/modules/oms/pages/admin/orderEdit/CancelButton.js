@@ -1,4 +1,5 @@
 import { Form } from '@components/common/form/Form.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { TextareaField } from '@components/common/form/TextareaField.js';
 import RenderIfTrue from '@components/common/RenderIfTrue.js';
 import { Button } from '@components/common/ui/Button.js';
@@ -12,7 +13,7 @@ export default function CancelButton({ order: { cancelApi, paymentStatus, shipme
         condition: paymentStatus.isCancelable !== false && shipmentStatus.isCancelable !== false
     }, /*#__PURE__*/ React.createElement(Dialog, null, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, {
         variant: "destructive"
-    }, "Cancel Order")), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Cancel Order")), /*#__PURE__*/ React.createElement(Form, {
+    }, _('Cancel Order'))), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Cancel Order'))), /*#__PURE__*/ React.createElement(Form, {
         form: form,
         id: "cancelReason",
         method: "POST",
@@ -28,15 +29,15 @@ export default function CancelButton({ order: { cancelApi, paymentStatus, shipme
         }
     }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(TextareaField, {
         name: "reason",
-        label: "Reason for cancellation",
-        placeholder: "Reason for cancellation",
+        label: _('Reason for cancellation'),
+        placeholder: _('Reason for cancellation'),
         required: true,
         validation: {
             required: 'Reason is required'
         }
     }))), /*#__PURE__*/ React.createElement(DialogFooter, null, /*#__PURE__*/ React.createElement(DialogClose, null, /*#__PURE__*/ React.createElement(Button, {
         variant: "outline"
-    }, "Cancel")), /*#__PURE__*/ React.createElement(Button, {
+    }, _('Cancel'))), /*#__PURE__*/ React.createElement(Button, {
         variant: "default",
         isLoading: form.formState.isSubmitting,
         onClick: async ()=>{

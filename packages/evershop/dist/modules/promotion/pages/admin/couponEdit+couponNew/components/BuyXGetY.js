@@ -1,6 +1,7 @@
 import { ProductSelector } from '@components/admin/ProductSelector.js';
 import { NumberField } from '@components/common/form/NumberField.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Dialog, DialogContent, DialogHeader, DialogTrigger, DialogTitle } from '@components/common/ui/Dialog.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/common/ui/Table.js';
 import React, { useEffect } from 'react';
@@ -16,9 +17,9 @@ const SkuSelector = ({ product, updateProduct })=>{
         variant: 'link'
     }, product.sku ? /*#__PURE__*/ React.createElement("span", {
         className: "italic"
-    }, "‘", product.sku, "’") : /*#__PURE__*/ React.createElement("span", null, "Choose SKU"))), /*#__PURE__*/ React.createElement(DialogContent, {
+    }, "‘", product.sku, "’") : /*#__PURE__*/ React.createElement("span", null, _('Choose SKU')))), /*#__PURE__*/ React.createElement(DialogContent, {
         className: 'max-w-[80vw]'
-    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Choose Product SKU")), /*#__PURE__*/ React.createElement(ProductSelector, {
+    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Choose Product SKU'))), /*#__PURE__*/ React.createElement(ProductSelector, {
         selectedProducts: [
             product
         ].map((p)=>({
@@ -47,7 +48,7 @@ const BuyXGetYList = ({ requireProducts })=>{
             unregister('buyx_gety'); // Cleanup: unregister field when component unmounts
         };
     }, []);
-    return /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "Sku")), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "X")), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "Y")), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "Max of Y")), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "Discount percent")), /*#__PURE__*/ React.createElement(TableHead, null, " "))), /*#__PURE__*/ React.createElement(TableBody, null, fields.map((p, i)=>/*#__PURE__*/ React.createElement(TableRow, {
+    return /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, _('Sku'))), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "X")), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "Y")), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, _('Max of Y'))), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, _('Discount percent'))), /*#__PURE__*/ React.createElement(TableHead, null, " "))), /*#__PURE__*/ React.createElement(TableBody, null, fields.map((p, i)=>/*#__PURE__*/ React.createElement(TableRow, {
             key: p.id
         }, /*#__PURE__*/ React.createElement(TableCell, null, /*#__PURE__*/ React.createElement(SkuSelector, {
             product: p,
@@ -60,7 +61,7 @@ const BuyXGetYList = ({ requireProducts })=>{
         })), /*#__PURE__*/ React.createElement(TableCell, null, /*#__PURE__*/ React.createElement(NumberField, {
             name: `buyx_gety.${i}.buy_qty`,
             defaultValue: p.buyQty,
-            placeholder: "Buy qty",
+            placeholder: _('Buy qty'),
             required: true,
             validation: {
                 required: 'Buy qty is required'
@@ -68,7 +69,7 @@ const BuyXGetYList = ({ requireProducts })=>{
         })), /*#__PURE__*/ React.createElement(TableCell, null, /*#__PURE__*/ React.createElement(NumberField, {
             name: `buyx_gety.${i}.get_qty`,
             defaultValue: p.getQty,
-            placeholder: "Get qty",
+            placeholder: _('Get qty'),
             required: true,
             validation: {
                 required: 'Get qty is required'
@@ -76,7 +77,7 @@ const BuyXGetYList = ({ requireProducts })=>{
         })), /*#__PURE__*/ React.createElement(TableCell, null, /*#__PURE__*/ React.createElement(NumberField, {
             name: `buyx_gety.${i}.max_y`,
             defaultValue: p.maxY,
-            placeholder: "Max of Y",
+            placeholder: _('Max of Y'),
             required: true,
             validation: {
                 required: 'Max of Y is required'
@@ -84,7 +85,7 @@ const BuyXGetYList = ({ requireProducts })=>{
         })), /*#__PURE__*/ React.createElement(TableCell, null, /*#__PURE__*/ React.createElement(NumberField, {
             name: `buyx_gety.${i}.discount`,
             defaultValue: p.discount,
-            placeholder: "Discount percent",
+            placeholder: _('Discount percent'),
             required: true,
             validation: {
                 required: 'Discount percent is required'
@@ -139,7 +140,7 @@ const BuyXGetYList = ({ requireProducts })=>{
                 discount: 100
             });
         }
-    }, /*#__PURE__*/ React.createElement("span", null, "Add product")))));
+    }, /*#__PURE__*/ React.createElement("span", null, _('Add product'))))));
 };
 const BuyXGetY = ({ requireProducts })=>{
     const { watch } = useFormContext();

@@ -1,4 +1,5 @@
 import { GridPagination } from '@components/admin/grid/GridPagination';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { DummyColumnHeader } from '@components/admin/grid/header/Dummy';
 import { SortableHeader } from '@components/admin/grid/header/Sortable';
 import { Status } from '@components/admin/Status.js';
@@ -41,18 +42,20 @@ function Actions({ coupons = [], selectedIds = [] }) {
     };
     const actions = [
         {
-            name: 'Disable',
+            name: _('Disable'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Disable ${selectedIds.length} coupons`,
-                    content: 'Are you sure?',
+                    heading: _('Disable ${count} coupons', {
+                        count: String(selectedIds.length)
+                    }),
+                    content: _('Are you sure?'),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Disable',
+                        title: _('Disable'),
                         onAction: async ()=>{
                             await updateCoupons(0);
                         },
@@ -62,18 +65,20 @@ function Actions({ coupons = [], selectedIds = [] }) {
             }
         },
         {
-            name: 'Enable',
+            name: _('Enable'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Enable ${selectedIds.length} coupons`,
-                    content: 'Are you sure?',
+                    heading: _('Enable ${count} coupons', {
+                        count: String(selectedIds.length)
+                    }),
+                    content: _('Are you sure?'),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Enable',
+                        title: _('Enable'),
                         onAction: async ()=>{
                             await updateCoupons(1);
                         },
@@ -83,18 +88,20 @@ function Actions({ coupons = [], selectedIds = [] }) {
             }
         },
         {
-            name: 'Delete',
+            name: _('Delete'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Delete ${selectedIds.length} coupons`,
-                    content: /*#__PURE__*/ React.createElement("div", null, "Can't be undone"),
+                    heading: _('Delete ${count} coupons', {
+                        count: String(selectedIds.length)
+                    }),
+                    content: _('Can\'t be undone'),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Delete',
+                        title: _('Delete'),
                         onAction: async ()=>{
                             await deleteCoupons();
                         },
@@ -143,7 +150,7 @@ export default function CouponGrid({ coupons: { items: coupons, total, currentFi
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(InputField, {
                             name: "coupon",
-                            placeholder: "Search",
+                            placeholder: _('Search'),
                             defaultValue: currentFilters.find((f)=>f.key === 'coupon')?.value,
                             onKeyPress: (e)=>{
                                 // If the user press enter, we should submit the form
@@ -173,11 +180,11 @@ export default function CouponGrid({ coupons: { items: coupons, total, currentFi
                                 url.searchParams.set('status', value);
                                 window.location.href = url.href;
                             }
-                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, "Status")), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, "Status"), /*#__PURE__*/ React.createElement(SelectItem, {
+                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, _('Status'))), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, _('Status')), /*#__PURE__*/ React.createElement(SelectItem, {
                             value: "1"
-                        }, "Enabled"), /*#__PURE__*/ React.createElement(SelectItem, {
+                        }, _('Enabled')), /*#__PURE__*/ React.createElement(SelectItem, {
                             value: "0"
-                        }, "Disabled"))))
+                        }, _('Disabled')))))
                 },
                 sortOrder: 10
             },
@@ -190,11 +197,11 @@ export default function CouponGrid({ coupons: { items: coupons, total, currentFi
                                 url.searchParams.set('free_shipping', value);
                                 window.location.href = url.href;
                             }
-                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, "Free shipping ?")), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, "Free shipping ?"), /*#__PURE__*/ React.createElement(SelectItem, {
+                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, _('Free shipping ?'))), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, _('Free shipping ?')), /*#__PURE__*/ React.createElement(SelectItem, {
                             value: "1"
-                        }, "Free shipping"), /*#__PURE__*/ React.createElement(SelectItem, {
+                        }, _('Free shipping')), /*#__PURE__*/ React.createElement(SelectItem, {
                             value: "0"
-                        }, "No free shipping"))))
+                        }, _('No free shipping')))))
                 },
                 sortOrder: 10
             }
@@ -207,7 +214,7 @@ export default function CouponGrid({ coupons: { items: coupons, total, currentFi
             url.search = '';
             window.location.href = url.href;
         }
-    }, "Clear filter"))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("div", {
+    }, _('Clear filter')))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("div", {
         className: "form-field mb-0"
     }, /*#__PURE__*/ React.createElement(Checkbox, {
         onCheckedChange: (checked)=>{
@@ -231,7 +238,7 @@ export default function CouponGrid({ coupons: { items: coupons, total, currentFi
             {
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(DummyColumnHeader, {
-                            title: "State Date"
+                            title: "Start Date"
                         })
                 },
                 sortOrder: 20
@@ -329,7 +336,7 @@ export default function CouponGrid({ coupons: { items: coupons, total, currentFi
             ]
         }))))), coupons.length === 0 && /*#__PURE__*/ React.createElement("div", {
         className: "flex w-full justify-center mt-2"
-    }, "There is no coupon to display"), /*#__PURE__*/ React.createElement(GridPagination, {
+    }, _('There is no coupon to display')), /*#__PURE__*/ React.createElement(GridPagination, {
         total: total,
         limit: limit,
         page: page

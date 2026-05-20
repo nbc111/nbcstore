@@ -1,4 +1,5 @@
 import { InputField } from '@components/common/form/InputField.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { NumberField } from '@components/common/form/NumberField.js';
 import { RadioGroupField } from '@components/common/form/RadioGroupField.js';
 import { Card, CardContent, CardTitle } from '@components/common/ui/Card.js';
@@ -73,7 +74,7 @@ const AreaInput: React.FC<{
                 : []
             )
           }
-          placeholder="Type area and press enter..."
+          placeholder={_('Type area and press enter...')}
           value={
             field.value
               ? field.value.map((val) =>
@@ -123,16 +124,16 @@ export default function General({ widget, routes }: GeneralProps) {
         <InputField
           name="name"
           defaultValue={widget?.name}
-          label="Name"
+          label={_('Name')}
           required
           validation={{ required: 'Name is required' }}
-          placeholder="Name"
+          placeholder={_('Name')}
         />
       </CardContent>
       <CardContent className="pt-3 border-t border-border">
         <RadioGroupField
           name="status"
-          label="Status"
+          label={_('Status')}
           defaultValue={widget?.status}
           required
           validation={{ required: 'Status is required' }}
@@ -197,7 +198,7 @@ export default function General({ widget, routes }: GeneralProps) {
                 )}
                 hideSelectedOptions
                 isMulti
-                aria-label="Select pages"
+                aria-label={_('Select pages')}
                 onChange={(selectedOptions) => {
                   const stringArray = selectedOptions
                     ? selectedOptions.map((option) => option.value)
@@ -214,9 +215,9 @@ export default function General({ widget, routes }: GeneralProps) {
       <CardContent className="pt-3 border-t border-border">
         <NumberField
           name="sort_order"
-          label="Sort Order"
+          label={_('Sort Order')}
           defaultValue={widget?.sortOrder}
-          placeholder="Sort Order"
+          placeholder={_('Sort Order')}
           validation={{
             required: 'Sort order is required',
             min: {

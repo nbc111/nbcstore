@@ -1,4 +1,5 @@
 import Area from '@components/common/Area.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { CheckboxField } from '@components/common/form/CheckboxField.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { RadioGroupField } from '@components/common/form/RadioGroupField.js';
@@ -16,15 +17,15 @@ export default function General({ coupon }) {
                 component: {
                     default: /*#__PURE__*/ React.createElement(InputField, {
                         name: "coupon",
-                        label: "Coupon Code",
+                        label: _('Coupon Code'),
                         defaultValue: coupon?.coupon || '',
-                        placeholder: "Enter coupon code",
+                        placeholder: _('Enter coupon code'),
                         required: true,
                         validation: {
-                            required: 'Coupon code is required',
+                            required: _('Coupon code is required'),
                             pattern: {
                                 value: /^[a-zA-Z0-9_-]+$/,
-                                message: 'Coupon code can only contain letters, numbers, underscores, and hyphens'
+                                message: _('Coupon code can only contain letters, numbers, underscores, and hyphens')
                             }
                         }
                     })
@@ -35,12 +36,12 @@ export default function General({ coupon }) {
                 component: {
                     default: /*#__PURE__*/ React.createElement(TextareaField, {
                         name: "description",
-                        label: "Description",
+                        label: _('Description'),
                         defaultValue: coupon?.description || '',
-                        placeholder: "Enter description",
+                        placeholder: _('Enter description'),
                         required: true,
                         validation: {
-                            required: 'Description is required'
+                            required: _('Description is required')
                         }
                     })
                 },
@@ -50,21 +51,21 @@ export default function General({ coupon }) {
                 component: {
                     default: /*#__PURE__*/ React.createElement(RadioGroupField, {
                         name: "status",
-                        label: "Status",
+                        label: _('Status'),
                         options: [
                             {
-                                label: 'Enabled',
+                                label: _('Enabled'),
                                 value: 1
                             },
                             {
-                                label: 'Disabled',
+                                label: _('Disabled'),
                                 value: 0
                             }
                         ],
                         defaultValue: coupon?.status === 0 ? 0 : 1,
                         required: true,
                         validation: {
-                            required: 'Status is required',
+                            required: _('Status is required'),
                             valueAsNumber: true
                         }
                     })
@@ -87,7 +88,7 @@ export default function General({ coupon }) {
                     default: /*#__PURE__*/ React.createElement(CheckboxField, {
                         name: "free_shipping",
                         defaultValue: parseInt(get(coupon, 'freeShipping'), 10) === 1,
-                        label: "Free shipping?"
+                        label: _('Free shipping?')
                     })
                 },
                 sortOrder: 50

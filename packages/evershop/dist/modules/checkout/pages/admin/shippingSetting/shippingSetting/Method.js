@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@components/common/ui/Dialog.js';
 import { Cog } from 'lucide-react';
 import React from 'react';
@@ -65,7 +66,7 @@ function Method({ method, reload }) {
                 toast.error('Failed to remove method');
             }
         }
-    }, "Delete"))), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Edit Shipping Method")), /*#__PURE__*/ React.createElement(MethodForm, {
+    }, "Delete"))), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Edit Shipping Method'))), /*#__PURE__*/ React.createElement(MethodForm, {
         saveMethodApi: method.updateApi,
         onSuccess: ()=>setDialogOpen(false),
         reload: reload,

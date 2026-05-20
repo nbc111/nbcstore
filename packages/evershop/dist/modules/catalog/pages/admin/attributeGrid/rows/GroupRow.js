@@ -1,4 +1,5 @@
 import { Form } from '@components/common/form/Form.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputField } from '@components/common/form/InputField.js';
 import { useAlertContext } from '@components/common/modal/Alert.js';
 import { Badge } from '@components/common/ui/Badge.js';
@@ -11,7 +12,9 @@ export function GroupRow({ groups }) {
     const { openAlert, closeAlert, dispatchAlert } = useAlertContext();
     const onEdit = (group)=>{
         openAlert({
-            heading: `Editing ${group.groupName}`,
+            heading: _('Editing ${name}', {
+                name: group.groupName
+            }),
             content: /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(Form, {
                 form: form,
                 id: "groupEdit",
@@ -28,20 +31,20 @@ export function GroupRow({ groups }) {
             }, /*#__PURE__*/ React.createElement(InputField, {
                 name: "group_name",
                 required: true,
-                label: "Group Name",
-                placeholder: "Enter group name",
+                label: _('Group Name'),
+                placeholder: _('Enter group name'),
                 validation: {
-                    required: 'Group name is required'
+                    required: _('Group name is required')
                 },
                 defaultValue: group.groupName
             }))),
             primaryAction: {
-                title: 'Cancel',
+                title: _('Cancel'),
                 onAction: closeAlert,
                 variant: 'critical'
             },
             secondaryAction: {
-                title: 'Save',
+                title: _('Save'),
                 onAction: ()=>{
                     dispatchAlert({
                         type: 'update',

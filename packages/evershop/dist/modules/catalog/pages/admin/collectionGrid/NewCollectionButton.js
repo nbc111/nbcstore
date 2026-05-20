@@ -1,9 +1,10 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 export default function NewCollectionButton({ newCollectionUrl }) {
     return /*#__PURE__*/ React.createElement(Button, {
         onClick: ()=>window.location.href = newCollectionUrl
-    }, "New Collection");
+    }, _('New Collection'));
 }
 export const layout = {
     areaId: 'pageHeadingRight',

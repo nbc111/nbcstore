@@ -4,6 +4,7 @@ import { CardContent } from '@components/common/ui/Card.js';
 import axios from 'axios';
 import React from 'react';
 import { toast } from 'react-toastify';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 export default function PaypalCaptureButton({ captureAPI, order: { paymentStatus, uuid, paymentMethod } }) {
     const [isLoading, setIsLoading] = React.useState(false);
     const onAction = async ()=>{
@@ -32,7 +33,7 @@ export default function PaypalCaptureButton({ captureAPI, order: { paymentStatus
     }, /*#__PURE__*/ React.createElement(Button, {
         onClick: onAction,
         isLoading: isLoading
-    }, "Capture Payment"))));
+    }, _('Capture Payment')))));
 }
 export const layout = {
     areaId: 'orderPaymentActions',

@@ -37,10 +37,10 @@ export function SelectField({ name, label, error, helperText, required, validati
         className: wrapperClassName
     }, label && /*#__PURE__*/ React.createElement(FieldLabel, {
         htmlFor: fieldId
-    }, /*#__PURE__*/ React.createElement(React.Fragment, null, label, required && /*#__PURE__*/ React.createElement("span", {
+    }, /*#__PURE__*/ React.createElement(React.Fragment, null, _(label), required && /*#__PURE__*/ React.createElement("span", {
         className: "text-destructive"
     }, "*"), helperText && /*#__PURE__*/ React.createElement(Tooltip, {
-        content: helperText,
+        content: _(helperText),
         position: "top"
     }))), /*#__PURE__*/ React.createElement(Controller, {
         name: name,

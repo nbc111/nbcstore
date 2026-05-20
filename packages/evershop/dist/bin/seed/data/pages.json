@@ -2,7 +2,7 @@
   {
     "status": true,
     "url_key": "about-us",
-    "name": "About Us",
+    "name": "关于我们",
     "content": [
       {
         "id": "r__about_us",
@@ -17,7 +17,7 @@
                   "id": "about_us_h2",
                   "type": "header",
                   "data": {
-                    "text": "Welcome to Our Store",
+                    "text": "欢迎来到我们的商店",
                     "level": 2
                   }
                 },
@@ -25,14 +25,14 @@
                   "id": "about_us_p1",
                   "type": "paragraph",
                   "data": {
-                    "text": "We are passionate about bringing you high-quality ceramic and stainless steel products that combine functionality with elegant design. Our carefully curated collection features items that enhance your daily life, from morning coffee to home organization."
+                    "text": "我们致力于为您带来高品质的陶瓷与不锈钢产品，兼具实用与优雅设计。我们精心挑选的系列涵盖日常生活的方方面面，从晨间咖啡到家居收纳，让每一天都更舒适。"
                   }
                 },
                 {
-                  "id": "about_us_h2",
+                  "id": "about_us_h2_mission",
                   "type": "header",
                   "data": {
-                    "text": "Our Mission",
+                    "text": "我们的使命",
                     "level": 2
                   }
                 },
@@ -45,7 +45,7 @@
                       "width": 2400,
                       "height": 1200
                     },
-                    "caption": "Our carefully curated collection",
+                    "caption": "我们精心挑选的商品系列",
                     "withBorder": false,
                     "withBackground": false,
                     "stretched": false
@@ -55,14 +55,14 @@
                   "id": "about_us_p2",
                   "type": "paragraph",
                   "data": {
-                    "text": "We believe that everyday objects should be both beautiful and practical. That's why we source products that are not only aesthetically pleasing but also durable and functional. Each item in our collection is selected with care to ensure it meets our high standards."
+                    "text": "我们相信日常用品应当既美观又实用。因此我们甄选兼具设计感、耐用性与功能性的产品。系列中的每一件商品都经过严格筛选，以确保符合我们的高标准。"
                   }
                 },
                 {
                   "id": "about_us_h3",
                   "type": "header",
                   "data": {
-                    "text": "Quality You Can Trust",
+                    "text": "值得信赖的品质",
                     "level": 2
                   }
                 },
@@ -70,14 +70,14 @@
                   "id": "about_us_p3",
                   "type": "paragraph",
                   "data": {
-                    "text": "All our products are made from premium materials - from food-safe ceramics to BPA-free stainless steel. We work directly with manufacturers who share our commitment to quality and sustainability. Whether you're looking for office supplies, drinkware, or home decor, you can trust that every item has been thoughtfully designed and rigorously tested."
+                    "text": "所有产品均采用优质材料——从食品级陶瓷到不含 BPA 的不锈钢。我们与同样重视品质与可持续生产的制造商直接合作。无论您需要办公用品、饮具还是家居装饰，都可以放心每一件都经过精心设计与严格测试。"
                   }
                 },
                 {
                   "id": "about_us_h4",
                   "type": "header",
                   "data": {
-                    "text": "Customer Satisfaction",
+                    "text": "客户满意",
                     "level": 2
                   }
                 },
@@ -85,7 +85,7 @@
                   "id": "about_us_p4",
                   "type": "paragraph",
                   "data": {
-                    "text": "Your satisfaction is our top priority. We offer fast shipping, easy returns, and dedicated customer support to ensure your shopping experience is seamless. If you have any questions about our products or need assistance, our team is always here to help."
+                    "text": "您的满意是我们的首要目标。我们提供快速配送、便捷退换与专业客服，力求让购物体验顺畅无忧。如对商品有任何疑问或需要帮助，我们的团队随时为您服务。"
                   }
                 }
               ],
@@ -97,8 +97,8 @@
         "className": "md:grid-cols-1"
       }
     ],
-    "meta_title": "About Us - Learn More About Our Store",
-    "meta_keywords": "about us, our story, company information",
-    "meta_description": "Learn more about our mission to bring you high-quality ceramic and stainless steel products that combine functionality with elegant design."
+    "meta_title": "关于我们 - 了解我们的商店",
+    "meta_keywords": "关于我们, 品牌故事, 公司介绍",
+    "meta_description": "了解我们为您提供高品质陶瓷与不锈钢商品、兼顾实用与优雅设计的使命。"
   }
 ]

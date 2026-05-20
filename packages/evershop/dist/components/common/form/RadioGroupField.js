@@ -20,10 +20,10 @@ export function RadioGroupField({ name, options, label, error, wrapperClassName,
     return /*#__PURE__*/ React.createElement(Field, {
         "data-invalid": fieldError ? 'true' : 'false',
         className: wrapperClassName
-    }, label && /*#__PURE__*/ React.createElement(FieldLabel, null, /*#__PURE__*/ React.createElement(React.Fragment, null, label, required && /*#__PURE__*/ React.createElement("span", {
+    }, label && /*#__PURE__*/ React.createElement(FieldLabel, null, /*#__PURE__*/ React.createElement(React.Fragment, null, _(label), required && /*#__PURE__*/ React.createElement("span", {
         className: "text-destructive"
     }, "*"), helperText && /*#__PURE__*/ React.createElement(Tooltip, {
-        content: helperText,
+        content: _(helperText),
         position: "top"
     }))), /*#__PURE__*/ React.createElement(Controller, {
         name: name,

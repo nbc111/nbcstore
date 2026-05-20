@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 
 interface CopyRightProps {
@@ -10,7 +11,7 @@ export default function CopyRight({
 }: CopyRightProps) {
   return (
     <div className="copyright">
-      <span>{copyRight}</span>
+      <span>{_(copyRight)}</span>
     </div>
   );
 }

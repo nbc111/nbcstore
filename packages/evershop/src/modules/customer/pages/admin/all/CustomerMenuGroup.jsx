@@ -1,4 +1,5 @@
 import { NavigationItemGroup } from '@components/admin/NavigationItemGroup';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { User } from 'lucide-react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -12,7 +13,7 @@ export default function CustomerMenuGroup({ customerGrid }) {
         {
           Icon: User,
           url: customerGrid,
-          title: 'Customers'
+          title: _('Customers')
         }
       ]}
     />

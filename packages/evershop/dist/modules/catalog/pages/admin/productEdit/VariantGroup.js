@@ -1,10 +1,11 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import React from 'react';
 import { New } from './variants/New.js';
 import { Variants } from './variants/Variants.js';
 const VariantGroup = ({ product, createVariantGroupApi, createProductApi })=>{
     const [group, setGroup] = React.useState(product?.variantGroup || null);
-    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Variant Group"), /*#__PURE__*/ React.createElement(CardDescription, null, "Manage the variant group of the product.")), !group && /*#__PURE__*/ React.createElement(New, {
+    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Variant Group')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Manage the variant group of the product.'))), !group && /*#__PURE__*/ React.createElement(New, {
         currentProductUuid: product.uuid,
         createVariantGroupApi: createVariantGroupApi,
         setGroup: setGroup

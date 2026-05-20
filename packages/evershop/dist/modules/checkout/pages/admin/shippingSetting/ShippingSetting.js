@@ -1,4 +1,5 @@
 import { SettingMenu } from '@components/admin/SettingMenu.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import React from 'react';
 import { Zones } from './shippingSetting/Zones.js';
@@ -11,7 +12,7 @@ export default function ShippingSetting({ createShippingZoneApi }) {
         className: "col-span-2"
     }, /*#__PURE__*/ React.createElement(SettingMenu, null)), /*#__PURE__*/ React.createElement("div", {
         className: "col-span-4"
-    }, /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Shipping"), /*#__PURE__*/ React.createElement(CardDescription, null, "Choose where you ship and how much you charge for shipping.")), /*#__PURE__*/ React.createElement(Zones, {
+    }, /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Shipping')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Choose where you ship and how much you charge for shipping.'))), /*#__PURE__*/ React.createElement(Zones, {
         createShippingZoneApi: createShippingZoneApi
     })))));
 }

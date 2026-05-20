@@ -1,4 +1,5 @@
 import { CardContent } from '@components/common/ui/Card.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Dialog, DialogContent, DialogHeader, DialogTrigger, DialogTitle } from '@components/common/ui/Dialog.js';
 import axios from 'axios';
 import { MapPin } from 'lucide-react';
@@ -19,7 +20,7 @@ function Zone({ zone, reload }) {
     }, /*#__PURE__*/ React.createElement(Dialog, {
         open: dialogOpen,
         onOpenChange: setDialogOpen
-    }, /*#__PURE__*/ React.createElement(DialogTrigger, null, "Edit Zone"), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Edit Shipping Zone")), /*#__PURE__*/ React.createElement(ZoneForm, {
+    }, /*#__PURE__*/ React.createElement(DialogTrigger, null, "Edit Zone"), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Edit Shipping Zone'))), /*#__PURE__*/ React.createElement(ZoneForm, {
         formMethod: "PATCH",
         saveZoneApi: zone.updateApi,
         onSuccess: ()=>setDialogOpen(false),

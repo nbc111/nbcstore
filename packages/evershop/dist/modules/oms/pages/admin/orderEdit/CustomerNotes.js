@@ -1,10 +1,11 @@
 import Area from '@components/common/Area.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardContent, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import React from 'react';
 export default function CustomerNotes({ order: { shippingNote } }) {
     return /*#__PURE__*/ React.createElement(Card, {
         className: "bg-popover"
-    }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Customer notes")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Area, {
+    }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Customer notes'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Area, {
         id: "orderEditCustomerNotes",
         coreComponents: [
             {

@@ -3,6 +3,7 @@ import {
   useCheckout,
   useCheckoutDispatch
 } from '@evershop/evershop/components/frontStore/checkout/CheckoutContext';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React, { useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 
@@ -48,13 +49,15 @@ export default function NbcWallet({
 
         if (!response.ok || json.error) {
           captureRequestedRef.current = false;
-          throw new Error(json.error?.message || 'NBC payment failed');
+          throw new Error(json.error?.message || _('NBC payment failed'));
         }
 
         window.location.href = `${checkoutSuccessUrl}/${orderId}`;
       } catch (error) {
         captureRequestedRef.current = false;
-        toast.error(error instanceof Error ? error.message : 'NBC payment failed');
+        toast.error(
+          error instanceof Error ? error.message : _('NBC payment failed')
+        );
       }
     };
 
@@ -63,10 +66,10 @@ export default function NbcWallet({
 
   useEffect(() => {
     registerPaymentComponent('nbc_wallet', {
-      nameRenderer: () => <span>NBC Wallet</span>,
+      nameRenderer: () => <span>{_('NBC Wallet')}</span>,
       formRenderer: () => (
         <div className="text-sm text-muted-foreground py-3 text-center">
-          Pay directly with your NBC wallet balance.
+          {_('Pay directly with your NBC wallet balance.')}
         </div>
       ),
       checkoutButtonRenderer: () => {
@@ -81,7 +84,9 @@ export default function NbcWallet({
             await checkout();
           } catch (error) {
             toast.error(
-              error instanceof Error ? error.message : 'Failed to place order'
+              error instanceof Error
+                ? error.message
+                : _('Failed to place order')
             );
           }
         };
@@ -96,8 +101,8 @@ export default function NbcWallet({
             className="w-full"
           >
             {loadingStates.placingOrder
-              ? 'Placing Order...'
-              : 'Pay with NBC Wallet'}
+              ? _('Placing Order...')
+              : _('Pay with NBC Wallet')}
           </Button>
         );
       }

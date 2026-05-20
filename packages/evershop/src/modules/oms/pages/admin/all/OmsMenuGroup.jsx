@@ -1,4 +1,5 @@
 import { NavigationItemGroup } from '@components/admin/NavigationItemGroup.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Package } from 'lucide-react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -12,7 +13,7 @@ export default function OmsMenuGroup({ orderGrid }) {
         {
           Icon: Package,
           url: orderGrid,
-          title: 'Orders'
+          title: _('Orders')
         }
       ]}
     />

@@ -1,4 +1,5 @@
 import Spinner from '@components/admin/Spinner.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Form } from '@components/common/form/Form.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { ReactSelectField } from '@components/common/form/ReactSelectField.js';
@@ -68,18 +69,18 @@ function ZoneForm({
       <div className="space-y-3">
         <InputField
           name="name"
-          label="Zone Name"
-          aria-label="Zone Name"
-          placeholder="Enter zone name"
+          label={_('Zone Name')}
+          aria-label={_('Zone Name')}
+          placeholder={_('Enter zone name')}
           required
           validation={{ required: 'Zone name is required' }}
           defaultValue={zone?.name}
         />
         <ReactSelectField
           name="country"
-          label="Country"
-          aria-label="Country"
-          placeholder="Select country"
+          label={_('Country')}
+          aria-label={_('Country')}
+          placeholder={_('Select country')}
           required
           validation={{ required: 'Country is required' }}
           options={data.countries}
@@ -89,9 +90,9 @@ function ZoneForm({
         />
         <ReactSelectField
           name="provinces"
-          label="Provinces/States"
-          aria-label="Provinces/States"
-          placeholder="Select provinces/states"
+          label={_('Provinces/States')}
+          aria-label={_('Provinces/States')}
+          placeholder={_('Select provinces/states')}
           options={
             data.countries.find((c) => c.value === countryWatch)?.provinces ||
             []

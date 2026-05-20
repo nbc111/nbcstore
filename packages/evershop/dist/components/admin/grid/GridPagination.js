@@ -1,5 +1,6 @@
 import { Button } from '@components/common/ui/Button.js';
 import { ButtonGroup } from '@components/common/ui/ButtonGroup.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@components/common/ui/Pagination.js';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@components/common/ui/Select.js';
 import React from 'react';
@@ -55,7 +56,7 @@ export function GridPagination({ total, limit, page }) {
         className: "flex justify-between w-full space-x-2"
     }, /*#__PURE__*/ React.createElement(ButtonGroup, null, /*#__PURE__*/ React.createElement(Button, {
         variant: 'outline'
-    }, "Show"), /*#__PURE__*/ React.createElement(Select, {
+    }, _('Show')), /*#__PURE__*/ React.createElement(Select, {
         value: limit.toString(),
         onValueChange: (value)=>{
             const url = new URL(window.location.href);
@@ -64,15 +65,15 @@ export function GridPagination({ total, limit, page }) {
         }
     }, /*#__PURE__*/ React.createElement(SelectTrigger, {
         className: "w-20"
-    }, /*#__PURE__*/ React.createElement(SelectValue, null, limit)), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, "Limit"), /*#__PURE__*/ React.createElement(SelectItem, {
+    }, /*#__PURE__*/ React.createElement(SelectValue, null, limit)), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, _('Limit')), /*#__PURE__*/ React.createElement(SelectItem, {
         value: "50"
-    }, "50"), /*#__PURE__*/ React.createElement(SelectItem, {
+    }, _('50')), /*#__PURE__*/ React.createElement(SelectItem, {
         value: "100"
-    }, "100"), /*#__PURE__*/ React.createElement(SelectItem, {
+    }, _('100')), /*#__PURE__*/ React.createElement(SelectItem, {
         value: "150"
-    }, "150"), /*#__PURE__*/ React.createElement(SelectItem, {
+    }, _('150')), /*#__PURE__*/ React.createElement(SelectItem, {
         value: "200"
-    }, "200"))))), /*#__PURE__*/ React.createElement("div", {
+    }, _('200')))))), /*#__PURE__*/ React.createElement("div", {
         className: "flex justify-end"
     }, /*#__PURE__*/ React.createElement(Pagination, null, /*#__PURE__*/ React.createElement(PaginationContent, null, /*#__PURE__*/ React.createElement(PaginationItem, null, /*#__PURE__*/ React.createElement(PaginationPrevious, {
         onClick: (e)=>{

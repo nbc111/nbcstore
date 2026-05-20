@@ -1,10 +1,11 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 export default function NewProductButton({ newProductUrl }) {
     return /*#__PURE__*/ React.createElement(Button, {
         onClick: ()=>window.location.href = newProductUrl,
-        title: "New Product"
-    }, "New Product");
+        title: _('New Product')
+    }, _('New Product'));
 }
 export const layout = {
     areaId: 'pageHeadingRight',

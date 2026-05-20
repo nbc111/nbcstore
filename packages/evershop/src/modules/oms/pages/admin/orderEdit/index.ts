@@ -1,4 +1,5 @@
 import { select } from '@evershop/postgres-query-builder';
+import { translate } from '../../../../../lib/locale/translate/translate.js';
 import { pool } from '../../../../../lib/postgres/connection.js';
 import { EvershopRequest } from '../../../../../types/request.js';
 import { EvershopResponse } from '../../../../../types/response.js';

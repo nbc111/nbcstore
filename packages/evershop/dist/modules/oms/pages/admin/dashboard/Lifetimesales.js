@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -35,15 +36,15 @@ export default function LifetimeSale({ api }) {
     const { orders, total, completed_percentage, cancelled_percentage } = data;
     const chartData = [
         {
-            name: 'Completed',
+            name: _('Completed'),
             value: completed_percentage
         },
         {
-            name: 'Cancelled',
+            name: _('Cancelled'),
             value: cancelled_percentage
         },
         {
-            name: 'Others',
+            name: _('Others'),
             value: 100 - completed_percentage - cancelled_percentage
         }
     ];
@@ -65,7 +66,7 @@ export default function LifetimeSale({ api }) {
     if (fetching) {
         return /*#__PURE__*/ React.createElement(Card, {
             title: "Lifetime Sales"
-        }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Lifetime Sales")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
+        }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Lifetime Sales'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
             className: "skeleton-wrapper-lifetime"
         }, /*#__PURE__*/ React.createElement("div", {
             className: "skeleton"
@@ -83,7 +84,7 @@ export default function LifetimeSale({ api }) {
     } else {
         return /*#__PURE__*/ React.createElement(Card, {
             title: "Lifetime Sales"
-        }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Lifetime Sales"), /*#__PURE__*/ React.createElement(CardDescription, null, "Overview of total sales and order status over the lifetime of your")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
+        }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Lifetime Sales')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Overview of total sales and order status over the lifetime of your store'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
             className: "grid grid-cols-1 gap-2"
         }, /*#__PURE__*/ React.createElement("div", {
             className: "flex space-x-2 items-center"
@@ -91,25 +92,33 @@ export default function LifetimeSale({ api }) {
             variant: "info"
         }), /*#__PURE__*/ React.createElement("div", {
             className: "self-center"
-        }, orders, " orders")), /*#__PURE__*/ React.createElement("div", {
+        }, _('${count} orders', {
+            count: String(orders)
+        }))), /*#__PURE__*/ React.createElement("div", {
             className: "flex space-x-2 items-center"
         }, /*#__PURE__*/ React.createElement(Dot, {
             variant: "info"
         }), /*#__PURE__*/ React.createElement("div", {
             className: "self-center"
-        }, total, " lifetime sale")), /*#__PURE__*/ React.createElement("div", {
+        }, _('${amount} lifetime sales', {
+            amount: String(total)
+        }))), /*#__PURE__*/ React.createElement("div", {
             className: "flex space-x-2 items-center"
         }, /*#__PURE__*/ React.createElement(Dot, {
             variant: "success"
         }), /*#__PURE__*/ React.createElement("div", {
             className: "self-center"
-        }, completed_percentage, "% of orders completed")), /*#__PURE__*/ React.createElement("div", {
+        }, _('${percent}% of orders completed', {
+            percent: String(completed_percentage)
+        }))), /*#__PURE__*/ React.createElement("div", {
             className: "flex space-x-2 items-center"
         }, /*#__PURE__*/ React.createElement(Dot, {
             variant: "critical"
         }), /*#__PURE__*/ React.createElement("div", {
             className: "self-center"
-        }, cancelled_percentage, "% of orders cancelled")))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
+        }, _('${percent}% of orders cancelled', {
+            percent: String(cancelled_percentage)
+        }))))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", {
             style: {
                 height: '200px'
             }

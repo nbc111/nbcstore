@@ -1,6 +1,7 @@
 import Spinner from '@components/admin/Spinner.js';
 import { Button } from '@components/common/ui/Button.js';
 import { Checkbox } from '@components/common/ui/Checkbox.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -121,14 +122,14 @@ export const CreateVariantGroup = ({ currentProductUuid, createVariantGroupApi, 
         variant: 'default',
         className: 'hover:cursor-pointer',
         onClick: (e)=>onCreate(e)
-    }, "Create"), /*#__PURE__*/ React.createElement(Button, {
+    }, _('Create')), /*#__PURE__*/ React.createElement(Button, {
         variant: "destructive",
         onClick: (e)=>{
             e.preventDefault();
             onCancel();
         }
-    }, "Cancel"))), (data?.attributes?.items || []).length === 0 && /*#__PURE__*/ React.createElement("div", {
+    }, _('Cancel')))), (data?.attributes?.items || []).length === 0 && /*#__PURE__*/ React.createElement("div", {
         className: "alert alert-danger",
         role: "alert"
-    }, 'There is no "Select" attribute available.')));
+    }, _('There is no "Select" attribute available.'))));
 };

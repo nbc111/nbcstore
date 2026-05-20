@@ -1,6 +1,7 @@
 import { ProductSelector } from '@components/admin/ProductSelector.js';
 import { NumberField } from '@components/common/form/NumberField.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -44,13 +45,13 @@ const SkuSelector: React.FC<{
           {product.sku ? (
             <span className="italic">&lsquo;{product.sku}&rsquo;</span>
           ) : (
-            <span>Choose SKU</span>
+            <span>{_('Choose SKU')}</span>
           )}
         </Button>
       </DialogTrigger>
       <DialogContent className={'max-w-[80vw]'}>
         <DialogHeader>
-          <DialogTitle>Choose Product SKU</DialogTitle>
+          <DialogTitle>{_('Choose Product SKU')}</DialogTitle>
         </DialogHeader>
         <ProductSelector
           selectedProducts={[product].map((p) => ({
@@ -122,7 +123,7 @@ const BuyXGetYList: React.FC<{
         <TableHeader>
           <TableRow>
             <TableHead>
-              <span>Sku</span>
+              <span>{_('Sku')}</span>
             </TableHead>
             <TableHead>
               <span>X</span>
@@ -131,10 +132,10 @@ const BuyXGetYList: React.FC<{
               <span>Y</span>
             </TableHead>
             <TableHead>
-              <span>Max of Y</span>
+              <span>{_('Max of Y')}</span>
             </TableHead>
             <TableHead>
-              <span>Discount percent</span>
+              <span>{_('Discount percent')}</span>
             </TableHead>
             <TableHead> </TableHead>
           </TableRow>
@@ -157,7 +158,7 @@ const BuyXGetYList: React.FC<{
                 <NumberField
                   name={`buyx_gety.${i}.buy_qty`}
                   defaultValue={p.buyQty}
-                  placeholder="Buy qty"
+                  placeholder={_('Buy qty')}
                   required
                   validation={{
                     required: 'Buy qty is required'
@@ -168,7 +169,7 @@ const BuyXGetYList: React.FC<{
                 <NumberField
                   name={`buyx_gety.${i}.get_qty`}
                   defaultValue={p.getQty}
-                  placeholder="Get qty"
+                  placeholder={_('Get qty')}
                   required
                   validation={{
                     required: 'Get qty is required'
@@ -179,7 +180,7 @@ const BuyXGetYList: React.FC<{
                 <NumberField
                   name={`buyx_gety.${i}.max_y`}
                   defaultValue={p.maxY}
-                  placeholder="Max of Y"
+                  placeholder={_('Max of Y')}
                   required
                   validation={{
                     required: 'Max of Y is required'
@@ -190,7 +191,7 @@ const BuyXGetYList: React.FC<{
                 <NumberField
                   name={`buyx_gety.${i}.discount`}
                   defaultValue={p.discount}
-                  placeholder="Discount percent"
+                  placeholder={_('Discount percent')}
                   required
                   validation={{
                     required: 'Discount percent is required'
@@ -260,7 +261,7 @@ const BuyXGetYList: React.FC<{
               } as Field);
             }}
           >
-            <span>Add product</span>
+            <span>{_('Add product')}</span>
           </a>
         </div>
       </div>

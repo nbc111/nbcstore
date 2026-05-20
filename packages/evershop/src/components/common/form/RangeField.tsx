@@ -62,10 +62,10 @@ export function RangeField<T extends FieldValues = FieldValues>({
     >
       {label && (
         <label htmlFor={fieldId}>
-          {label}
+          {_(label)}
           {required && <span className="text-destructive">*</span>}
           {showValue && <span className="range-value">({value})</span>}
-          {helperText && <Tooltip content={helperText} position="top" />}
+          {helperText && <Tooltip content={_(helperText)} position="top" />}
         </label>
       )}
 

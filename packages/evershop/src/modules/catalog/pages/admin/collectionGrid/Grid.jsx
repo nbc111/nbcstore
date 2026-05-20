@@ -1,4 +1,5 @@
 import { GridPagination } from '@components/admin/grid/GridPagination';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { DummyColumnHeader } from '@components/admin/grid/header/Dummy';
 import { SortableHeader } from '@components/admin/grid/header/Sortable';
 import Area from '@components/common/Area';
@@ -44,18 +45,18 @@ function Actions({ collections = [], selectedIds = [] }) {
 
   const actions = [
     {
-      name: 'Delete',
+      name: _('Delete'),
       onAction: () => {
         openAlert({
-          heading: `Delete ${selectedIds.length} collections`,
-          content: <div>Can&apos;t be undone</div>,
+          heading: _('Delete ${count} collections', { count: String(selectedIds.length) }),
+          content: _('Can\'t be undone'),
           primaryAction: {
-            title: 'Cancel',
+            title: _('Cancel'),
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Delete',
+            title: _('Delete'),
             onAction: async () => {
               await deleteCategories();
             },
@@ -121,7 +122,7 @@ export default function CollectionGrid({
           <Form submitBtn={false} id="collectionGridFilter">
             <InputField
               name="name"
-              placeholder="Search"
+              placeholder={_('Search')}
               defaultValue={currentFilters.find((f) => f.key === 'name')?.value}
               onKeyPress={(e) => {
                 // If the user press enter, we should submit the form

@@ -1,5 +1,6 @@
 import { ProductSelector } from '@components/admin/ProductSelector.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@components/common/ui/Dialog.js';
 import React from 'react';
 export const SkuConditionValueSelector = ({ selectedValues, updateCondition, isMulti })=>{
@@ -39,7 +40,7 @@ export const SkuConditionValueSelector = ({ selectedValues, updateCondition, isM
             className: "italic"
         }, "‘", sku, "’"), index === 1 && /*#__PURE__*/ React.createElement("span", null, " and ", selectedSKUs.current.length - 1, " more"))), selectedSKUs.current.length === 0 && /*#__PURE__*/ React.createElement("span", null, "Choose SKUs"))), /*#__PURE__*/ React.createElement(DialogContent, {
         className: 'max-w-[80vw]'
-    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Select Products by SKU")), /*#__PURE__*/ React.createElement(ProductSelector, {
+    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Select Products by SKU'))), /*#__PURE__*/ React.createElement(ProductSelector, {
         onSelect: onSelect,
         onUnSelect: onUnSelect,
         selectedProducts: selectedSKUs.current.map((sku)=>({

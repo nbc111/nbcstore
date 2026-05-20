@@ -2,6 +2,7 @@ import {
   NavigationItem,
   NavigationItemProps
 } from '@components/admin/NavigationItem.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import Area from '@components/common/Area.jsx';
 import React from 'react';
 import './NavigationItemGroup.scss';
@@ -30,8 +31,8 @@ export function NavigationItemGroup({
               <Icon />
             </span>
           )}
-          {!url && <span>{name}</span>}
-          {url && <a href={url}>{name}</a>}
+          {!url && <span>{_(name)}</span>}
+          {url && <a href={url}>{_(name)}</a>}
         </div>
       </div>
       <ul className="item-group">

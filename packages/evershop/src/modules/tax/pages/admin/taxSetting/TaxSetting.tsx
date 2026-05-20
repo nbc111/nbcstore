@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@components/common/ui/Dialog.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 import { useQuery } from 'urql';
 import { TaxClasses } from './components/TaxClasses.js';
@@ -112,10 +113,11 @@ export default function TaxSetting({
         <div className="col-span-4 grid grid-cols-1 gap-5">
           <Card>
             <CardHeader>
-              <CardTitle>Tax calculation configuration</CardTitle>
+              <CardTitle>{_('Tax calculation configuration')}</CardTitle>
               <CardDescription>
-                Configure the tax classes that will be available to your
-                customers at checkout.
+                {_(
+                  'Configure the tax classes that will be available to your customers at checkout.'
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent title="Basic configuration">
@@ -129,9 +131,9 @@ export default function TaxSetting({
                   <div>
                     <SelectField
                       name="defaultShippingTaxClassId"
-                      label="Shipping tax class"
+                      label={_('Shipping tax class')}
                       defaultValue={setting.defaultShippingTaxClassId}
-                      placeholder="None"
+                      placeholder={_('None')}
                       options={[
                         {
                           value: -1,
@@ -149,13 +151,15 @@ export default function TaxSetting({
                           })
                         ) || []
                       )}
-                      helperText="This is the tax class applied to shipping costs."
+                      helperText={_(
+                        'This is the tax class applied to shipping costs.'
+                      )}
                     />
                   </div>
                   <div>
                     <SelectField
                       name="baseCalculationAddress"
-                      label="Base calculation address"
+                      label={_('Base calculation address')}
                       defaultValue={setting.baseCalculationAddress || ''}
                       options={[
                         {
@@ -171,7 +175,9 @@ export default function TaxSetting({
                           label: 'Store address'
                         }
                       ]}
-                      helperText="This is the address used to calculate tax rates."
+                      helperText={_(
+                        'This is the address used to calculate tax rates.'
+                      )}
                     />
                   </div>
                 </div>
@@ -180,9 +186,11 @@ export default function TaxSetting({
           </Card>
           <Card title="Tax classes">
             <CardHeader>
-              <CardTitle>Tax classes</CardTitle>
+              <CardTitle>{_('Tax classes')}</CardTitle>
               <CardDescription>
-                Manage tax classes and tax rates for different regions.
+                {_(
+                  'Manage tax classes and tax rates for different regions.'
+                )}
               </CardDescription>
             </CardHeader>
             <TaxClasses
@@ -194,16 +202,16 @@ export default function TaxSetting({
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                   <DialogTrigger>
                     <Button
-                      title="Create new tax class"
+                      title={_('Create new tax class')}
                       variant="outline"
                       onClick={() => setDialogOpen(true)}
                     >
-                      Create new tax class
+                      {_('Create new tax class')}
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Create New Tax Class</DialogTitle>
+                      <DialogTitle>{_('Create New Tax Class')}</DialogTitle>
                     </DialogHeader>
                     <TaxClassForm
                       saveTaxClassApi={createTaxClassApi}

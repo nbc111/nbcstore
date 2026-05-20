@@ -1,4 +1,5 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -61,7 +62,7 @@ export function Methods({ reload, methods, addMethodApi }: MethodsProps) {
           </DialogTrigger>
         </div>
         <DialogContent>
-          <DialogTitle>Add Shipping Method</DialogTitle>
+          <DialogTitle>{_('Add Shipping Method')}</DialogTitle>
           <MethodForm
             saveMethodApi={addMethodApi}
             onSuccess={() => {

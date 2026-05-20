@@ -39,15 +39,15 @@ const SKUAndPrice: React.FC<{
     <div className="grid grid-cols-2 gap-2">
       <InputField
         name="sku"
-        label="SKU"
-        placeholder="Enter SKU"
+        label={_('SKU')}
+        placeholder={_('Enter SKU')}
         defaultValue={sku}
         required
         helperText={_('SKU must be unique')}
       />
       <NumberField
         name="price"
-        placeholder="Enter price"
+        placeholder={_('Enter price')}
         label={`Price`}
         defaultValue={price?.value}
         unit={setting.storeCurrency}
@@ -182,7 +182,7 @@ const CategorySelect: React.FC<{
         )}
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Select Category</DialogTitle>
+            <DialogTitle>{_('Select Category')}</DialogTitle>
           </DialogHeader>
           <CategorySelector
             onSelect={onSelect}
@@ -246,10 +246,8 @@ export default function General({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>General Information</CardTitle>
-        <CardDescription>
-          Manage the general information of the product.
-        </CardDescription>
+        <CardTitle>{_('General Information')}</CardTitle>
+        <CardDescription>{_('Manage the general information of the product.')}</CardDescription>
       </CardHeader>
       <CardContent>
         <Area
@@ -261,8 +259,8 @@ export default function General({
                 default: (
                   <InputField
                     name="name"
-                    placeholder="Enter product name"
-                    label="Product Name"
+                    placeholder={_('Enter product name')}
+                    label={_('Product Name')}
                     defaultValue={product?.name}
                     required
                     helperText={_('Product name is required')}
@@ -301,7 +299,7 @@ export default function General({
                 default: (
                   <SelectField
                     name="tax_class"
-                    label="Tax Class"
+                    label={_('Tax Class')}
                     options={taxClasses.map((taxClass) => ({
                       value: taxClass.value,
                       label: taxClass.text
@@ -320,7 +318,7 @@ export default function General({
                 default: (
                   <Editor
                     name="description"
-                    label="Description"
+                    label={_('Description')}
                     value={product?.description}
                   />
                 )

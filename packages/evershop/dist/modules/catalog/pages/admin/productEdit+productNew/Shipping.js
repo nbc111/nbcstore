@@ -1,4 +1,5 @@
 import { CheckboxField } from '@components/common/form/CheckboxField.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { NumberField } from '@components/common/form/NumberField.js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import React from 'react';
@@ -14,15 +15,15 @@ export default function Shipping({ product, setting }) {
         name: 'no_shipping_required',
         defaultValue: shipping.noShippingRequired !== null && shipping.noShippingRequired || false
     });
-    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Shipping"), /*#__PURE__*/ React.createElement(CardDescription, null, "Manage the shipping settings of the product.")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(CheckboxField, {
+    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Shipping')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Manage the shipping settings of the product.'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(CheckboxField, {
         name: "no_shipping_required",
-        label: "No shipping required?",
+        label: _('No shipping required?'),
         defaultValue: shipping.noShippingRequired === true,
         helperText: "Select this option if the product is a digital product or service that does not require shipping.",
         wrapperClassName: "mb-0"
     })), /*#__PURE__*/ React.createElement(CardContent, null, !noShippingRequired && /*#__PURE__*/ React.createElement(NumberField, {
         name: "weight",
-        placeholder: "Enter weight",
+        placeholder: _('Enter weight'),
         label: `Weight`,
         defaultValue: shipping.weight?.value,
         unit: setting?.weightUnit,
@@ -36,7 +37,7 @@ export default function Shipping({ product, setting }) {
         helperText: 'Weight must be a positive number'
     }), noShippingRequired && /*#__PURE__*/ React.createElement(NumberField, {
         name: "weight_no_shipping",
-        placeholder: "Enter weight",
+        placeholder: _('Enter weight'),
         label: `Weight`,
         defaultValue: shipping.weight?.value,
         unit: setting?.weightUnit,

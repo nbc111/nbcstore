@@ -1,5 +1,6 @@
 import { NumberField } from '@components/common/form/NumberField.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Table, TableRow, TableBody, TableHeader, TableHead, TableCell, TableFooter } from '@components/common/ui/Table.js';
 import React from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
@@ -51,7 +52,7 @@ export function WeightBasedPrice({ lines }) {
             className: "border-none"
         }, /*#__PURE__*/ React.createElement(NumberField, {
             name: `weight_based_cost.${index}.min_weight`,
-            placeholder: "Min Weight",
+            placeholder: _('Min Weight'),
             required: true,
             validation: {
                 required: 'Min weight is required'
@@ -60,7 +61,7 @@ export function WeightBasedPrice({ lines }) {
             className: "border-none"
         }, /*#__PURE__*/ React.createElement(NumberField, {
             name: `weight_based_cost.${index}.cost`,
-            placeholder: "Shipping Cost",
+            placeholder: _('Shipping Cost'),
             required: true,
             validation: {
                 required: 'Shipping cost is required'

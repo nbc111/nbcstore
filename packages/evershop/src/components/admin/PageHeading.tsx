@@ -1,4 +1,5 @@
 import Area from '@components/common/Area.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 import './PageHeading.scss';
 
@@ -30,7 +31,7 @@ BackIcon.defaultProps = {
 function Heading({ heading }: { heading: string }) {
   return (
     <div className="self-center">
-      <h1 className="page-heading-title">{heading}</h1>
+      <h1 className="page-heading-title">{_(heading)}</h1>
     </div>
   );
 }

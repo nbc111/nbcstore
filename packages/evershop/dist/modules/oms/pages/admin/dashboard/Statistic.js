@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardAction, CardDescription, CardHeader, CardTitle, CardContent } from '@components/common/ui/Card.js';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -30,28 +31,28 @@ export default function SaleStatistic({ api }) {
     if (fetching) {
         return /*#__PURE__*/ React.createElement(Card, {
             title: "Sale Statistics"
-        }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Sale Statistics"), /*#__PURE__*/ React.createElement(CardDescription, null, "Overview of sales data over selected periods")), /*#__PURE__*/ React.createElement("div", {
+        }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Sale Statistics')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Overview of sales data over selected periods'))), /*#__PURE__*/ React.createElement("div", {
             className: "skeleton-wrapper-statistic"
         }, /*#__PURE__*/ React.createElement("div", {
             className: "skeleton"
         })));
     } else {
-        return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Sale Statistics"), /*#__PURE__*/ React.createElement(CardDescription, null, "Overview of sales data over selected periods"), /*#__PURE__*/ React.createElement(CardAction, null, /*#__PURE__*/ React.createElement(ButtonGroup, null, /*#__PURE__*/ React.createElement(Button, {
+        return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Sale Statistics')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Overview of sales data over selected periods')), /*#__PURE__*/ React.createElement(CardAction, null, /*#__PURE__*/ React.createElement(ButtonGroup, null, /*#__PURE__*/ React.createElement(Button, {
             onClick: ()=>setPeriod('daily'),
             variant: 'outline'
         }, period === 'daily' ? /*#__PURE__*/ React.createElement("span", {
             className: "text-primary"
-        }, "Daily") : 'Daily'), /*#__PURE__*/ React.createElement(Button, {
+        }, _('Daily')) : _('Daily')), /*#__PURE__*/ React.createElement(Button, {
             onClick: ()=>setPeriod('weekly'),
             variant: 'outline'
         }, period === 'weekly' ? /*#__PURE__*/ React.createElement("span", {
             className: "text-primary"
-        }, "Weekly") : 'Weekly'), /*#__PURE__*/ React.createElement(Button, {
+        }, _('Weekly')) : _('Weekly')), /*#__PURE__*/ React.createElement(Button, {
             onClick: ()=>setPeriod('monthly'),
             variant: 'outline'
         }, period === 'monthly' ? /*#__PURE__*/ React.createElement("span", {
             className: "text-primary"
-        }, "Monthly") : 'Monthly')))), /*#__PURE__*/ React.createElement(CardContent, null, data.length === 0 ? null : /*#__PURE__*/ React.createElement(ResponsiveContainer, {
+        }, _('Monthly')) : _('Monthly'))))), /*#__PURE__*/ React.createElement(CardContent, null, data.length === 0 ? null : /*#__PURE__*/ React.createElement(ResponsiveContainer, {
             width: "100%",
             height: 300
         }, /*#__PURE__*/ React.createElement(AreaChart, {

@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -116,7 +117,7 @@ function Method({ method, reload }: MethodProps) {
       </>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Shipping Method</DialogTitle>
+          <DialogTitle>{_('Edit Shipping Method')}</DialogTitle>
         </DialogHeader>
         <MethodForm
           saveMethodApi={method.updateApi}

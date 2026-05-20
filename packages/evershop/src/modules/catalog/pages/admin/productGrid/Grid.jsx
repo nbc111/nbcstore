@@ -1,4 +1,5 @@
 import { GridPagination } from '@components/admin/grid/GridPagination.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { DummyColumnHeader } from '@components/admin/grid/header/Dummy';
 import { SortableHeader } from '@components/admin/grid/header/Sortable.js';
 import { Thumbnail } from '@components/admin/grid/Thumbnail.js';
@@ -71,18 +72,18 @@ function Actions({ products = [], selectedIds = [] }) {
 
   const actions = [
     {
-      name: 'Disable',
+      name: _('Disable'),
       onAction: () => {
         openAlert({
-          heading: `Disable ${selectedIds.length} products`,
-          content: 'Are you sure?',
+          heading: _('Disable ${count} products', { count: String(selectedIds.length) }),
+          content: _('Are you sure?'),
           primaryAction: {
-            title: 'Cancel',
+            title: _('Cancel'),
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Disable',
+            title: _('Disable'),
             onAction: async () => {
               await updateProducts(0);
             },
@@ -93,18 +94,18 @@ function Actions({ products = [], selectedIds = [] }) {
       }
     },
     {
-      name: 'Enable',
+      name: _('Enable'),
       onAction: () => {
         openAlert({
-          heading: `Enable ${selectedIds.length} products`,
-          content: 'Are you sure?',
+          heading: _('Enable ${count} products', { count: String(selectedIds.length) }),
+          content: _('Are you sure?'),
           primaryAction: {
-            title: 'Cancel',
+            title: _('Cancel'),
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Enable',
+            title: _('Enable'),
             onAction: async () => {
               await updateProducts(1);
             },
@@ -115,18 +116,18 @@ function Actions({ products = [], selectedIds = [] }) {
       }
     },
     {
-      name: 'Delete',
+      name: _('Delete'),
       onAction: () => {
         openAlert({
-          heading: `Delete ${selectedIds.length} products`,
-          content: <div>Can&apos;t be undone</div>,
+          heading: _('Delete ${count} products', { count: String(selectedIds.length) }),
+          content: _('Can\'t be undone'),
           primaryAction: {
-            title: 'Cancel',
+            title: _('Cancel'),
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Delete',
+            title: _('Delete'),
             onAction: async () => {
               await deleteProducts();
             },
@@ -203,7 +204,7 @@ export default function ProductGrid({
                     default: () => (
                       <InputField
                         name="keyword"
-                        placeholder="Search"
+                        placeholder={_('Search')}
                         defaultValue={
                           currentFilters.find((f) => f.key === 'keyword')?.value
                         }
@@ -239,13 +240,13 @@ export default function ProductGrid({
                         }}
                       >
                         <SelectTrigger>
-                          <SelectValue>Status</SelectValue>
+                          <SelectValue>{_('Status')}</SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectLabel>Status</SelectLabel>
-                            <SelectItem value="1">Enabled</SelectItem>
-                            <SelectItem value="0">Disabled</SelectItem>
+                            <SelectLabel>{_('Status')}</SelectLabel>
+                            <SelectItem value="1">{_('Enabled')}</SelectItem>
+                            <SelectItem value="0">{_('Disabled')}</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -267,15 +268,13 @@ export default function ProductGrid({
                         }}
                       >
                         <SelectTrigger>
-                          <SelectValue>Product type</SelectValue>
+                          <SelectValue>{_('Product type')}</SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectLabel>Product type</SelectLabel>
-                            <SelectItem value="simple">Simple</SelectItem>
-                            <SelectItem value="configurable">
-                              Configurable
-                            </SelectItem>
+                            <SelectLabel>{_('Product type')}</SelectLabel>
+                            <SelectItem value="simple">{_('Simple')}</SelectItem>
+                            <SelectItem value="configurable">{_('Configurable')}</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -297,9 +296,7 @@ export default function ProductGrid({
               url.search = '';
               window.location.href = url.href;
             }}
-          >
-            Clear Filters
-          </Button>
+          >{_('Clear Filters')}</Button>
         </CardAction>
       </CardHeader>
       <CardContent>
@@ -327,7 +324,7 @@ export default function ProductGrid({
                         <TableHead>
                           <div className="table-header id-header">
                             <div className="font-medium uppercase text-xs">
-                              <span>Thumbnail</span>
+                              <span>{_('Thumbnail')}</span>
                             </div>
                           </div>
                         </TableHead>

@@ -1,4 +1,5 @@
 import { Form } from '@components/common/form/Form.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputField } from '@components/common/form/InputField.js';
 import { SelectField } from '@components/common/form/SelectField.js';
 import { Button } from '@components/common/ui/Button.js';
@@ -20,7 +21,7 @@ export default function AddTrackingButton({ order: { noShippingRequired, shipmen
             onClick: ()=>{
                 setDialogOpen(true);
             }
-        }, "Edit Tracking Info")), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Edit Tracking Info")), /*#__PURE__*/ React.createElement(Form, {
+        }, "Edit Tracking Info")), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Edit Tracking Info'))), /*#__PURE__*/ React.createElement(Form, {
             form: form,
             id: "editTrackingInfo",
             method: "PATCH",
@@ -34,8 +35,8 @@ export default function AddTrackingButton({ order: { noShippingRequired, shipmen
         }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(InputField, {
             type: "text",
             name: "tracking_number",
-            label: "Tracking number",
-            placeholder: "Tracking number",
+            label: _('Tracking number'),
+            placeholder: _('Tracking number'),
             defaultValue: shipment.trackingNumber || '',
             required: true,
             validation: {
@@ -43,7 +44,7 @@ export default function AddTrackingButton({ order: { noShippingRequired, shipmen
             }
         })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(SelectField, {
             name: "carrier",
-            label: "Carrier",
+            label: _('Carrier'),
             defaultValue: shipment.carrier || '',
             required: true,
             options: carriers,

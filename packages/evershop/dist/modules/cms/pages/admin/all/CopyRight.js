@@ -1,8 +1,9 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 export default function CopyRight({ themeConfig: { copyRight } }) {
     return /*#__PURE__*/ React.createElement("div", {
         className: "copyright"
-    }, /*#__PURE__*/ React.createElement("span", null, copyRight));
+    }, /*#__PURE__*/ React.createElement("span", null, _(copyRight)));
 }
 CopyRight.defaultProps = {
     themeConfig: {

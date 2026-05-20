@@ -115,7 +115,9 @@ export const DefaultAttributeFilterRender: React.FC<{
                 onClick={() => toggleCollapse(attribute.attributeCode)}
                 className="flex items-center justify-between text-left flex-1 hover:text-primary transition-colors"
               >
-                <span className="font-medium">{attribute.attributeName}</span>
+                <span className="font-medium">
+                  {_(attribute.attributeName)}
+                </span>
                 <svg
                   className={`w-4 h-4 transition-transform ${
                     isCollapsed ? 'rotate-180' : ''
@@ -138,7 +140,7 @@ export const DefaultAttributeFilterRender: React.FC<{
                   variant={'link'}
                   onClick={() => clearAttributeFilter(attribute.attributeCode)}
                   className="hover:text-destructive text-sm transition-colors"
-                  title="Clear all"
+                  title={_('Clear all')}
                 >
                   ✕
                 </Button>
@@ -189,7 +191,7 @@ export const DefaultAttributeFilterRender: React.FC<{
                           <Label
                             htmlFor={`${attribute.attributeCode}-${option.optionId}`}
                           >
-                            {option.optionText}
+                            {_(option.optionText)}
                           </Label>
                         </div>
                       );

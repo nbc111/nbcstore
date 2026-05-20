@@ -1,4 +1,5 @@
 import Area from '@components/common/Area.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { NumberField } from '@components/common/form/NumberField.js';
 import { ReactSelectCreatableField } from '@components/common/form/ReactSelectCreatableField.js';
 import { ReactSelectField } from '@components/common/form/ReactSelectField.js';
@@ -19,7 +20,7 @@ export default function CustomerCondition({ coupon, groups: { items: customerGro
             {
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(ReactSelectField, {
-                            label: "Customer groups",
+                            label: _('Customer groups'),
                             name: "user_condition.groups",
                             options: customerGroups.map((group)=>({
                                     value: group.value.toString(),
@@ -39,8 +40,8 @@ export default function CustomerCondition({ coupon, groups: { items: customerGro
                 component: {
                     default: /*#__PURE__*/ React.createElement(ReactSelectCreatableField, {
                         name: "user_condition.emails",
-                        label: "Customer emails",
-                        placeholder: "Enter customer emails",
+                        label: _('Customer emails'),
+                        placeholder: _('Enter customer emails'),
                         isMulti: true,
                         options: (condition?.emails || []).map((email)=>({
                                 value: email,
@@ -55,12 +56,12 @@ export default function CustomerCondition({ coupon, groups: { items: customerGro
             {
                 component: {
                     default: /*#__PURE__*/ React.createElement(NumberField, {
-                        label: "Customer's purchase",
-                        placeholder: "Enter purchased amount",
+                        label: _('Customer\'s purchase'),
+                        placeholder: _('Enter purchased amount'),
                         defaultValue: parseInt(condition?.purchased) || 0,
                         name: "user_condition.purchased",
                         min: 0,
-                        helperText: "Minimum purchased amount. This only applies to registered customers."
+                        helperText: _('Minimum purchased amount. This only applies to registered customers.')
                     })
                 },
                 sortOrder: 30,

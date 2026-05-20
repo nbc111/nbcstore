@@ -24,7 +24,7 @@ export function Payment() {
                 const paymentMethod = form.getValues('paymentMethod');
                 const methodDetails = availablePaymentMethods?.find((method)=>method.code === paymentMethod);
                 if (!methodDetails) {
-                    throw new Error('Please select a valid payment method');
+                    throw new Error(_('Please select a valid payment method'));
                 }
                 updateCheckoutData({
                     paymentMethod: methodDetails.code

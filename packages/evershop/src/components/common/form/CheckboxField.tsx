@@ -110,9 +110,9 @@ export function CheckboxField<T extends FieldValues = FieldValues>({
               htmlFor={fieldId}
               className="text-sm font-normal cursor-pointer"
             >
-              {label}
+              {_(label)}
               {required && <span className="text-destructive">*</span>}
-              {helperText && <Tooltip content={helperText} position="top" />}
+              {helperText && <Tooltip content={_(helperText)} position="top" />}
             </FieldLabel>
           )}
         </div>
@@ -131,9 +131,9 @@ export function CheckboxField<T extends FieldValues = FieldValues>({
         <fieldset>
           <FieldLegend>
             <>
-              {label}
+              {_(label)}
               {required && <span className="text-destructive">*</span>}
-              {helperText && <Tooltip content={helperText} position="top" />}
+              {helperText && <Tooltip content={_(helperText)} position="top" />}
             </>
           </FieldLegend>
 

@@ -1,4 +1,5 @@
 import { ImageUploader } from '@components/admin/ImageUploader.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import Spinner from '@components/admin/Spinner.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { NumberField } from '@components/common/form/NumberField.js';
@@ -188,7 +189,7 @@ export const VariantModal = ({ variant, variantGroup, createProductApi, refresh,
         }, /*#__PURE__*/ React.createElement(SelectField, {
             name: `variant_attributes.${a.attributeCode}`,
             label: a.attributeName,
-            placeholder: "Select an option",
+            placeholder: _('Select an option'),
             required: true,
             validation: {
                 required: 'This field is required'
@@ -199,8 +200,8 @@ export const VariantModal = ({ variant, variantGroup, createProductApi, refresh,
         className: "grid grid-cols-3 gap-x-2 border-b border-border pb-4 mb-4"
     }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(InputField, {
         name: "variant_sku",
-        label: "Sku",
-        placeholder: "Enter SKU",
+        label: _('Sku'),
+        placeholder: _('Enter SKU'),
         required: true,
         validation: {
             required: 'SKU is required'
@@ -208,9 +209,9 @@ export const VariantModal = ({ variant, variantGroup, createProductApi, refresh,
         defaultValue: variant?.product?.sku
     })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(NumberField, {
         name: "variant_qty",
-        label: "Quantity",
+        label: _('Quantity'),
         required: true,
-        placeholder: "Enter quantity",
+        placeholder: _('Enter quantity'),
         validation: {
             required: 'Qty is required'
         },
@@ -220,19 +221,19 @@ export const VariantModal = ({ variant, variantGroup, createProductApi, refresh,
         className: "grid grid-cols-3 gap-x-2"
     }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(ToggleField, {
         name: "variant_status",
-        label: "Status",
+        label: _('Status'),
         trueValue: true,
         falseValue: false,
         defaultValue: variant?.product.status === 1
     })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(ToggleField, {
         name: "variant_visibility",
-        label: "Visibility",
+        label: _('Visibility'),
         trueValue: true,
         falseValue: false,
         defaultValue: variant?.product.visibility === 1
     }))))), /*#__PURE__*/ React.createElement(DialogFooter, null, /*#__PURE__*/ React.createElement(DialogClose, null, /*#__PURE__*/ React.createElement(Button, {
         variant: "outline"
-    }, "Cancel")), /*#__PURE__*/ React.createElement(Button, {
+    }, _('Cancel'))), /*#__PURE__*/ React.createElement(Button, {
         isLoading: saving,
         onClick: async ()=>{
             const isValid = await trigger();

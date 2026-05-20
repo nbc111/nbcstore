@@ -1,4 +1,5 @@
 import Area from '@components/common/Area.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Card,
   CardContent,
@@ -18,7 +19,7 @@ export default function CustomerNotes({
   return (
     <Card className="bg-popover">
       <CardHeader>
-        <CardTitle>Customer notes</CardTitle>
+        <CardTitle>{_('Customer notes')}</CardTitle>
       </CardHeader>
       <CardContent>
         <Area

@@ -1,0 +1,225 @@
+${newValue}
+10
+100
+150
+200
+50
+A list of best selling products
+A list of customers who have placed the most orders
+Add option
+Add Products
+Add Shipping Method
+Add Tax Rate
+Add Variant
+Attribute group
+Base calculation address
+Best customers
+Best Sellers
+Buy qty
+Calculate API endpoint
+Calculation Type
+Cancel Order
+Capture Payment
+Carrier
+Cash On Delivery Payment
+Category Image
+Category Name
+Choose Attribute Groups
+Choose Categories
+Choose Collections
+Choose Product SKU
+Choose where you ship and how much you charge for shipping.
+Client ID
+Code
+Collection Code
+Collection Name
+Configurable
+Configure your Cash On Delivery payment gateway settings
+Configure your Paypal payment gateway settings
+Configure your store information
+Configure your Stripe payment gateway settings
+Coupon Code
+Create a new group
+Create New Tax Class
+Create New Zone
+Customer conditions
+Customer emails
+Customer groups
+Customer Information
+Customer notes
+Customer\
+dashboard
+Description
+Disabled
+Discount amount
+Discount percent
+Discount Type
+Display Name
+Display on Frontend?
+Edit Shipping Method
+Edit Shipping Zone
+Edit Tax Rate
+Edit Tracking Info
+Edit Variant
+Enabled
+End date
+Enter attribute code
+Enter attribute name
+Enter Category Name
+Enter Collection Name
+Enter customer emails
+Enter description
+Enter group name
+Enter meta description
+Enter Meta description
+Enter Meta Description
+Enter meta title
+Enter Meta title
+Enter Meta Title
+Enter page name
+Enter price
+Enter product name
+Enter purchased amount
+Enter quantity
+Enter SKU
+Enter tax class name
+Enter the quantity
+Enter URL key
+Enter URL Key
+Enter weight
+Enter zone name
+Flat rate cost
+Free shipping
+Free shipping ?
+Free shipping?
+General
+General Information
+Get qty
+Group Name
+Include in Store Menu?
+Inventory
+Is compound
+Is Filterable?
+Is Required?
+Lifetime Sales
+Limit
+Manage general information about the collection.
+Manage product images and gallery. Drag and drop to reorder images.
+Manage Stock
+Manage tax classes and tax rates for different regions.
+Manage the attributes.
+Manage the collections associated with this product.
+Manage the general information of the attribute.
+Manage the general information of the category.
+Manage the general information of the product.
+Manage the inventory settings of the product.
+Manage the products assigned to this category.
+Manage the products assigned to this collection.
+Manage the SEO settings of the category.
+Manage the SEO settings.
+Manage the setting of the attribute.
+Manage the shipping settings of the product.
+Manage the status settings of the category.
+Manage the variant group of the product.
+Max of Y
+Media
+Meta description
+Meta Description
+Meta title
+Meta Title
+Method name
+Min Price
+Min Weight
+Minimum purchase amount
+Minimum purchase qty
+Minimum purchase quantity
+New folder
+New Variant
+New Widget
+No free shipping
+No Shipping Required
+No shipping required?
+None
+Option text
+Order conditions
+Overview of sales data over selected periods
+Overview of total sales and order status over the lifetime of your
+Page Name
+Payment Status
+Paypal Payment
+Postal Code
+Priority
+Product Name
+Product Status
+Product type
+Provide the basic information for the CMS page.
+Provide the SEO details for the CMS page.
+Provinces
+Provinces/States
+Publishable Key
+Rate
+Reason for cancellation
+Recently placed orders by this customer
+Refund
+Refund amount
+Sale Statistics
+Search attribute groups
+Search categories
+Search collections
+Search engine optimize
+Search products
+Search results for
+Search results for 
+Secret Key
+Select an option
+Select Category
+Select country
+Select operator
+Select options
+Select or create shipping method
+Select pages
+Select Parent Category
+Select Products by SKU
+Select provinces/states
+SEO
+SEO Information
+Set the status and visibility of the product.
+Setting
+Ship
+Shipment Status
+Shipping cost
+Shipping Cost
+Shipping tax class
+Show
+Show products?
+Simple
+SKU
+SKU ${sku}
+Sort order
+Sort Order
+Start date
+Stock Availability
+Store Address
+Store Description
+Store Email
+Store Name
+Store Phone Number
+Store Settings
+Stripe Payment
+Tax calculation configuration
+Tax Class
+Tax class name
+Tax classes
+The general information about the coupon.
+The type of discount applied by the coupon.
+Tracking number
+Type
+Type area and press enter...
+Upload an image for the category.
+URL key
+URL Key
+Value
+Variant Group
+Visibility
+Widget Settings
+Zone Name

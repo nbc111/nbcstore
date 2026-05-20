@@ -1,5 +1,6 @@
 import { Button } from '@components/common/ui/Button.js';
 import { ButtonGroup } from '@components/common/ui/ButtonGroup.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Pagination,
   PaginationContent,
@@ -83,7 +84,7 @@ export function GridPagination({ total, limit, page }: GridPaginationProps) {
     <div className="pagination flex w-full mt-3">
       <div className="flex justify-between w-full space-x-2">
         <ButtonGroup>
-          <Button variant={'outline'}>Show</Button>
+          <Button variant={'outline'}>{_('Show')}</Button>
           <Select
             value={limit.toString()}
             onValueChange={(value) => {
@@ -97,11 +98,11 @@ export function GridPagination({ total, limit, page }: GridPaginationProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Limit</SelectLabel>
-                <SelectItem value="50">50</SelectItem>
-                <SelectItem value="100">100</SelectItem>
-                <SelectItem value="150">150</SelectItem>
-                <SelectItem value="200">200</SelectItem>
+                <SelectLabel>{_('Limit')}</SelectLabel>
+                <SelectItem value="50">{_('50')}</SelectItem>
+                <SelectItem value="100">{_('100')}</SelectItem>
+                <SelectItem value="150">{_('150')}</SelectItem>
+                <SelectItem value="200">{_('200')}</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>

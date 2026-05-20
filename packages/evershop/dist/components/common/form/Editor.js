@@ -201,7 +201,7 @@ export const Editor = ({ name, value = [], label })=>{
         className: "editor form-field-container"
     }, /*#__PURE__*/ React.createElement(FieldLabel, {
         htmlFor: "description mt-4"
-    }, label), /*#__PURE__*/ React.createElement("div", {
+    }, _(label)), /*#__PURE__*/ React.createElement("div", {
         className: "prose prose-xl max-w-none"
     }, /*#__PURE__*/ React.createElement(DndContext, {
         sensors: sensors,

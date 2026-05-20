@@ -1,7 +1,8 @@
 import { setPageMetaInfo } from '../../../../cms/services/pageMetaInfo.js';
+import { translate } from '../../../../../lib/locale/translate/translate.js';
 export default ((request)=>{
     setPageMetaInfo(request, {
-        title: 'Payment Setting',
-        description: 'Payment Setting'
+        title: translate('Payment Setting'),
+        description: translate('Payment Setting')
     });
 });

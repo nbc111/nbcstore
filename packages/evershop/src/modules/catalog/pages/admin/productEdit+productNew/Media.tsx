@@ -1,4 +1,5 @@
 import { ImageUploader } from '@components/admin/ImageUploader.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Card,
   CardContent,
@@ -38,10 +39,8 @@ export default function Media({ product }: MediaProps) {
   return (
     <Card title="Media">
       <CardHeader>
-        <CardTitle>Media</CardTitle>
-        <CardDescription>
-          Manage product images and gallery. Drag and drop to reorder images.
-        </CardDescription>
+        <CardTitle>{_('Media')}</CardTitle>
+        <CardDescription>{_('Manage product images and gallery. Drag and drop to reorder images.')}</CardDescription>
       </CardHeader>
       <CardContent>
         <ImageUploader

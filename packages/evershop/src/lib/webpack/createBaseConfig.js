@@ -1,7 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import webpack from 'webpack';
 import { SwcMinifyWebpackPlugin } from 'swc-minify-webpack-plugin';
+import { getConfig } from '../util/getConfig.js';
 import { getEnabledExtensions } from '../../bin/extension/index.js';
 import { getCoreModules } from '../../bin/lib/loadModules.js';
 import { CONSTANTS } from '../helpers.js';
@@ -28,10 +30,84 @@ function isRealDirectorySync(path) {
   }
 }
 
+function parseCsvField(content, startIndex) {
+  let i = startIndex;
+  let field = '';
+  if (content[i] === '"') {
+    i += 1;
+    while (i < content.length) {
+      if (content[i] === '"') {
+        if (content[i + 1] === '"') {
+          field += '"';
+          i += 2;
+        } else {
+          i += 1;
+          break;
+        }
+      } else {
+        field += content[i++];
+      }
+    }
+    return { field, index: i };
+  }
+  while (
+    i < content.length &&
+    content[i] !== ',' &&
+    content[i] !== '\n' &&
+    content[i] !== '\r'
+  ) {
+    field += content[i++];
+  }
+  return { field, index: i };
+}
+
+function loadTranslationsSync() {
+  const language = getConfig('shop.language', 'en');
+  if (language === 'en') {
+    return {};
+  }
+  const folderPath = path.resolve(CONSTANTS.ROOTPATH, 'translations', language);
+  if (!fs.existsSync(folderPath)) {
+    return {};
+  }
+  const results = {};
+  for (const file of fs.readdirSync(folderPath)) {
+    if (!file.endsWith('.csv')) {
+      continue;
+    }
+    const content = fs.readFileSync(path.join(folderPath, file), 'utf8');
+    let i = 0;
+    while (i < content.length) {
+      while (i < content.length && (content[i] === '\n' || content[i] === '\r')) {
+        i += 1;
+      }
+      if (i >= content.length) {
+        break;
+      }
+      const keyParsed = parseCsvField(content, i);
+      i = keyParsed.index;
+      if (i < content.length && content[i] === ',') {
+        i += 1;
+      }
+      const valueParsed = parseCsvField(content, i);
+      i = valueParsed.index;
+      const key = keyParsed.field;
+      if (key && !key.startsWith('#')) {
+        results[key] = valueParsed.field;
+      }
+      while (i < content.length && content[i] !== '\n' && content[i] !== '\r') {
+        i += 1;
+      }
+    }
+  }
+  return results;
+}
+
 export function createBaseConfig(isServer) {
   const extenions = getEnabledExtensions();
   const coreModules = getCoreModules();
   const theme = getEnabledTheme();
+  const translations = loadTranslationsSync();
 
   const loaders = [
     {
@@ -127,7 +203,11 @@ export function createBaseConfig(isServer) {
     },
     target: isServer === true ? 'node' : 'web',
     output,
-    plugins: [],
+    plugins: [
+      new webpack.DefinePlugin({
+        __EVERSHOP_TRANSLATIONS__: JSON.stringify(translations)
+      })
+    ],
     cache: { type: 'memory' }
   };
 

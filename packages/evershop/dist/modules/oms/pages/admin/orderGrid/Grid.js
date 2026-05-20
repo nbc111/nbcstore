@@ -1,4 +1,5 @@
 import { GridPagination } from '@components/admin/grid/GridPagination';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { SortableHeader } from '@components/admin/grid/header/Sortable';
 import Area from '@components/common/Area';
 import { Form } from '@components/common/form/Form.js';
@@ -29,20 +30,22 @@ function Actions({ orders = [], selectedIds = [] }) {
     };
     const actions = [
         {
-            name: 'Mark as shipped',
+            name: _('Mark as shipped'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Fullfill ${selectedIds.length} orders`,
+                    heading: _('Fulfill ${count} orders', {
+                        count: String(selectedIds.length)
+                    }),
                     content: /*#__PURE__*/ React.createElement("div", {
                         className: "form-field mb-0"
-                    }, "Are you sure you want to mark the selected orders as shipped?"),
+                    }, _('Are you sure you want to mark the selected orders as shipped?')),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Mark as shipped',
+                        title: _('Mark as shipped'),
                         onAction: async ()=>{
                             await fullFillOrders();
                         },
@@ -93,7 +96,7 @@ export default function OrderGrid({ orders: { items: orders, total, currentFilte
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(InputField, {
                             name: "keyword",
-                            placeholder: "Search",
+                            placeholder: _('Search'),
                             defaultValue: currentFilters.find((f)=>f.key === 'keyword')?.value,
                             onKeyPress: (e)=>{
                                 // If the user press enter, we should submit the form
@@ -121,10 +124,10 @@ export default function OrderGrid({ orders: { items: orders, total, currentFilte
                                 url.searchParams.set('payment_status', value);
                                 window.location.href = url;
                             }
-                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, "Payment Status")), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, "Payment Status"), paymentStatusList.map((status, index)=>/*#__PURE__*/ React.createElement(SelectItem, {
+                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, _('Payment Status'))), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, _('Payment Status')), paymentStatusList.map((status, index)=>/*#__PURE__*/ React.createElement(SelectItem, {
                                 key: index,
                                 value: status.code
-                            }, status.name))))))
+                            }, _(status.name)))))))
                 },
                 sortOrder: 10
             },
@@ -137,10 +140,10 @@ export default function OrderGrid({ orders: { items: orders, total, currentFilte
                                 url.searchParams.set('shipment_status', value);
                                 window.location.href = url;
                             }
-                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, "Shipment Status")), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, "Shipment Status"), shipmentStatusList.map((status, index)=>/*#__PURE__*/ React.createElement(SelectItem, {
+                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, _('Shipment Status'))), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, _('Shipment Status')), shipmentStatusList.map((status, index)=>/*#__PURE__*/ React.createElement(SelectItem, {
                                 key: index,
                                 value: status.code
-                            }, status.name)))))
+                            }, _(status.name))))))
                 },
                 sortOrder: 15
             }
@@ -154,7 +157,7 @@ export default function OrderGrid({ orders: { items: orders, total, currentFilte
             url.search = '';
             window.location.href = url.href;
         }
-    }, "Clear Filters"))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("div", {
+    }, _('Clear Filters')))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("div", {
         className: "form-field mb-0"
     }, /*#__PURE__*/ React.createElement(Checkbox, {
         onCheckedChange: (checked)=>{
@@ -301,7 +304,7 @@ export default function OrderGrid({ orders: { items: orders, total, currentFilte
             ]
         }))))), orders.length === 0 && /*#__PURE__*/ React.createElement("div", {
         className: "flex w-full justify-center"
-    }, "There is no order to display"), /*#__PURE__*/ React.createElement(GridPagination, {
+    }, _('There is no order to display')), /*#__PURE__*/ React.createElement(GridPagination, {
         total: total,
         limit: limit,
         page: page

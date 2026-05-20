@@ -1,4 +1,5 @@
 import { Form } from '@components/common/form/Form.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputField } from '@components/common/form/InputField.js';
 import { SelectField } from '@components/common/form/SelectField.js';
 import { useAlertContext } from '@components/common/modal/Alert.js';
@@ -12,7 +13,7 @@ export default function ShipButton({ order: { noShippingRequired, shipment, crea
         return /*#__PURE__*/ React.createElement(Button, {
             disabled: true,
             variant: "secondary"
-        }, "No Shipping Required");
+        }, _('No Shipping Required'));
     }
     if (shipment) {
         return null;
@@ -60,20 +61,20 @@ export default function ShipButton({ order: { noShippingRequired, shipment, crea
                     }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(InputField, {
                         type: "text",
                         name: "tracking_number",
-                        label: "Tracking number",
-                        placeholder: "Tracking number"
+                        label: _('Tracking number'),
+                        placeholder: _('Tracking number')
                     })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(SelectField, {
                         name: "carrier",
-                        label: "Carrier",
+                        label: _('Carrier'),
                         options: carriers
                     }))))),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'outline'
                     },
                     secondaryAction: {
-                        title: 'Ship',
+                        title: _('Ship'),
                         onAction: ()=>{
                             dispatchAlert({
                                 type: 'update',

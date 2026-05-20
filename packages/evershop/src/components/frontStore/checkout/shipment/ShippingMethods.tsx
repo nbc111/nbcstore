@@ -188,7 +188,7 @@ export function ShippingMethods({
                                 disabled={isProcessing}
                               />
                               <Label htmlFor={`shipping-method-${method.code}`}>
-                                {method.name}
+                                {_(method.name)}
                               </Label>
                             </div>
                           </ItemTitle>

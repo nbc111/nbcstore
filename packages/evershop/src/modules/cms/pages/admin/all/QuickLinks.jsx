@@ -1,4 +1,5 @@
 import { NavigationItemGroup } from '@components/admin/NavigationItemGroup';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { HomeIcon } from 'lucide-react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -12,7 +13,7 @@ export default function QuickLinks({ dashboard }) {
         {
           Icon: HomeIcon,
           url: dashboard,
-          title: 'Dashboard'
+          title: _('Dashboard')
         }
       ]}
     />

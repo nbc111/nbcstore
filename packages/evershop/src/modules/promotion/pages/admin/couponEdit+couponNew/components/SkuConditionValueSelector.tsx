@@ -1,5 +1,6 @@
 import { ProductSelector } from '@components/admin/ProductSelector.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -59,7 +60,7 @@ export const SkuConditionValueSelector: React.FC<{
       </DialogTrigger>
       <DialogContent className={'max-w-[80vw]'}>
         <DialogHeader>
-          <DialogTitle>Select Products by SKU</DialogTitle>
+          <DialogTitle>{_('Select Products by SKU')}</DialogTitle>
         </DialogHeader>
         <ProductSelector
           onSelect={onSelect}

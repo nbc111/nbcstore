@@ -1,10 +1,11 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import { TagIcon } from 'lucide-react';
 import React from 'react';
 export default function Collections({ product: { collections } }) {
     return /*#__PURE__*/ React.createElement(Card, {
         className: "bg-popover"
-    }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Collections"), /*#__PURE__*/ React.createElement(CardDescription, null, "Manage the collections associated with this product.")), /*#__PURE__*/ React.createElement(CardContent, {
+    }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Collections')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Manage the collections associated with this product.'))), /*#__PURE__*/ React.createElement(CardContent, {
         className: "space-y-2"
     }, collections.map((collection)=>/*#__PURE__*/ React.createElement("div", {
             className: "flex justify-start gap-2 items-center align-middle",

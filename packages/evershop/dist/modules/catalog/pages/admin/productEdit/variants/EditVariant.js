@@ -1,4 +1,5 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/common/ui/Dialog.js';
 import { Cog } from 'lucide-react';
 import React from 'react';
@@ -15,7 +16,7 @@ export const EditVariant = ({ variant, variantGroup, refresh })=>{
         className: "w-5 h-5 text-primary"
     }))), /*#__PURE__*/ React.createElement(DialogContent, {
         className: 'sm:max-w-212.5'
-    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Edit Variant"), /*#__PURE__*/ React.createElement(DialogDescription, null, "Update the variant details and attributes here.")), /*#__PURE__*/ React.createElement(VariantModal, {
+    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Edit Variant')), /*#__PURE__*/ React.createElement(DialogDescription, null, "Update the variant details and attributes here.")), /*#__PURE__*/ React.createElement(VariantModal, {
         variant: variant,
         variantGroup: variantGroup,
         refresh: refresh,

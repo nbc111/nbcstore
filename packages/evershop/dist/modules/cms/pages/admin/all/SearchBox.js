@@ -1,4 +1,5 @@
 import Spinner from '@components/admin/Spinner.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@components/common/ui/InputGroup.js';
 import { Search } from 'lucide-react';
 import React, { useRef, useState } from 'react';
@@ -99,7 +100,7 @@ export default function SearchBox({ resourceLinks }) {
         className: "bg-[#f1f2f3] rounded-[3px] border-[#f1f2f3]"
     }, /*#__PURE__*/ React.createElement(InputGroupAddon, null, /*#__PURE__*/ React.createElement(Search, null)), /*#__PURE__*/ React.createElement(InputGroupInput, {
         type: "text",
-        placeholder: "Search",
+        placeholder: _('Search'),
         ref: InputRef,
         onChange: (e)=>setKeyword(e.target.value)
     })), showResult && /*#__PURE__*/ React.createElement("div", {
@@ -112,7 +113,7 @@ export default function SearchBox({ resourceLinks }) {
         height: 25
     })), !keyword && /*#__PURE__*/ React.createElement("div", {
         className: "text-center"
-    }, /*#__PURE__*/ React.createElement("span", null, "Search for products, order and other resources")), data?.products.items.length === 0 && data?.customers.items.length === 0 && data?.orders.items.length === 0 && keyword && !loading && /*#__PURE__*/ React.createElement(NoResult, {
+    }, /*#__PURE__*/ React.createElement("span", null, _('Search for products, orders and other resources'))), data?.products.items.length === 0 && data?.customers.items.length === 0 && data?.orders.items.length === 0 && keyword && !loading && /*#__PURE__*/ React.createElement(NoResult, {
         keyword: keyword,
         resourseLinks: resourceLinks
     }), data && !loading && !fetching && (data?.products.items.length > 0 || data?.customers.items.length > 0 || data?.orders.items.length > 0) && /*#__PURE__*/ React.createElement(Results, {

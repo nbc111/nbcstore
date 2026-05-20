@@ -5,6 +5,7 @@ import { SelectField } from '@components/common/form/SelectField.js';
 import { Button } from '@components/common/ui/Button.js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@components/common/ui/Dialog.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 import { useQuery } from 'urql';
 import { TaxClasses } from './components/TaxClasses.js';
@@ -76,7 +77,7 @@ export default function TaxSetting({ createTaxClassApi, saveSettingApi, setting 
         className: "col-span-2"
     }, /*#__PURE__*/ React.createElement(SettingMenu, null)), /*#__PURE__*/ React.createElement("div", {
         className: "col-span-4 grid grid-cols-1 gap-5"
-    }, /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Tax calculation configuration"), /*#__PURE__*/ React.createElement(CardDescription, null, "Configure the tax classes that will be available to your customers at checkout.")), /*#__PURE__*/ React.createElement(CardContent, {
+    }, /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Tax calculation configuration')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Configure the tax classes that will be available to your customers at checkout.'))), /*#__PURE__*/ React.createElement(CardContent, {
         title: "Basic configuration"
     }, /*#__PURE__*/ React.createElement(Form, {
         id: "taxBasicConfig",
@@ -87,9 +88,9 @@ export default function TaxSetting({ createTaxClassApi, saveSettingApi, setting 
         className: "grid grid-cols-2 gap-5"
     }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(SelectField, {
         name: "defaultShippingTaxClassId",
-        label: "Shipping tax class",
+        label: _('Shipping tax class'),
         defaultValue: setting.defaultShippingTaxClassId,
-        placeholder: "None",
+        placeholder: _('None'),
         options: [
             {
                 value: -1,
@@ -103,10 +104,10 @@ export default function TaxSetting({ createTaxClassApi, saveSettingApi, setting 
                 value: taxClass.taxClassId,
                 label: taxClass.name
             })) || []),
-        helperText: "This is the tax class applied to shipping costs."
+        helperText: _('This is the tax class applied to shipping costs.')
     })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(SelectField, {
         name: "baseCalculationAddress",
-        label: "Base calculation address",
+        label: _('Base calculation address'),
         defaultValue: setting.baseCalculationAddress || '',
         options: [
             {
@@ -122,20 +123,20 @@ export default function TaxSetting({ createTaxClassApi, saveSettingApi, setting 
                 label: 'Store address'
             }
         ],
-        helperText: "This is the address used to calculate tax rates."
+        helperText: _('This is the address used to calculate tax rates.')
     })))))), /*#__PURE__*/ React.createElement(Card, {
         title: "Tax classes"
-    }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Tax classes"), /*#__PURE__*/ React.createElement(CardDescription, null, "Manage tax classes and tax rates for different regions.")), /*#__PURE__*/ React.createElement(TaxClasses, {
+    }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Tax classes')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Manage tax classes and tax rates for different regions.'))), /*#__PURE__*/ React.createElement(TaxClasses, {
         classes: taxClassesQueryData.data.taxClasses.items,
         getTaxClasses: reexecuteQuery
     }), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(Dialog, {
         open: dialogOpen,
         onOpenChange: setDialogOpen
     }, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, {
-        title: "Create new tax class",
+        title: _('Create new tax class'),
         variant: "outline",
         onClick: ()=>setDialogOpen(true)
-    }, "Create new tax class")), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Create New Tax Class")), /*#__PURE__*/ React.createElement(TaxClassForm, {
+    }, _('Create new tax class'))), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Create New Tax Class'))), /*#__PURE__*/ React.createElement(TaxClassForm, {
         saveTaxClassApi: createTaxClassApi,
         closeModal: ()=>setDialogOpen(false),
         getTaxClasses: reexecuteQuery

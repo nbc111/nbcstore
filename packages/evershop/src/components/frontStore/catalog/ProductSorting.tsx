@@ -182,9 +182,11 @@ export function ProductSorting({
           ? 'opacity-50 cursor-not-allowed'
           : 'hover:text-primary cursor-pointer'
       }`}
-      aria-label={`Sort ${
-        props.sortOrder === 'asc' ? 'descending' : 'ascending'
-      }`}
+      aria-label={
+        props.sortOrder === 'asc'
+          ? _('Sort descending')
+          : _('Sort ascending')
+      }
     >
       {props.sortOrder === 'desc' ? (
         <ArrowDownWideNarrow className="w-5 h-5 text-muted-foreground" />

@@ -1,4 +1,5 @@
 import { DateField } from '@components/common/form/DateField.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { NumberField } from '@components/common/form/NumberField.js';
 import React from 'react';
 export const Setting = ({ discountAmount, startDate, endDate })=>{
@@ -7,21 +8,21 @@ export const Setting = ({ discountAmount, startDate, endDate })=>{
     }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(NumberField, {
         name: "discount_amount",
         defaultValue: discountAmount,
-        placeholder: "Discount amount",
+        placeholder: _('Discount amount'),
         required: true,
-        label: "Discount amount",
+        label: _('Discount amount'),
         validation: {
-            required: 'Discount amount is required'
+            required: _('Discount amount is required')
         }
     })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(DateField, {
         name: "start_date",
-        label: "Start date",
-        placeholder: "Start date",
+        label: _('Start date'),
+        placeholder: _('Start date'),
         defaultValue: startDate
     })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(DateField, {
-        placeholder: "End date",
+        placeholder: _('End date'),
         name: "end_date",
-        label: "End date",
+        label: _('End date'),
         defaultValue: endDate
     })));
 };

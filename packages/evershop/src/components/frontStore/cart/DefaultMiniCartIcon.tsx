@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { ShoppingBag } from 'lucide-react';
 import React from 'react';
 
@@ -24,7 +25,9 @@ export const DefaultMiniCartIcon = ({
       className={`mini-cart-icon relative ${
         disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
       } ${isOpen ? 'active' : ''}`}
-      aria-label={`Shopping cart with ${totalQty} items`}
+      aria-label={_('Shopping cart with ${count} items', {
+        count: String(totalQty)
+      })}
     >
       {syncStatus.syncing ? (
         <div className="w-6 h-6 flex items-center justify-center">

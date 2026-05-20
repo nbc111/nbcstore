@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Image.scss';
 import { ImageUploader } from '@components/admin/ImageUploader.js';
 import { InputField } from '@components/common/form/InputField.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import { useFormContext } from 'react-hook-form';
 export default function Image({ category }) {
@@ -17,7 +18,7 @@ export default function Image({ category }) {
         image,
         setValue
     ]);
-    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Category Image"), /*#__PURE__*/ React.createElement(CardDescription, null, "Upload an image for the category.")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(ImageUploader, {
+    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Category Image')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Upload an image for the category.'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(ImageUploader, {
         onUpload: (images)=>{
             if (images.length > 0) {
                 setImage(images[0]);

@@ -1,4 +1,5 @@
 import Area from '@components/common/Area.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputField } from '@components/common/form/InputField.js';
 import { TextareaField } from '@components/common/form/TextareaField.js';
 import {
@@ -27,8 +28,8 @@ export default function SEO({ product }: SEOProps) {
         default: (
           <InputField
             name="url_key"
-            label="URL Key"
-            placeholder="Enter URL Key"
+            label={_('URL Key')}
+            placeholder={_('Enter URL Key')}
             required
             defaultValue={product?.urlKey}
             validation={{
@@ -49,8 +50,8 @@ export default function SEO({ product }: SEOProps) {
         default: (
           <InputField
             name="meta_title"
-            label="Meta Title"
-            placeholder="Enter Meta Title"
+            label={_('Meta Title')}
+            placeholder={_('Enter Meta Title')}
             required
             defaultValue={product?.metaTitle}
             validation={{
@@ -78,8 +79,8 @@ export default function SEO({ product }: SEOProps) {
         default: (
           <TextareaField
             name="meta_description"
-            label="Meta Description"
-            placeholder="Enter Meta Description"
+            label={_('Meta Description')}
+            placeholder={_('Enter Meta Description')}
             defaultValue={product?.metaDescription || ''}
           />
         )
@@ -91,8 +92,8 @@ export default function SEO({ product }: SEOProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>SEO</CardTitle>
-        <CardDescription>Manage the SEO settings.</CardDescription>
+        <CardTitle>{_('SEO')}</CardTitle>
+        <CardDescription>{_('Manage the SEO settings.')}</CardDescription>
       </CardHeader>
       <CardContent>
         <Area

@@ -1,4 +1,5 @@
 import Spinner from '@components/admin/Spinner.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Form } from '@components/common/form/Form.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { NumberField } from '@components/common/form/NumberField.js';
@@ -59,17 +60,17 @@ function RateForm({ saveRateApi, closeModal, getTaxClasses, rate }) {
         className: "grid grid-cols-2 gap-5"
     }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(InputField, {
         name: "name",
-        placeholder: "Name",
+        placeholder: _('Name'),
         required: true,
         validation: {
             required: 'Name is required'
         },
-        label: "Name",
+        label: _('Name'),
         defaultValue: rate?.name
     })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(NumberField, {
         name: "rate",
-        label: "Rate",
-        placeholder: "Rate",
+        label: _('Rate'),
+        placeholder: _('Rate'),
         required: true,
         validation: {
             required: 'Rate is required'
@@ -81,8 +82,8 @@ function RateForm({ saveRateApi, closeModal, getTaxClasses, rate }) {
         className: "grid grid-cols-3 gap-5"
     }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(InputField, {
         name: "country",
-        label: "Country",
-        placeholder: "Country",
+        label: _('Country'),
+        placeholder: _('Country'),
         required: true,
         validation: {
             required: 'Country is required'
@@ -91,8 +92,8 @@ function RateForm({ saveRateApi, closeModal, getTaxClasses, rate }) {
         helperText: 'Country code (e.g., "US"). Use "*" for all countries.'
     })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(InputField, {
         name: "province",
-        label: "Provinces",
-        placeholder: "Provinces",
+        label: _('Provinces'),
+        placeholder: _('Provinces'),
         required: true,
         validation: {
             required: 'Provinces is required'
@@ -101,8 +102,8 @@ function RateForm({ saveRateApi, closeModal, getTaxClasses, rate }) {
         helperText: 'Province code (e.g., "CA"). Use "*" for all provinces.'
     })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(InputField, {
         name: "postcode",
-        label: "Postcode",
-        placeholder: "Postcode",
+        label: _('Postcode'),
+        placeholder: _('Postcode'),
         required: true,
         validation: {
             required: 'Postcode is required'
@@ -113,14 +114,14 @@ function RateForm({ saveRateApi, closeModal, getTaxClasses, rate }) {
         className: "grid grid-cols-2 gap-5 mt-5"
     }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(ToggleField, {
         name: "is_compound",
-        label: "Is compound",
+        label: _('Is compound'),
         defaultValue: rate?.isCompound || false
     })), /*#__PURE__*/ React.createElement("div", null)), /*#__PURE__*/ React.createElement("div", {
         className: "grid grid-cols-2 gap-5 mt-5"
     }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(NumberField, {
         name: "priority",
-        label: "Priority",
-        placeholder: "Priority",
+        label: _('Priority'),
+        placeholder: _('Priority'),
         validation: {
             required: 'Priority is required'
         },
@@ -132,7 +133,7 @@ function RateForm({ saveRateApi, closeModal, getTaxClasses, rate }) {
         title: "Cancel",
         variant: "secondary",
         onClick: closeModal
-    }, "Cancel"), /*#__PURE__*/ React.createElement(Button, {
+    }, _('Cancel')), /*#__PURE__*/ React.createElement(Button, {
         title: "Save",
         variant: "default",
         onClick: async ()=>{

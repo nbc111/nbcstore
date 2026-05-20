@@ -1,4 +1,5 @@
 import Area from '@components/common/Area.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 import './PageHeading.scss';
 function BackIcon({ backUrl }) {
@@ -25,7 +26,7 @@ function Heading({ heading }) {
         className: "self-center"
     }, /*#__PURE__*/ React.createElement("h1", {
         className: "page-heading-title"
-    }, heading));
+    }, _(heading)));
 }
 function PageHeading({ backUrl, heading }) {
     if (!heading) {

@@ -1,4 +1,5 @@
 import { GridPagination } from '@components/admin/grid/GridPagination';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { SortableHeader } from '@components/admin/grid/header/Sortable';
 import { Status } from '@components/admin/Status.js';
 import Area from '@components/common/Area';
@@ -27,18 +28,20 @@ function Actions({ customers = [], selectedIds = [] }) {
     };
     const actions = [
         {
-            name: 'Disable',
+            name: _('Disable'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Disable ${selectedIds.length} customers`,
-                    content: 'Are you sure?',
+                    heading: _('Disable ${count} customers', {
+                        count: String(selectedIds.length)
+                    }),
+                    content: _('Are you sure?'),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Disable',
+                        title: _('Disable'),
                         onAction: async ()=>{
                             await updateCustomers(0);
                         },
@@ -48,18 +51,20 @@ function Actions({ customers = [], selectedIds = [] }) {
             }
         },
         {
-            name: 'Enable',
+            name: _('Enable'),
             onAction: ()=>{
                 openAlert({
-                    heading: `Enable ${selectedIds.length} customers`,
-                    content: 'Are you sure?',
+                    heading: _('Enable ${count} customers', {
+                        count: String(selectedIds.length)
+                    }),
+                    content: _('Are you sure?'),
                     primaryAction: {
-                        title: 'Cancel',
+                        title: _('Cancel'),
                         onAction: closeAlert,
                         variant: 'secondary'
                     },
                     secondaryAction: {
-                        title: 'Enable',
+                        title: _('Enable'),
                         onAction: async ()=>{
                             await updateCustomers(1);
                         },
@@ -106,7 +111,7 @@ export default function CustomerGrid({ customers: { items: customers, total, cur
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement(InputField, {
                             name: "keyword",
-                            placeholder: "Search",
+                            placeholder: _('Search'),
                             defaultValue: currentFilters.find((f)=>f.key === 'keyword')?.value,
                             onKeyPress: (e)=>{
                                 // If the user press enter, we should submit the form
@@ -134,11 +139,11 @@ export default function CustomerGrid({ customers: { items: customers, total, cur
                                 url.searchParams.set('status', value);
                                 window.location.href = url.href;
                             }
-                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, "Status")), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, "Status"), /*#__PURE__*/ React.createElement(SelectItem, {
+                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, _('Status'))), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, _('Status')), /*#__PURE__*/ React.createElement(SelectItem, {
                             value: "1"
-                        }, "Enabled"), /*#__PURE__*/ React.createElement(SelectItem, {
+                        }, _('Enabled')), /*#__PURE__*/ React.createElement(SelectItem, {
                             value: "0"
-                        }, "Disabled"))))
+                        }, _('Disabled')))))
                 },
                 sortOrder: 10
             }
@@ -152,7 +157,7 @@ export default function CustomerGrid({ customers: { items: customers, total, cur
             url.search = '';
             window.location.href = url.href;
         }
-    }, "Clear filter"))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableCell, {
+    }, _('Clear filter')))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableCell, {
         className: "align-bottom"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "form-field mb-0"
@@ -264,7 +269,7 @@ export default function CustomerGrid({ customers: { items: customers, total, cur
             ]
         }))))), customers.length === 0 && /*#__PURE__*/ React.createElement("div", {
         className: "flex w-full justify-center mt-3"
-    }, "There is no customer to display"), /*#__PURE__*/ React.createElement(GridPagination, {
+    }, _('There is no customer to display')), /*#__PURE__*/ React.createElement(GridPagination, {
         total: total,
         limit: limit,
         page: page

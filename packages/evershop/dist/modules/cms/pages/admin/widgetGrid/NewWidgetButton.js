@@ -1,4 +1,5 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@components/common/ui/Dialog.js';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@components/common/ui/Item.js';
 import React from 'react';
@@ -17,7 +18,7 @@ const WidgetTypes = ({ types })=>{
         }, "Choose")))));
 };
 export default function NewWidgetButton({ widgetTypes }) {
-    return /*#__PURE__*/ React.createElement(Dialog, null, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, null, "New Widget")), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "New Widget")), /*#__PURE__*/ React.createElement(WidgetTypes, {
+    return /*#__PURE__*/ React.createElement(Dialog, null, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, null, _('New Widget'))), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('New Widget'))), /*#__PURE__*/ React.createElement(WidgetTypes, {
         types: widgetTypes
     })));
 }

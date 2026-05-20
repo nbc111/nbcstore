@@ -1,8 +1,9 @@
 import { setPageMetaInfo } from '../../../../cms/services/pageMetaInfo.js';
+import { translate } from '../../../../../lib/locale/translate/translate.js';
 
 export default (request) => {
   setPageMetaInfo(request, {
-    title: 'Shipping Setting',
-    description: 'Shipping Setting'
+    title: translate('Shipping Setting'),
+    description: translate('Shipping Setting')
   });
 };

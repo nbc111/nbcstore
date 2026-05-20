@@ -1,4 +1,5 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -30,7 +31,7 @@ export const EditVariant: React.FC<{
         </DialogTrigger>
         <DialogContent className={'sm:max-w-212.5'}>
           <DialogHeader>
-            <DialogTitle>Edit Variant</DialogTitle>
+            <DialogTitle>{_('Edit Variant')}</DialogTitle>
             <DialogDescription>
               Update the variant details and attributes here.
             </DialogDescription>

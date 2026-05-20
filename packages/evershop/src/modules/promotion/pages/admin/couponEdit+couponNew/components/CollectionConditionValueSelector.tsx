@@ -1,5 +1,6 @@
 import { CollectionSelector } from '@components/admin/CollectionSelector.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -66,7 +67,7 @@ export const CollectionConditionValueSelector: React.FC<{
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Choose Collections</DialogTitle>
+          <DialogTitle>{_('Choose Collections')}</DialogTitle>
         </DialogHeader>
         <CollectionSelector
           onSelect={onSelect}

@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 import './NavigationItem.scss';
 
@@ -49,7 +50,7 @@ export function NavigationItem({ Icon, url, title }: NavigationItemProps) {
         <i className="menu-icon">
           <Icon />
         </i>
-        {title}
+        {_(title)}
       </a>
     </li>
   );

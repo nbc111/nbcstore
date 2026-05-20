@@ -1,10 +1,11 @@
 import { AddressSummary } from '@components/common/customer/address/AddressSummary.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardContent, CardHeader, CardTitle } from '@components/common/ui/Card.js';
 import React from 'react';
 export default function Customer({ order: { noShippingRequired, shippingAddress, billingAddress, customerFullName, customerEmail, customerUrl } }) {
     return /*#__PURE__*/ React.createElement(Card, {
         className: ""
-    }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Customer Information")), /*#__PURE__*/ React.createElement(CardContent, null, customerUrl && /*#__PURE__*/ React.createElement("a", {
+    }, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Customer Information'))), /*#__PURE__*/ React.createElement(CardContent, null, customerUrl && /*#__PURE__*/ React.createElement("a", {
         href: customerUrl,
         className: "text-interactive hover:underline block"
     }, customerFullName), !customerUrl && /*#__PURE__*/ React.createElement("span", null, customerEmail, " (Guest Checkout)")), /*#__PURE__*/ React.createElement(CardContent, {

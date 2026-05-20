@@ -6,6 +6,7 @@ import { Check } from 'lucide-react';
 import React from 'react';
 import { useQuery } from 'urql';
 import { AtLeastOne } from '../../types/atLeastOne.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 
 const SearchQuery = `
   query Query ($filters: [FilterInput!]) {
@@ -137,7 +138,7 @@ const CategorySelector: React.FC<{
           <Input
             type="text"
             value={inputValue || ''}
-            placeholder="Search categories"
+            placeholder={_('Search categories')}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setInputValue(e.target.value);
               setLoading(true);
@@ -152,7 +153,7 @@ const CategorySelector: React.FC<{
                 {inputValue ? (
                   <p>No categories found for query &quot;{inputValue}&rdquo;</p>
                 ) : (
-                  <p>You have no categories to display</p>
+                  <p>{_('You have no categories to display')}</p>
                 )}
               </div>
             )}

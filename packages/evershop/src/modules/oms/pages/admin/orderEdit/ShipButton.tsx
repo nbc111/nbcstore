@@ -1,4 +1,5 @@
 import { Form } from '@components/common/form/Form.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputField } from '@components/common/form/InputField.js';
 import { SelectField } from '@components/common/form/SelectField.js';
 import { useAlertContext } from '@components/common/modal/Alert.js';
@@ -31,9 +32,7 @@ export default function ShipButton({
   const { openAlert, closeAlert, dispatchAlert } = useAlertContext();
   if (noShippingRequired) {
     return (
-      <Button disabled variant="secondary">
-        No Shipping Required
-      </Button>
+      <Button disabled variant="secondary">{_('No Shipping Required')}</Button>
     );
   }
   if (shipment) {
@@ -77,14 +76,14 @@ export default function ShipButton({
                         <InputField
                           type="text"
                           name="tracking_number"
-                          label="Tracking number"
-                          placeholder="Tracking number"
+                          label={_('Tracking number')}
+                          placeholder={_('Tracking number')}
                         />
                       </div>
                       <div>
                         <SelectField
                           name="carrier"
-                          label="Carrier"
+                          label={_('Carrier')}
                           options={carriers}
                         />
                       </div>
@@ -93,12 +92,12 @@ export default function ShipButton({
                 </div>
               ),
               primaryAction: {
-                title: 'Cancel',
+                title: _('Cancel'),
                 onAction: closeAlert,
                 variant: 'outline'
               },
               secondaryAction: {
-                title: 'Ship',
+                title: _('Ship'),
                 onAction: () => {
                   dispatchAlert({
                     type: 'update',

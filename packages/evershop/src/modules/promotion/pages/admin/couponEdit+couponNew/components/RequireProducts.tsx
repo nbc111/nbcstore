@@ -2,6 +2,7 @@ import { InputField } from '@components/common/form/InputField.js';
 import { NumberField } from '@components/common/form/NumberField.js';
 import { SelectField } from '@components/common/form/SelectField.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Table,
   TableBody,
@@ -49,22 +50,24 @@ export function RequiredProducts({
   return (
     <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
       <div>
-        <span>Order must contains product matched bellow conditions(All)</span>
+        <span>
+          {_('Order must contain products matching all of the following conditions')}
+        </span>
       </div>
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>
-              <span>Key</span>
+              <span>{_('Key')}</span>
             </TableHead>
             <TableHead>
-              <span>Operator</span>
+              <span>{_('Operator')}</span>
             </TableHead>
             <TableHead>
-              <span>Value</span>
+              <span>{_('Value')}</span>
             </TableHead>
             <TableHead>
-              <span>Minimum quantity</span>
+              <span>{_('Minimum quantity')}</span>
             </TableHead>
             <TableHead> </TableHead>
           </TableRow>
@@ -173,7 +176,7 @@ export function RequiredProducts({
                         ? p.qty
                         : parseInt(p.qty, 10) || 1
                     }
-                    placeholder="Enter the quantity"
+                    placeholder={_('Enter the quantity')}
                     required
                     validation={{
                       required: 'Minimum quantity is required',
@@ -231,7 +234,7 @@ export function RequiredProducts({
               });
             }}
           >
-            <span>Add product</span>
+            <span>{_('Add product')}</span>
           </Button>
         </div>
       </div>

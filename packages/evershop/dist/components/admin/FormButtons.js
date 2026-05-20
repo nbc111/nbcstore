@@ -1,4 +1,5 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 const FormButtons = ({ cancelUrl, formId })=>{
@@ -10,7 +11,7 @@ const FormButtons = ({ cancelUrl, formId })=>{
         onClick: ()=>{
             window.location.href = cancelUrl;
         }
-    }, "Cancel"), /*#__PURE__*/ React.createElement(Button, {
+    }, _('Cancel')), /*#__PURE__*/ React.createElement(Button, {
         onClick: ()=>{
             document.getElementById(formId).dispatchEvent(new Event('submit', {
                 cancelable: true,
@@ -18,6 +19,6 @@ const FormButtons = ({ cancelUrl, formId })=>{
             }));
         },
         isLoading: isSubmitting
-    }, "Save"));
+    }, _('Save')));
 };
 export { FormButtons };

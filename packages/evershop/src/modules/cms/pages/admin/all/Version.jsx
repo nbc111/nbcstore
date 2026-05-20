@@ -1,3 +1,4 @@
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -5,7 +6,7 @@ import React from 'react';
 export default function Version({ version }) {
   return (
     <div className="version">
-      <span>Version {version}</span>
+      <span>{_('Version ${version}', { version })}</span>
     </div>
   );
 }

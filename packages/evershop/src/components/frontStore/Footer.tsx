@@ -1,5 +1,6 @@
 import Area from '@components/common/Area.js';
 import { Toaster } from '@components/common/ui/Sonner.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 
 interface FooterProps {
@@ -110,7 +111,7 @@ export function Footer({ copyRight }: FooterProps) {
                   </div>
                   <div className="self-center">
                     <div className="copyright text-center md:text-right text-textSubdued">
-                      <span>{copyRight}</span>
+                      <span>{_(copyRight)}</span>
                     </div>
                   </div>
                 </div>

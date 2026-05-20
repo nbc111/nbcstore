@@ -1,6 +1,7 @@
 import { ProductListSkeleton } from '@components/admin/ProductListSkeleton.js';
 import { ProductSelector } from '@components/admin/ProductSelector.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Card, CardContent, CardTitle, CardDescription, CardHeader, CardAction } from '@components/common/ui/Card.js';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/common/ui/Dialog.js';
 import { Input } from '@components/common/ui/Input.js';
@@ -137,9 +138,9 @@ export default function Products({ category: { categoryId, addProductApi } }) {
         page
     ]);
     const { data, fetching, error } = result;
-    return /*#__PURE__*/ React.createElement(Dialog, null, /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "Products"), /*#__PURE__*/ React.createElement(CardDescription, null, "Manage the products assigned to this category."), /*#__PURE__*/ React.createElement(CardAction, null, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, {
+    return /*#__PURE__*/ React.createElement(Dialog, null, /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Products')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Manage the products assigned to this category.')), /*#__PURE__*/ React.createElement(CardAction, null, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, {
         variant: "link"
-    }, "Add Products")))), error && /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("span", {
+    }, _('Add Products'))))), error && /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("span", {
         className: "text-destructive"
     }, error.message)), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", {
         className: "mb-5"
@@ -148,14 +149,16 @@ export default function Products({ category: { categoryId, addProductApi } }) {
     }, /*#__PURE__*/ React.createElement(Input, {
         type: "text",
         value: keyword,
-        placeholder: "Search products",
+        placeholder: _('Search products'),
         onChange: (e)=>{
             setLoading(true);
             setKeyword(e.target.value);
         }
-    }))), data && !loading && /*#__PURE__*/ React.createElement(React.Fragment, null, data.category.products.items.length === 0 && /*#__PURE__*/ React.createElement("div", null, "No product to display."), /*#__PURE__*/ React.createElement("div", {
+    }))), data && !loading && /*#__PURE__*/ React.createElement(React.Fragment, null, data.category.products.items.length === 0 && /*#__PURE__*/ React.createElement("div", null, _('No product to display.')), /*#__PURE__*/ React.createElement("div", {
         className: "flex justify-between"
-    }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("i", null, data.category.products.total, " items")), /*#__PURE__*/ React.createElement("div", null, data.category.products.total > 10 && /*#__PURE__*/ React.createElement("div", {
+    }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("i", null, _('${count} items', {
+        count: String(data.category.products.total)
+    }))), /*#__PURE__*/ React.createElement("div", null, data.category.products.total > 10 && /*#__PURE__*/ React.createElement("div", {
         className: "flex justify-between gap-2"
     }, page > 1 && /*#__PURE__*/ React.createElement("a", {
         className: "text-interactive",
@@ -164,14 +167,14 @@ export default function Products({ category: { categoryId, addProductApi } }) {
             e.preventDefault();
             setPage(page - 1);
         }
-    }, "Previous"), page < data.category.products.total / 10 && /*#__PURE__*/ React.createElement("a", {
+    }, _('Previous')), page < data.category.products.total / 10 && /*#__PURE__*/ React.createElement("a", {
         className: "text-interactive",
         href: "#",
         onClick: (e)=>{
             e.preventDefault();
             setPage(page + 1);
         }
-    }, "Next")))), /*#__PURE__*/ React.createElement("div", {
+    }, _('Next'))))), /*#__PURE__*/ React.createElement("div", {
         className: "divide-y"
     }, data.category.products.items.map((p)=>/*#__PURE__*/ React.createElement("div", {
             key: p.uuid,
@@ -207,9 +210,9 @@ export default function Products({ category: { categoryId, addProductApi } }) {
                 await removeProduct(p.removeFromCategoryUrl, p.uuid);
             },
             isLoading: removing.includes(p.uuid)
-        }, "Remove")))))), (fetching || loading) && /*#__PURE__*/ React.createElement(ProductListSkeleton, null)))), /*#__PURE__*/ React.createElement(DialogContent, {
+        }, _('Remove'))))))), (fetching || loading) && /*#__PURE__*/ React.createElement(ProductListSkeleton, null)))), /*#__PURE__*/ React.createElement(DialogContent, {
         className: "sm:max-w-[90vw] lg:max-w-200"
-    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Add Products"), /*#__PURE__*/ React.createElement(DialogDescription, null, "Add products to this category by selecting them from the list below."), data && /*#__PURE__*/ React.createElement(ProductSelector, {
+    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Add Products')), /*#__PURE__*/ React.createElement(DialogDescription, null, _('Add products to this category by selecting them from the list below.')), data && /*#__PURE__*/ React.createElement(ProductSelector, {
         onSelect: addProductFunction,
         selectedProducts: data.category.products.items.map((p)=>({
                 sku: p.sku,

@@ -22,12 +22,12 @@ export function RangeField({ name, label, error, wrapperClassName, helperText, r
         className: `form-field ${wrapperClassName} ${fieldError ? 'error' : ''}`
     }, label && /*#__PURE__*/ React.createElement("label", {
         htmlFor: fieldId
-    }, label, required && /*#__PURE__*/ React.createElement("span", {
+    }, _(label), required && /*#__PURE__*/ React.createElement("span", {
         className: "text-destructive"
     }, "*"), showValue && /*#__PURE__*/ React.createElement("span", {
         className: "range-value"
     }, "(", value, ")"), helperText && /*#__PURE__*/ React.createElement(Tooltip, {
-        content: helperText,
+        content: _(helperText),
         position: "top"
     })), /*#__PURE__*/ React.createElement("input", {
         id: fieldId,

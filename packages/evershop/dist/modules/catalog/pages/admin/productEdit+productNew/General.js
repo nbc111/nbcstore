@@ -18,14 +18,14 @@ const SKUAndPrice = ({ sku, price, setting })=>{
         className: "grid grid-cols-2 gap-2"
     }, /*#__PURE__*/ React.createElement(InputField, {
         name: "sku",
-        label: "SKU",
-        placeholder: "Enter SKU",
+        label: _('SKU'),
+        placeholder: _('Enter SKU'),
         defaultValue: sku,
         required: true,
         helperText: _('SKU must be unique')
     }), /*#__PURE__*/ React.createElement(NumberField, {
         name: "price",
-        placeholder: "Enter price",
+        placeholder: _('Enter price'),
         label: `Price`,
         defaultValue: price?.value,
         unit: setting.storeCurrency,
@@ -119,7 +119,7 @@ const CategorySelect = ({ product })=>{
             e.preventDefault();
             setDialogOpen(true);
         }
-    }, "Select category"), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Select Category")), /*#__PURE__*/ React.createElement(CategorySelector, {
+    }, "Select category"), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Select Category'))), /*#__PURE__*/ React.createElement(CategorySelector, {
         onSelect: onSelect,
         onUnSelect: ()=>{},
         selectedCategories: category ? [
@@ -128,7 +128,7 @@ const CategorySelect = ({ product })=>{
     }))));
 };
 export default function General({ product, setting, productTaxClasses: { items: taxClasses } }) {
-    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, "General Information"), /*#__PURE__*/ React.createElement(CardDescription, null, "Manage the general information of the product.")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Area, {
+    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('General Information')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Manage the general information of the product.'))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Area, {
         id: "productEditGeneral",
         className: "flex flex-col gap-2",
         coreComponents: [
@@ -136,8 +136,8 @@ export default function General({ product, setting, productTaxClasses: { items: 
                 component: {
                     default: /*#__PURE__*/ React.createElement(InputField, {
                         name: "name",
-                        placeholder: "Enter product name",
-                        label: "Product Name",
+                        placeholder: _('Enter product name'),
+                        label: _('Product Name'),
                         defaultValue: product?.name,
                         required: true,
                         helperText: _('Product name is required')
@@ -172,7 +172,7 @@ export default function General({ product, setting, productTaxClasses: { items: 
                 component: {
                     default: /*#__PURE__*/ React.createElement(SelectField, {
                         name: "tax_class",
-                        label: "Tax Class",
+                        label: _('Tax Class'),
                         options: taxClasses.map((taxClass)=>({
                                 value: taxClass.value,
                                 label: taxClass.text
@@ -191,7 +191,7 @@ export default function General({ product, setting, productTaxClasses: { items: 
                 component: {
                     default: /*#__PURE__*/ React.createElement(Editor, {
                         name: "description",
-                        label: "Description",
+                        label: _('Description'),
                         value: product?.description
                     })
                 },

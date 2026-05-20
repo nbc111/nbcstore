@@ -3,6 +3,7 @@ import { NumberField } from '@components/common/form/NumberField.js';
 import { SelectField } from '@components/common/form/SelectField.js';
 import { Button } from '@components/common/ui/Button.js';
 import { Item, ItemContent, ItemTitle } from '@components/common/ui/Item.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/common/ui/Table.js';
 import React, { useEffect } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
@@ -32,7 +33,7 @@ function Products({ targetProducts, maxQty }) {
         className: "mb-2 mt-2"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "flex justify-start items-center"
-    }, /*#__PURE__*/ React.createElement("div", null, "Maximum"), /*#__PURE__*/ React.createElement("div", {
+    }, /*#__PURE__*/ React.createElement("div", null, _('Maximum')), /*#__PURE__*/ React.createElement("div", {
         style: {
             width: '100px',
             padding: '0 1rem'
@@ -40,18 +41,18 @@ function Products({ targetProducts, maxQty }) {
     }, /*#__PURE__*/ React.createElement(NumberField, {
         name: "target_products.maxQty",
         defaultValue: maxQty,
-        placeholder: "10",
+        placeholder: _('10'),
         required: true,
         validation: {
-            required: 'Maximum quantity is required',
+            required: _('Maximum quantity is required'),
             min: {
                 value: 0,
-                message: 'Maximum quantity must be greater than or equal to 0'
+                message: _('Maximum quantity must be greater than or equal to 0')
             }
         },
         min: 0,
         wrapperClassName: "form-field mb-0"
-    })), /*#__PURE__*/ React.createElement("div", null, "quantity of products are matched bellow conditions(All)"))), /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "Key")), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "Operator")), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, "Value")), /*#__PURE__*/ React.createElement(TableHead, null, " "))), /*#__PURE__*/ React.createElement(TableBody, null, fields.map((product, index)=>/*#__PURE__*/ React.createElement(TableRow, {
+    })), /*#__PURE__*/ React.createElement("div", null, _('quantity of products matching all of the following conditions')))), /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableHeader, null, /*#__PURE__*/ React.createElement(TableRow, null, /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, _('Key'))), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, _('Operator'))), /*#__PURE__*/ React.createElement(TableHead, null, /*#__PURE__*/ React.createElement("span", null, _('Value'))), /*#__PURE__*/ React.createElement(TableHead, null, " "))), /*#__PURE__*/ React.createElement(TableBody, null, fields.map((product, index)=>/*#__PURE__*/ React.createElement(TableRow, {
             key: product.id
         }, /*#__PURE__*/ React.createElement(TableCell, null, product.editable ? /*#__PURE__*/ React.createElement(SelectField, {
             name: `target_products.products.${index}.key`,
@@ -81,7 +82,7 @@ function Products({ targetProducts, maxQty }) {
                     label: operator.label
                 })),
             wrapperClassName: "form-field mb-0",
-            placeholder: "Select operator"
+            placeholder: _('Select operator')
         }) : /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement(InputField, {
             type: "hidden",
             name: `target_products.products.${index}.operator`,
@@ -142,7 +143,7 @@ function Products({ targetProducts, maxQty }) {
                 editable: true
             });
         }
-    }, /*#__PURE__*/ React.createElement("span", null, "Add product")))));
+    }, /*#__PURE__*/ React.createElement("span", null, _('Add product'))))));
 }
 export function TargetProducts({ products, maxQty }) {
     const { watch } = useFormContext();
@@ -153,7 +154,7 @@ export function TargetProducts({ products, maxQty }) {
     return /*#__PURE__*/ React.createElement(Item, {
         variant: 'outline',
         className: "mt-6"
-    }, /*#__PURE__*/ React.createElement(ItemContent, null, /*#__PURE__*/ React.createElement(ItemTitle, null, "Target Products"), /*#__PURE__*/ React.createElement(Products, {
+    }, /*#__PURE__*/ React.createElement(ItemContent, null, /*#__PURE__*/ React.createElement(ItemTitle, null, _('Target Products')), /*#__PURE__*/ React.createElement(Products, {
         targetProducts: products,
         maxQty: maxQty
     })));

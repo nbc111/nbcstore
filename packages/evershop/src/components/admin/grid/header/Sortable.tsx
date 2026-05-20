@@ -1,4 +1,5 @@
 import { TableCell } from '@components/common/ui/Table.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 
 function Up() {
@@ -122,7 +123,7 @@ export function SortableHeader({
     <TableCell>
       <div className="table-header flex justify-start gap-2 content-center">
         <div className="font-medium uppercase text-xs">
-          <span>{title}</span>
+          <span>{_(title)}</span>
         </div>
         <div className="sort flex items-center">
           <button type="button" onClick={onChange}>

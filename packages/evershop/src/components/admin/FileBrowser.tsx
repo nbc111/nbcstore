@@ -4,6 +4,7 @@ import './FileBrowser.scss';
 import { useQuery } from 'urql';
 import Spinner from '@components/admin/Spinner.js';
 import { Input } from '@components/common/ui/Input.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 
 const GetApisQuery = `
   query Query ($filters: [FilterInput!]) {
@@ -328,7 +329,7 @@ const FileBrowser: React.FC<{
             <div className="col-span-1">
               <div className="current-path mb-10">
                 <div className="flex">
-                  <div className="pr-2">You are here:</div>
+                  <div className="pr-2">{_('You are here:')}</div>
                   <div>
                     <a
                       href="#"
@@ -388,14 +389,14 @@ const FileBrowser: React.FC<{
                 ))}
                 {folders.length === 0 && (
                   <li className="list-group-item">
-                    <span>There is no sub folder.</span>
+                    <span>{_('There is no sub folder.')}</span>
                   </li>
                 )}
               </ul>
               <div className="justify-start items-center gap-2 flex">
                 <Input
                   type="text"
-                  placeholder="New folder"
+                  placeholder={_('New folder')}
                   ref={newFolderRefInput}
                 />
                 <Button
@@ -404,7 +405,7 @@ const FileBrowser: React.FC<{
                   }
                   variant={'outline'}
                 >
-                  Create
+                  {_('Create')}
                 </Button>
               </div>
             </div>
@@ -413,17 +414,17 @@ const FileBrowser: React.FC<{
               <div className="tool-bar grid grid-cols-3 gap-2 mb-5">
                 <Button
                   variant="destructive"
-                  title="Delete image"
+                  title={_('Delete image')}
                   onClick={() => deleteFile()}
                 >
-                  Delete
+                  {_('Delete')}
                 </Button>
                 <Button
                   variant="default"
-                  title="Insert image"
+                  title={_('Insert image')}
                   onClick={() => insertFile()}
                 >
-                  Insert
+                  {_('Insert')}
                 </Button>
                 <Button
                   variant="outline"
@@ -435,7 +436,7 @@ const FileBrowser: React.FC<{
                     ).click();
                   }}
                 >
-                  Upload
+                  {_('Upload')}
                 </Button>
                 <label
                   className="self-center"
@@ -452,7 +453,7 @@ const FileBrowser: React.FC<{
                   </a>
                 </label>
               </div>
-              {files.length === 0 && <div>There is no file to display.</div>}
+              {files.length === 0 && <div>{_('There is no file to display.')}</div>}
               <div className="grid grid-cols-9 gap-2">
                 {files.map((f) => (
                   <File file={f} select={onSelectFile} key={f.name} />

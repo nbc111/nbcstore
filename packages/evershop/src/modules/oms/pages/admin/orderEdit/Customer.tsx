@@ -1,4 +1,5 @@
 import { AddressSummary } from '@components/common/customer/address/AddressSummary.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Card,
   CardContent,
@@ -61,7 +62,7 @@ export default function Customer({
   return (
     <Card className="">
       <CardHeader>
-        <CardTitle>Customer Information</CardTitle>
+        <CardTitle>{_('Customer Information')}</CardTitle>
       </CardHeader>
       <CardContent>
         {customerUrl && (

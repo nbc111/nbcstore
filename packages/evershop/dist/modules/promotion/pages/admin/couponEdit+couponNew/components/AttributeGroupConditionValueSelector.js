@@ -1,5 +1,6 @@
 import { AttributeGroupSelector } from '@components/admin/AttributeGroupSelector.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@components/common/ui/Dialog.js';
 import React from 'react';
 export const AttributeGroupConditionValueSelector = ({ selectedValues, updateCondition, isMulti })=>{
@@ -42,7 +43,7 @@ export const AttributeGroupConditionValueSelector = ({ selectedValues, updateCon
             className: "italic"
         }, "‘", id, "’"), index === 1 && /*#__PURE__*/ React.createElement("span", null, " and ", selectedIds.current.length - 1, " more"))), selectedIds.current.length === 0 && /*#__PURE__*/ React.createElement("span", null, "Choose Attribute Groups"))), /*#__PURE__*/ React.createElement(DialogContent, {
         className: 'max-w-[60vw]'
-    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Choose Attribute Groups")), /*#__PURE__*/ React.createElement(AttributeGroupSelector, {
+    }, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Choose Attribute Groups'))), /*#__PURE__*/ React.createElement(AttributeGroupSelector, {
         onSelect: onSelect,
         onUnSelect: onUnSelect,
         selectedAttributeGroups: selectedIds.current.map((id)=>({

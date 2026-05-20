@@ -72,7 +72,7 @@ export function ReactSelectCreatableField({ name, label, error, wrapperClassName
                 className: wrapperClassName
             }, label && /*#__PURE__*/ React.createElement(FieldLabel, {
                 htmlFor: fieldId
-            }, label, required && /*#__PURE__*/ React.createElement("span", {
+            }, _(label), required && /*#__PURE__*/ React.createElement("span", {
                 className: "text-destructive"
             }, "*")), /*#__PURE__*/ React.createElement(CreatableSelect, {
                 ...field,
@@ -122,7 +122,7 @@ export function ReactSelectCreatableField({ name, label, error, wrapperClassName
             }, fieldError), helperText && !fieldError && /*#__PURE__*/ React.createElement("p", {
                 id: `${fieldId}-helper`,
                 className: "field-helper"
-            }, helperText));
+            }, _(helperText)));
         }
     });
 }

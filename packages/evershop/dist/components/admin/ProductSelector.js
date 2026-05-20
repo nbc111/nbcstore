@@ -6,6 +6,7 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { useQuery } from 'urql';
 import { ProductListSkeleton } from './ProductListSkeleton.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 const SearchQuery = `
   query Query ($filters: [FilterInput!]) {
     products(filters: $filters) {
@@ -127,7 +128,7 @@ const ProductSelector = ({ onSelect, onUnSelect, selectedProducts })=>{
     }, /*#__PURE__*/ React.createElement(Input, {
         type: "text",
         value: inputValue || '',
-        placeholder: "Search products",
+        placeholder: _('Search products'),
         onChange: (e)=>{
             setInputValue(e.target.value);
             setLoading(true);
@@ -136,7 +137,7 @@ const ProductSelector = ({ onSelect, onUnSelect, selectedProducts })=>{
         className: "divide-y"
     }, data.products.items.length === 0 && /*#__PURE__*/ React.createElement("div", {
         className: "p-2 border border-divider rounded flex justify-center items-center"
-    }, inputValue ? /*#__PURE__*/ React.createElement("p", null, 'No products found for query "', inputValue, "”") : /*#__PURE__*/ React.createElement("p", null, "You have no products to display")), data.products.items.map((product)=>/*#__PURE__*/ React.createElement("div", {
+    }, inputValue ? /*#__PURE__*/ React.createElement("p", null, 'No products found for query "', inputValue, "”") : /*#__PURE__*/ React.createElement("p", null, _('You have no products to display'))), data.products.items.map((product)=>/*#__PURE__*/ React.createElement("div", {
             key: product.uuid,
             className: "grid grid-cols-8 gap-5 py-2 border-divider items-center"
         }, /*#__PURE__*/ React.createElement("div", {

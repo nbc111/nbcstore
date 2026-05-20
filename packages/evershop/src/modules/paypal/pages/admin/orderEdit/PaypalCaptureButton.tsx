@@ -4,6 +4,7 @@ import { Card, CardContent } from '@components/common/ui/Card.js';
 import axios from 'axios';
 import React from 'react';
 import { toast } from 'react-toastify';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 
 interface Props {
   captureAPI: string;
@@ -48,9 +49,7 @@ export default function PaypalCaptureButton({
     >
       <CardContent>
         <div className="flex justify-end">
-          <Button onClick={onAction} isLoading={isLoading}>
-            Capture Payment
-          </Button>
+          <Button onClick={onAction} isLoading={isLoading}>{_('Capture Payment')}</Button>
         </div>
       </CardContent>
     </RenderIfTrue>

@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-has-content */ import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { cn } from '@evershop/evershop/lib/util/cn';
 import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from 'lucide-react';
 import * as React from 'react';
@@ -40,7 +41,7 @@ function PaginationLink({ className, isActive, size = 'icon', ...props }) {
 }
 function PaginationPrevious({ className, ...props }) {
     return /*#__PURE__*/ React.createElement(PaginationLink, {
-        "aria-label": "Go to previous page",
+        "aria-label": _('Go to previous page'),
         size: "default",
         className: cn('pl-2!', className),
         ...props
@@ -48,17 +49,17 @@ function PaginationPrevious({ className, ...props }) {
         "data-icon": "inline-start"
     }), /*#__PURE__*/ React.createElement("span", {
         className: "hidden sm:block"
-    }, "Previous"));
+    }, _('Previous')));
 }
 function PaginationNext({ className, ...props }) {
     return /*#__PURE__*/ React.createElement(PaginationLink, {
-        "aria-label": "Go to next page",
+        "aria-label": _('Go to next page'),
         size: "default",
         className: cn('pr-2!', className),
         ...props
     }, /*#__PURE__*/ React.createElement("span", {
         className: "hidden sm:block"
-    }, "Next"), /*#__PURE__*/ React.createElement(ChevronRightIcon, {
+    }, _('Next')), /*#__PURE__*/ React.createElement(ChevronRightIcon, {
         "data-icon": "inline-end"
     }));
 }

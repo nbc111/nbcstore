@@ -1,4 +1,5 @@
 import Spinner from '@components/admin/Spinner.jsx';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { InputField } from '@components/common/form/InputField.js';
 import { RadioGroupField } from '@components/common/form/RadioGroupField.js';
 import { Button } from '@components/common/ui/Button.js';
@@ -68,7 +69,7 @@ const Groups: React.FC<{ groups: Group[]; createGroupApi: string }> = ({
 
   const createGroup = () => {
     if (!newGroup.current?.value) {
-      setCreateGroupError('Group name is required');
+      setCreateGroupError(_('Group name is required'));
       return;
     }
     fetch(createGroupApi, {
@@ -102,7 +103,9 @@ const Groups: React.FC<{ groups: Group[]; createGroupApi: string }> = ({
 
   return (
     <div>
-      <div className="mb-2">Select groups the attribute belongs to</div>
+      <div className="mb-2">
+        {_('Select groups the attribute belongs to')}
+      </div>
       <div className="grid gap-5 grid-cols-2">
         <div>
           <Controller
@@ -133,7 +136,7 @@ const Groups: React.FC<{ groups: Group[]; createGroupApi: string }> = ({
               <InputGroup className="max-w-xs">
                 <InputGroupInput
                   type="text"
-                  placeholder="Create a new group"
+                  placeholder={_('Create a new group')}
                   ref={newGroup}
                 />
                 <InputGroupAddon align="inline-end">
@@ -200,8 +203,8 @@ const Options: React.FC<{
             <div className="flex-1">
               <InputField
                 name={`options.${index}.option_text`}
-                placeholder="Option text"
-                validation={{ required: 'Option text is required' }}
+                placeholder={_('Option text')}
+                validation={{ required: _('Option text is required') }}
               />
               <InputField type="hidden" name={`options.${index}.option_id`} />
             </div>
@@ -214,16 +217,14 @@ const Options: React.FC<{
                 }}
                 variant={'destructive'}
               >
-                Remove
+                {_('Remove')}
               </Button>
             </div>
           </div>
         );
       })}
       <div className="mt-2">
-        <Button type="button" onClick={addOption} variant={'outline'}>
-          Add option
-        </Button>
+        <Button type="button" onClick={addOption} variant={'outline'}>{_('Add option')}</Button>
       </div>
     </div>
   );
@@ -256,30 +257,30 @@ export default function General({ attribute, createGroupApi }: GeneralProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>General</CardTitle>
-        <CardDescription>
-          Manage the general information of the attribute.
-        </CardDescription>
+        <CardTitle>{_('General')}</CardTitle>
+        <CardDescription>{_('Manage the general information of the attribute.')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
           <InputField
             name="attribute_name"
-            label="Name"
-            placeholder="Enter attribute name"
+            label={_('Name')}
+            placeholder={_('Enter attribute name')}
             required
             defaultValue={attribute?.attributeName}
-            validation={{ required: 'Attribute name is required' }}
+            validation={{ required: _('Attribute name is required') }}
           />
 
           <InputField
             name="attribute_code"
-            label="Code"
-            placeholder="Enter attribute code"
+            label={_('Code')}
+            placeholder={_('Enter attribute code')}
             required
             defaultValue={attribute?.attributeCode}
-            validation={{ required: 'Attribute code is required' }}
-            helperText="Attribute code is used in API and must be unique"
+            validation={{ required: _('Attribute code is required') }}
+            helperText={_(
+              'Attribute code is used in API and must be unique'
+            )}
           />
 
           <div>
@@ -287,27 +288,27 @@ export default function General({ attribute, createGroupApi }: GeneralProps) {
               <RadioGroupField
                 name="type"
                 options={[
-                  { label: 'Text', value: 'text' },
-                  { label: 'Select', value: 'select' },
-                  { label: 'Multiselect', value: 'multiselect' },
-                  { label: 'Textarea', value: 'textarea' }
+                  { label: _('Text'), value: 'text' },
+                  { label: _('Select list'), value: 'select' },
+                  { label: _('Multiselect'), value: 'multiselect' },
+                  { label: _('Textarea'), value: 'textarea' }
                 ]}
-                label="Type"
+                label={_('Type')}
                 defaultValue={attribute?.type}
                 required
                 disabled={!!attribute?.attributeId}
-                validation={{ required: 'Type is required' }}
+                validation={{ required: _('Type is required') }}
               />
             </div>
           </div>
         </div>
       </CardContent>
       {['select', 'multiselect'].includes(type) && (
-        <CardContent title="Attribute options">
+        <CardContent title={_('Attribute options')}>
           <Options originOptions={get(attribute, 'options', [])} />
         </CardContent>
       )}
-      <CardContent title="Attribute Group">
+      <CardContent title={_('Attribute Group')}>
         <Groups
           groups={get(attribute, 'groups.items', [])}
           createGroupApi={createGroupApi}

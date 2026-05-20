@@ -82,7 +82,7 @@ export const DefaultAttributeFilterRender = ({ availableAttributes, currentFilte
             className: "flex items-center justify-between text-left flex-1 hover:text-primary transition-colors"
         }, /*#__PURE__*/ React.createElement("span", {
             className: "font-medium"
-        }, attribute.attributeName), /*#__PURE__*/ React.createElement("svg", {
+        }, _(attribute.attributeName)), /*#__PURE__*/ React.createElement("svg", {
             className: `w-4 h-4 transition-transform ${isCollapsed ? 'rotate-180' : ''}`,
             fill: "none",
             stroke: "currentColor",
@@ -96,7 +96,7 @@ export const DefaultAttributeFilterRender = ({ availableAttributes, currentFilte
             variant: 'link',
             onClick: ()=>clearAttributeFilter(attribute.attributeCode),
             className: "hover:text-destructive text-sm transition-colors",
-            title: "Clear all"
+            title: _('Clear all')
         }, "✕")), !isCollapsed && /*#__PURE__*/ React.createElement("div", {
             className: "filter__content"
         }, attribute.options.length > 5 && /*#__PURE__*/ React.createElement("div", {
@@ -120,7 +120,7 @@ export const DefaultAttributeFilterRender = ({ availableAttributes, currentFilte
                 onCheckedChange: (checked)=>handleAttributeChange(attribute.attributeCode, option.optionId.toString(), checked)
             }), /*#__PURE__*/ React.createElement(Label, {
                 htmlFor: `${attribute.attributeCode}-${option.optionId}`
-            }, option.optionText));
+            }, _(option.optionText)));
         }) : /*#__PURE__*/ React.createElement("div", {
             className: "text-muted-foreground text-sm text-center py-4"
         }, _('No options found for "${code}"', {

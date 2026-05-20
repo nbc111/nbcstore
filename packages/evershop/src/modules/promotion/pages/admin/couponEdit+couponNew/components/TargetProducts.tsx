@@ -3,6 +3,7 @@ import { NumberField } from '@components/common/form/NumberField.js';
 import { SelectField } from '@components/common/form/SelectField.js';
 import { Button } from '@components/common/ui/Button.js';
 import { Item, ItemContent, ItemTitle } from '@components/common/ui/Item.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Table,
   TableBody,
@@ -64,38 +65,40 @@ function Products({
     <div>
       <div className="mb-2 mt-2">
         <div className="flex justify-start items-center">
-          <div>Maximum</div>
+          <div>{_('Maximum')}</div>
           <div style={{ width: '100px', padding: '0 1rem' }}>
             <NumberField
               name="target_products.maxQty"
               defaultValue={maxQty}
-              placeholder="10"
+              placeholder={_('10')}
               required
               validation={{
-                required: 'Maximum quantity is required',
+                required: _('Maximum quantity is required'),
                 min: {
                   value: 0,
-                  message: 'Maximum quantity must be greater than or equal to 0'
+                  message: _('Maximum quantity must be greater than or equal to 0')
                 }
               }}
               min={0}
               wrapperClassName="form-field mb-0"
             />
           </div>
-          <div>quantity of products are matched bellow conditions(All)</div>
+          <div>
+            {_('quantity of products matching all of the following conditions')}
+          </div>
         </div>
       </div>
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>
-              <span>Key</span>
+              <span>{_('Key')}</span>
             </TableHead>
             <TableHead>
-              <span>Operator</span>
+              <span>{_('Operator')}</span>
             </TableHead>
             <TableHead>
-              <span>Value</span>
+              <span>{_('Value')}</span>
             </TableHead>
             <TableHead> </TableHead>
           </TableRow>
@@ -146,7 +149,7 @@ function Products({
                       label: operator.label
                     }))}
                     wrapperClassName="form-field mb-0"
-                    placeholder="Select operator"
+                    placeholder={_('Select operator')}
                   />
                 ) : (
                   <>
@@ -243,7 +246,7 @@ function Products({
               });
             }}
           >
-            <span>Add product</span>
+            <span>{_('Add product')}</span>
           </Button>
         </div>
       </div>
@@ -271,7 +274,7 @@ export function TargetProducts({
   return (
     <Item variant={'outline'} className="mt-6">
       <ItemContent>
-        <ItemTitle>Target Products</ItemTitle>
+        <ItemTitle>{_('Target Products')}</ItemTitle>
         <Products targetProducts={products} maxQty={maxQty} />
       </ItemContent>
     </Item>

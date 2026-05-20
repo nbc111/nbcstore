@@ -1,4 +1,5 @@
 import { Card } from '@components/common/ui/Card';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   CardContent,
   CardDescription,
@@ -12,14 +13,12 @@ export default function OrderHistory({ customer: { orders = [] } }) {
   return (
     <Card title="Order History">
       <CardHeader>
-        <CardTitle>Order History</CardTitle>
-        <CardDescription>
-          Recently placed orders by this customer
-        </CardDescription>
+        <CardTitle>{_('Order History')}</CardTitle>
+        <CardDescription>{_('Recently placed orders by this customer')}</CardDescription>
       </CardHeader>
       {orders.length < 1 && (
         <CardContent>
-          <div>Customer does not have any order yet.</div>
+          <div>{_('Customer does not have any order yet.')}</div>
         </CardContent>
       )}
       {orders.length > 0 && (
@@ -39,10 +38,10 @@ export default function OrderHistory({ customer: { orders = [] } }) {
                   <span>{order.createdAt.text}</span>
                 </div>
                 <div>
-                  <span>{order.paymentStatus.name}</span>
+                  <span>{_(order.paymentStatus.name)}</span>
                 </div>
                 <div>
-                  <span>{order.shipmentStatus.name}</span>
+                  <span>{_(order.shipmentStatus.name)}</span>
                 </div>
                 <div>
                   <span>{order.grandTotal.text}</span>

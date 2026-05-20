@@ -1,8 +1,14 @@
-export function _(text, values) {
-    // Check if the data is null, undefined or empty object
-    if (!values || Object.keys(values).length === 0) {
-        return text;
+function lookup(text) {
+    if (typeof __EVERSHOP_TRANSLATIONS__ !== 'undefined' && __EVERSHOP_TRANSLATIONS__[text]) {
+        return __EVERSHOP_TRANSLATIONS__[text];
     }
-    const template = `${text}`;
+    return text;
+}
+export function _(text, values) {
+    const translated = lookup(text);
+    if (!values || Object.keys(values).length === 0) {
+        return translated;
+    }
+    const template = `${translated}`;
     return template.replace(/\${(.*?)}/g, (match, key)=>values[key.trim()] !== undefined ? values[key.trim()] : match);
 }

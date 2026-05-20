@@ -1,5 +1,6 @@
 import { CategorySelector } from '@components/admin/CategorySelector.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Dialog,
   DialogContent,
@@ -63,7 +64,7 @@ export const CategoryConditionValueSelector: React.FC<{
       </DialogTrigger>
       <DialogContent className={'max-w-[60vw]'}>
         <DialogHeader>
-          <DialogTitle>Choose Categories</DialogTitle>
+          <DialogTitle>{_('Choose Categories')}</DialogTitle>
         </DialogHeader>
         <CategorySelector
           onSelect={onSelect}
