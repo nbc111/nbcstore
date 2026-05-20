@@ -8,51 +8,30 @@
 BASE="http://156.251.17.96:3000"
 ```
 
-本文档整理商城主流程相关接口的 curl 调用与关键返回，覆盖：
-
-- 商品列表
-- 钱包签名登录
-- 钱包余额准备
-- 我的购物车
-- 联系人、收货地址、账单地址
-- 配送方式、支付方式
-- 创建订单
-- NBC 钱包扣款
-- 查询余额与交易流水
-
-注意：本文档中的 curl 都是基于真实测试环境跑过的。为了能完整走通下单和 NBC 支付，测试过程中新增了一个测试配送区域和固定运费方法：
-
-- 配送区域：`Curl Test US Zone ...`
-- 配送方式：`Curl Test Flat Rate ...`
-- 固定运费：`5.00`
-- 适用地区：`US / CA`
-
-## 1. 前置变量
+说明：本文档中的“返回值”均来自真实 curl 调用后保存的原始 JSON 文件，目录为：
 
 ```bash
-BASE="http://156.251.17.96:3000"
-TMP_DIR="/tmp/nbc-store-main-flow-curl-test"
-mkdir -p "$TMP_DIR"
+/tmp/nbc-store-main-flow-curl-test-mine
 ```
 
-## 2. 查询商品列表
+测试过程中使用的是临时测试钱包。文档不记录测试钱包私钥，只记录接口真实返回。
+
+## 1. 查询商品列表
 
 ### Curl
 
 ```bash
 curl -sS \
   -H "Content-Type: application/json" \
-  -d '{
-    "query": "query { products(filters: [{key: \"page\", operation: eq, value: \"1\"}, {key: \"limit\", operation: eq, value: \"5\"}]) { items { productId sku name url } total } }"
-  }' \
+  -d '{"query":"query { products(filters: [{key: \"page\", operation: eq, value: \"1\"}, {key: \"limit\", operation: eq, value: \"5\"}]) { items { productId sku name url } total } }"}' \
   "$BASE/api/graphql" \
   -o "$TMP_DIR/01-products.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/01-products.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
@@ -64,6 +43,30 @@ jq . "$TMP_DIR/01-products.json"
           "sku": "THERMO-005-YEL",
           "name": "Stainless Steel Thermos - Yellow",
           "url": "/accessories/stainless-steel-thermos-yellow"
+        },
+        {
+          "productId": 14,
+          "sku": "THERMO-005-BLK",
+          "name": "Stainless Steel Thermos - Black",
+          "url": "/accessories/stainless-steel-thermos-black"
+        },
+        {
+          "productId": 13,
+          "sku": "THERMO-005-WHT",
+          "name": "Stainless Steel Thermos - White",
+          "url": "/accessories/stainless-steel-thermos-white"
+        },
+        {
+          "productId": 12,
+          "sku": "VASE-004-YEL",
+          "name": "Modern Ceramic Vase - Green",
+          "url": "/accessories/modern-ceramic-vase-green"
+        },
+        {
+          "productId": 11,
+          "sku": "VASE-004-BLK",
+          "name": "Modern Ceramic Vase - Black",
+          "url": "/accessories/modern-ceramic-vase-black"
         }
       ],
       "total": 15
@@ -72,51 +75,13 @@ jq . "$TMP_DIR/01-products.json"
 }
 ```
 
-本次主流程使用的 SKU：
+本次主流程选用商品：
 
 ```bash
 SKU="THERMO-005-YEL"
 ```
 
-### 注意点
-
-当前测试环境查询 `ProductCollection.currentPage` 会返回 500：
-
-```json
-{
-  "error": {
-    "status": 500,
-    "message": "Cannot return null for non-nullable field ProductCollection.currentPage."
-  }
-}
-```
-
-所以主流程商品列表只查询 `items` 和 `total`，没有查询 `currentPage`。
-
-## 3. 生成临时钱包
-
-### Curl 前置脚本
-
-```bash
-node --input-type=module - <<'NODE' > "$TMP_DIR/wallet.json"
-import { Wallet } from 'ethers';
-
-const wallet = Wallet.createRandom();
-console.log(JSON.stringify({
-  address: wallet.address,
-  privateKey: wallet.privateKey
-}, null, 2));
-NODE
-
-ADDR="$(jq -r '.address' "$TMP_DIR/wallet.json")"
-PRIV="$(jq -r '.privateKey' "$TMP_DIR/wallet.json")"
-CUSTOMER_COOKIE="$TMP_DIR/customer-cookies.txt"
-ADMIN_COOKIE="$TMP_DIR/admin-cookies.txt"
-```
-
-说明：这是测试钱包，只用于测试环境签名登录。
-
-## 4. 请求钱包签名参数
+## 2. 请求钱包签名参数
 
 ### Curl
 
@@ -127,26 +92,26 @@ curl -sS \
   "$BASE/api/nbcWallet/auth/request" \
   -o "$TMP_DIR/02-wallet-auth-request.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/02-wallet-auth-request.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
   "data": {
     "walletAddress": "0xed8e5531f2abe5d67b57c8cf6ed90d8d3876d5a3",
-    "nonce": "nonce",
-    "message": "Sign this message to authenticate with NBC Store.\n\nNonce: nonce",
-    "expiresAt": "2026-05-19T12:57:22.218Z"
+    "nonce": "1161cee04aa04dee48c2b7434a024cfb",
+    "message": "Sign this message to authenticate with NBC Store.\n\nNonce: 1161cee04aa04dee48c2b7434a024cfb",
+    "expiresAt": "2026-05-19T12:58:24.389Z"
   }
 }
 ```
 
-## 5. 钱包签名并登录
+## 3. 钱包签名并登录
 
-### 生成签名
+### 签名生成
 
 ```bash
 MESSAGE="$(jq -r '.data.message' "$TMP_DIR/02-wallet-auth-request.json")"
@@ -172,20 +137,20 @@ curl -sS \
   "$BASE/api/nbcWallet/auth/verify" \
   -o "$TMP_DIR/03-wallet-auth-verify.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/03-wallet-auth-verify.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
   "data": {
-    "sid": "8IukUwPsqdP0GAVedV2Nc6anL7HYEKvm",
+    "sid": "s1RvVVHTLVYLwEjEcRPibZihPqJmKh0J",
     "customer": {
       "customerId": 4,
-      "uuid": "a0e21021-e3d1-4079-8bc1-d456d1f0b51d",
-      "email": "wallet_0xed8e...@nbc.local",
+      "uuid": "4681c60e-a1cd-40e4-86fa-1d0897bde21d",
+      "email": "wallet_0xed8e5531f2abe5d67b57c8cf6ed90d8d3876d5a3@nbc.local",
       "fullName": "0xed8e...d5a3"
     },
     "wallet": {
@@ -195,9 +160,7 @@ jq . "$TMP_DIR/03-wallet-auth-verify.json"
 }
 ```
 
-## 6. 后台登录
-
-测试环境当前没有配置后台 JWT secret，因此后台私有接口使用 session cookie 登录方式。
+## 4. 后台登录
 
 ### Curl
 
@@ -210,23 +173,21 @@ curl -sS \
   "$BASE/admin/user/login" \
   -o "$TMP_DIR/04-admin-login.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/04-admin-login.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
   "data": {
-    "sid": "..."
+    "sid": "2Xdmd5ullUmAqQQG-OpX-4tikfKmXjkF"
   }
 }
 ```
 
-## 7. 后台给测试钱包加款
-
-为了让 NBC 支付能成功，先给临时测试钱包加一笔测试余额。
+## 5. 后台给测试钱包加款
 
 ### Curl
 
@@ -234,30 +195,34 @@ jq . "$TMP_DIR/04-admin-login.json"
 curl -sS \
   -b "$ADMIN_COOKIE" \
   -H "Content-Type: application/json" \
-  -d "{\"walletAddress\":\"$ADDR\",\"type\":\"credit\",\"amount\":999999,\"reason\":\"main flow mine cart test balance\",\"reference\":\"main-flow-mine-$(date +%s)\"}" \
+  -d "{\"walletAddress\":\"$ADDR\",\"type\":\"credit\",\"amount\":999999,\"reason\":\"main flow mine cart test balance\",\"reference\":\"main-flow-mine-1779194905\"}" \
   "$BASE/api/admin/nbcWallet/adjust" \
   -o "$TMP_DIR/05-wallet-adjust.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/05-wallet-adjust.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
   "data": {
     "walletId": 4,
     "customerId": 4,
+    "walletAddress": "0xed8e5531f2abe5d67b57c8cf6ed90d8d3876d5a3",
+    "transactionId": 4,
     "transactionType": "admin_credit",
     "amount": 999999,
     "balanceBefore": 0,
-    "balanceAfter": 999999
+    "balanceAfter": 999999,
+    "reason": "main flow mine cart test balance",
+    "reference": "main-flow-mine-1779194905"
   }
 }
 ```
 
-## 8. 查询加款后钱包余额
+## 6. 查询加款后钱包余额
 
 ### Curl
 
@@ -267,29 +232,38 @@ curl -sS \
   "$BASE/api/nbcWallet/balance" \
   -o "$TMP_DIR/06-wallet-balance-before.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/06-wallet-balance-before.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
   "data": {
     "wallet": {
+      "walletId": 4,
+      "uuid": "82d122b1-bd3a-45ce-86e0-67b1f9084b04",
+      "customerId": 4,
+      "walletAddress": "0xed8e5531f2abe5d67b57c8cf6ed90d8d3876d5a3",
+      "chainId": null,
       "balance": 999999,
+      "frozenBalance": 0,
       "availableBalance": 999999,
       "currency": "NBC",
+      "status": 1,
       "exchangeRate": 0.01,
-      "cnyValue": 9999.99
+      "cnyValue": 9999.99,
+      "availableCnyValue": 9999.99,
+      "lastLoginAt": "2026-05-19T12:48:24.860Z",
+      "createdAt": "2026-05-19T12:48:24.768Z",
+      "updatedAt": "2026-05-19T12:48:26.500Z"
     }
   }
 }
 ```
 
-## 9. 加入我的购物车
-
-必须使用 `/api/cart/mine/items` 创建“我的购物车”，这样购物车会绑定当前钱包登录客户。不要用匿名的 `POST /api/carts` 走 NBC 支付，否则订单 `customer_id` 可能为空，后续扣款会失败。
+## 7. 加入我的购物车
 
 ### Curl
 
@@ -302,23 +276,44 @@ curl -sS \
   "$BASE/api/cart/mine/items" \
   -o "$TMP_DIR/07-add-mine-item.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/07-add-mine-item.json"
-
-CART_ID="$(jq -r '.data.cartId' "$TMP_DIR/07-add-mine-item.json")"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
   "data": {
     "item": {
+      "uuid": "e3514ed4-7100-444d-a81f-8a0815c0f495",
+      "product_id": 15,
+      "productUrl": "/accessories/stainless-steel-thermos-yellow",
+      "product_uuid": "aaa2f6fd-3ad4-436c-a7e6-ccfba28ff4d7",
       "product_sku": "THERMO-005-YEL",
+      "group_id": 2,
+      "category_id": 4,
       "product_name": "Stainless Steel Thermos - Yellow",
+      "thumbnail": "/assets/catalog/8744/6622/thermos-yellow.jpg",
+      "product_weight": 350,
+      "no_shipping_required": false,
+      "tax_class_id": null,
       "qty": 1,
+      "variant_group_id": 5,
+      "variant_options": "[{\"attribute_code\":\"color\",\"attribute_name\":\"Color\",\"attribute_id\":1,\"option_id\":3,\"option_text\":\"Yellow\"}]",
+      "tax_percent": 0,
+      "product_price": 35,
+      "product_price_incl_tax": 35,
+      "tax_amount_before_discount": 0,
       "final_price": 35,
-      "line_total": 35
+      "final_price_incl_tax": 35,
+      "line_total": 35,
+      "line_total_incl_tax": 35,
+      "discount_amount": 0,
+      "tax_amount": 0,
+      "line_total_with_discount": 35,
+      "line_total_with_discount_incl_tax": 35,
+      "errors": {}
     },
     "count": 1,
     "cartId": "b0c52bb718414f959481737d064c4bbd"
@@ -326,25 +321,29 @@ CART_ID="$(jq -r '.data.cartId' "$TMP_DIR/07-add-mine-item.json")"
 }
 ```
 
-## 10. 写入联系人邮箱
+后续使用：
+
+```bash
+CART_ID="b0c52bb718414f959481737d064c4bbd"
+```
+
+## 8. 写入联系人邮箱
 
 ### Curl
 
 ```bash
-EMAIL="mainflow-mine-$(date +%s)@example.com"
-
 curl -sS \
   -b "$CUSTOMER_COOKIE" \
   -H "Content-Type: application/json" \
-  -d "{\"email\":\"$EMAIL\"}" \
+  -d '{"email":"mainflow-mine-1779194906@example.com"}' \
   "$BASE/api/carts/$CART_ID/contacts" \
   -o "$TMP_DIR/08-add-contact.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/08-add-contact.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
@@ -354,7 +353,7 @@ jq . "$TMP_DIR/08-add-contact.json"
 }
 ```
 
-## 11. 写入收货地址
+## 9. 写入收货地址
 
 ### Curl
 
@@ -368,26 +367,30 @@ curl -sS \
   "$BASE/api/carts/$CART_ID/addresses" \
   -o "$TMP_DIR/09-add-shipping-address.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/09-add-shipping-address.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
   "data": {
+    "cart_address_id": 5,
+    "uuid": "8299e14b-455d-4d1a-a196-cec99cd6b691",
     "full_name": "Curl Mine User",
+    "postcode": "90001",
+    "telephone": "13800138000",
     "country": "US",
     "province": "CA",
     "city": "Los Angeles",
     "address_1": "1 Test Street",
-    "postcode": "90001"
+    "address_2": "Suite 100"
   }
 }
 ```
 
-## 12. 写入账单地址
+## 10. 写入账单地址
 
 ### Curl
 
@@ -399,26 +402,30 @@ curl -sS \
   "$BASE/api/carts/$CART_ID/addresses" \
   -o "$TMP_DIR/10-add-billing-address.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/10-add-billing-address.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
   "data": {
+    "cart_address_id": 6,
+    "uuid": "82a4b539-85b7-45e7-9993-4fb6b422470e",
     "full_name": "Curl Mine User",
+    "postcode": "90001",
+    "telephone": "13800138000",
     "country": "US",
     "province": "CA",
     "city": "Los Angeles",
     "address_1": "1 Test Street",
-    "postcode": "90001"
+    "address_2": "Suite 100"
   }
 }
 ```
 
-## 13. 查询购物车可用配送和支付方式
+## 11. 查询购物车可用配送和支付方式
 
 ### Curl
 
@@ -430,18 +437,17 @@ curl -sS \
   "$BASE/api/graphql" \
   -o "$TMP_DIR/11-cart-methods.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/11-cart-methods.json"
-
-SHIP_CODE="$(jq -r '.data.cart.availableShippingMethods[0].code' "$TMP_DIR/11-cart-methods.json")"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
   "data": {
     "cart": {
+      "uuid": "b0c52bb7-1841-4f95-9481-737d064c4bbd",
       "customerId": 4,
       "customerEmail": "mainflow-mine-1779194906@example.com",
       "totalQty": 1,
@@ -470,7 +476,13 @@ SHIP_CODE="$(jq -r '.data.cart.availableShippingMethods[0].code' "$TMP_DIR/11-ca
 }
 ```
 
-## 14. 设置配送方式
+后续使用：
+
+```bash
+SHIP_CODE="f2f370d1-82b7-4e28-b902-1f523bef9629"
+```
+
+## 12. 设置配送方式
 
 ### Curl
 
@@ -482,11 +494,11 @@ curl -sS \
   "$BASE/api/carts/$CART_ID/shippingMethods" \
   -o "$TMP_DIR/12-add-shipping-method.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/12-add-shipping-method.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
@@ -498,7 +510,7 @@ jq . "$TMP_DIR/12-add-shipping-method.json"
 }
 ```
 
-## 15. 设置支付方式为 NBC Wallet
+## 13. 设置支付方式为 NBC Wallet
 
 ### Curl
 
@@ -510,11 +522,11 @@ curl -sS \
   "$BASE/api/carts/$CART_ID/paymentMethods" \
   -o "$TMP_DIR/13-add-payment-method.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/13-add-payment-method.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
@@ -527,7 +539,7 @@ jq . "$TMP_DIR/13-add-payment-method.json"
 }
 ```
 
-## 16. 创建订单
+## 14. 创建订单
 
 ### Curl
 
@@ -539,36 +551,131 @@ curl -sS \
   "$BASE/api/orders" \
   -o "$TMP_DIR/14-create-order.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/14-create-order.json"
-
-ORDER_UUID="$(jq -r '.data.uuid' "$TMP_DIR/14-create-order.json")"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
   "data": {
     "order_id": 2,
     "uuid": "64ecd28e-ecfa-4d08-bb7e-8a49c5de8a8c",
+    "integration_order_id": null,
+    "sid": "s1RvVVHTLVYLwEjEcRPibZihPqJmKh0J",
     "order_number": "10002",
     "status": "new",
+    "cart_id": 3,
+    "currency": "USD",
     "customer_id": 4,
     "customer_email": "mainflow-mine-1779194906@example.com",
-    "sub_total": "35.0000",
+    "customer_full_name": "0xed8e...d5a3",
+    "user_ip": null,
+    "user_agent": null,
+    "coupon": null,
+    "shipping_fee_excl_tax": "5.0000",
     "shipping_fee_incl_tax": "5.0000",
+    "discount_amount": "0.0000",
+    "sub_total": "35.0000",
+    "sub_total_incl_tax": "35.0000",
+    "sub_total_with_discount": "35.0000",
+    "sub_total_with_discount_incl_tax": "35.0000",
+    "total_qty": 1,
+    "total_weight": "350.0000",
+    "tax_amount": "0.0000",
+    "tax_amount_before_discount": "0.0000",
+    "shipping_tax_amount": "0.0000",
+    "shipping_note": null,
     "grand_total": "40.0000",
+    "shipping_method": "f2f370d1-82b7-4e28-b902-1f523bef9629",
     "shipping_method_name": "Curl Test Flat Rate 1779194794",
+    "shipping_address_id": 3,
     "payment_method": "nbc_wallet",
     "payment_method_name": "NBC Wallet",
+    "billing_address_id": 4,
+    "shipment_status": "pending",
     "payment_status": "pending",
-    "shipment_status": "pending"
+    "created_at": "2026-05-19T12:48:26.850Z",
+    "updated_at": "2026-05-19T12:48:26.850Z",
+    "total_tax_amount": "0.0000",
+    "no_shipping_required": false,
+    "items": [
+      {
+        "order_item_id": 2,
+        "uuid": "b5264f3e-e23d-45fc-a0d2-350acb04eba1",
+        "order_item_order_id": 2,
+        "product_id": 15,
+        "referer": null,
+        "product_sku": "THERMO-005-YEL",
+        "product_name": "Stainless Steel Thermos - Yellow",
+        "thumbnail": "/assets/catalog/8744/6622/thermos-yellow.jpg",
+        "product_weight": "350.0000",
+        "product_price": "35.0000",
+        "product_price_incl_tax": "35.0000",
+        "qty": 1,
+        "final_price": "35.0000",
+        "final_price_incl_tax": "35.0000",
+        "tax_percent": "0.0000",
+        "tax_amount": "0.0000",
+        "tax_amount_before_discount": "0.0000",
+        "discount_amount": "0.0000",
+        "line_total": "35.0000",
+        "line_total_with_discount": "35.0000",
+        "line_total_incl_tax": "35.0000",
+        "line_total_with_discount_incl_tax": "35.0000",
+        "variant_group_id": 5,
+        "variant_options": "[{\"attribute_code\":\"color\",\"attribute_name\":\"Color\",\"attribute_id\":1,\"option_id\":3,\"option_text\":\"Yellow\"}]",
+        "product_custom_options": null,
+        "requested_data": null,
+        "no_shipping_required": false
+      }
+    ],
+    "shipping_address": {
+      "order_address_id": 3,
+      "uuid": "423ff0d3-f570-4522-9334-050157b3e533",
+      "full_name": "Curl Mine User",
+      "postcode": "90001",
+      "telephone": "13800138000",
+      "country": "US",
+      "province": "CA",
+      "city": "Los Angeles",
+      "address_1": "1 Test Street",
+      "address_2": "Suite 100"
+    },
+    "billing_address": {
+      "order_address_id": 4,
+      "uuid": "a43ead4d-dd96-4722-b59f-4810da6de49b",
+      "full_name": "Curl Mine User",
+      "postcode": "90001",
+      "telephone": "13800138000",
+      "country": "US",
+      "province": "CA",
+      "city": "Los Angeles",
+      "address_1": "1 Test Street",
+      "address_2": "Suite 100"
+    },
+    "links": [
+      {
+        "rel": "edit",
+        "href": "/admin/order/edit/64ecd28e-ecfa-4d08-bb7e-8a49c5de8a8c",
+        "action": "GET",
+        "types": [
+          "text/xml"
+        ]
+      }
+    ]
   }
 }
 ```
 
-## 17. NBC 钱包支付扣款
+后续使用：
+
+```bash
+ORDER_UUID="64ecd28e-ecfa-4d08-bb7e-8a49c5de8a8c"
+```
+
+## 15. NBC 钱包支付扣款
 
 ### Curl
 
@@ -580,11 +687,11 @@ curl -sS \
   "$BASE/api/nbcWallet/orders/capture" \
   -o "$TMP_DIR/15-nbc-capture.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/15-nbc-capture.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
@@ -599,13 +706,7 @@ jq . "$TMP_DIR/15-nbc-capture.json"
 }
 ```
 
-说明：
-
-- 订单总额为 `40.00`。
-- 汇率 `NBC_TO_CNY = 0.01`。
-- 扣款数量：`40 / 0.01 = 4000 NBC`。
-
-## 18. 查询支付后钱包余额
+## 16. 查询支付后钱包余额
 
 ### Curl
 
@@ -615,27 +716,38 @@ curl -sS \
   "$BASE/api/nbcWallet/balance" \
   -o "$TMP_DIR/16-wallet-balance-after.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/16-wallet-balance-after.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
   "data": {
     "wallet": {
+      "walletId": 4,
+      "uuid": "82d122b1-bd3a-45ce-86e0-67b1f9084b04",
+      "customerId": 4,
+      "walletAddress": "0xed8e5531f2abe5d67b57c8cf6ed90d8d3876d5a3",
+      "chainId": null,
       "balance": 995999,
+      "frozenBalance": 0,
       "availableBalance": 995999,
       "currency": "NBC",
+      "status": 1,
       "exchangeRate": 0.01,
-      "cnyValue": 9959.99
+      "cnyValue": 9959.99,
+      "availableCnyValue": 9959.99,
+      "lastLoginAt": "2026-05-19T12:48:24.860Z",
+      "createdAt": "2026-05-19T12:48:24.768Z",
+      "updatedAt": "2026-05-19T12:48:31.108Z"
     }
   }
 }
 ```
 
-## 19. 查询钱包交易流水
+## 17. 查询钱包交易流水
 
 ### Curl
 
@@ -645,17 +757,23 @@ curl -sS \
   "$BASE/api/nbcWallet/transactions?limit=5" \
   -o "$TMP_DIR/17-wallet-transactions.json" \
   -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/17-wallet-transactions.json"
 ```
 
-### 关键返回
+HTTP 状态：`200`
+
+### 真实返回
 
 ```json
 {
   "data": {
     "items": [
       {
+        "walletTxId": 5,
+        "uuid": "108169ff-440e-4cc4-8673-02246368d578",
+        "walletId": 4,
+        "orderId": 2,
+        "orderUuid": "64ecd28e-ecfa-4d08-bb7e-8a49c5de8a8c",
+        "orderNumber": "10002",
         "transactionType": "debit",
         "amount": 4000,
         "balanceBefore": 999999,
@@ -666,92 +784,44 @@ jq . "$TMP_DIR/17-wallet-transactions.json"
         "status": "completed",
         "metadata": {
           "source": "order_capture"
-        }
+        },
+        "createdAt": "2026-05-19T12:48:31.108Z"
       },
       {
+        "walletTxId": 4,
+        "uuid": "7214cd6f-79da-4ed8-b870-cbed2e59f787",
+        "walletId": 4,
+        "orderId": null,
+        "orderUuid": null,
+        "orderNumber": null,
         "transactionType": "admin_credit",
         "amount": 999999,
         "balanceBefore": 0,
         "balanceAfter": 999999,
-        "status": "completed"
+        "exchangeRate": null,
+        "cnyAmount": null,
+        "reference": "main-flow-mine-1779194905",
+        "status": "completed",
+        "metadata": {
+          "reason": "main flow mine cart test balance",
+          "source": "admin_adjustment",
+          "performed_by": "admin:62d4756c-82bf-440c-8caf-57d28897b069"
+        },
+        "createdAt": "2026-05-19T12:48:26.500Z"
       }
     ],
+    "currentPage": 1,
+    "pageSize": 5,
     "total": 2
   }
 }
 ```
 
-## 20. 环境初始化：创建测试配送区域和配送方式
+## 18. 实测注意事项
 
-如果 `availableShippingMethods` 返回空数组，说明测试环境还没有可用配送区域。可以使用下面 curl 创建测试配送配置。
+### 18.1 商品列表 currentPage 字段异常
 
-### 创建配送区域
-
-```bash
-ZONE_NAME="Curl Test US Zone $(date +%s)"
-
-curl -sS \
-  -b "$ADMIN_COOKIE" \
-  -H "Content-Type: application/json" \
-  -d "{\"name\":\"$ZONE_NAME\",\"country\":\"US\",\"provinces\":[\"CA\"]}" \
-  "$BASE/api/shippingZones" \
-  -o "$TMP_DIR/create-shipping-zone.json" \
-  -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/create-shipping-zone.json"
-
-ZONE_ID="$(jq -r '.data.uuid' "$TMP_DIR/create-shipping-zone.json")"
-```
-
-### 创建配送方式
-
-```bash
-METHOD_NAME="Curl Test Flat Rate $(date +%s)"
-
-curl -sS \
-  -b "$ADMIN_COOKIE" \
-  -H "Content-Type: application/json" \
-  -d "{\"name\":\"$METHOD_NAME\"}" \
-  "$BASE/api/shippingMethods" \
-  -o "$TMP_DIR/create-shipping-method.json" \
-  -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/create-shipping-method.json"
-
-METHOD_ID="$(jq -r '.data.uuid' "$TMP_DIR/create-shipping-method.json")"
-```
-
-### 绑定配送区域和配送方式
-
-```bash
-curl -sS \
-  -b "$ADMIN_COOKIE" \
-  -H "Content-Type: application/json" \
-  -d "{\"method_id\":\"$METHOD_ID\",\"calculation_type\":\"flat_rate\",\"condition_type\":\"none\",\"cost\":\"5.00\",\"is_enabled\":1}" \
-  "$BASE/api/shippingZones/$ZONE_ID/methods" \
-  -o "$TMP_DIR/add-zone-method.json" \
-  -w "HTTP %{http_code}\n"
-
-jq . "$TMP_DIR/add-zone-method.json"
-```
-
-### 关键返回
-
-```json
-{
-  "data": {
-    "is_enabled": true,
-    "cost": "5.0000",
-    "condition_type": null
-  }
-}
-```
-
-## 21. 已发现问题与注意事项
-
-### 21.1 商品列表 currentPage 字段异常
-
-查询 `products.currentPage` 时，测试环境返回：
+真实测试中，如果 GraphQL 查询 `products.currentPage`，接口返回：
 
 ```json
 {
@@ -762,11 +832,11 @@ jq . "$TMP_DIR/add-zone-method.json"
 }
 ```
 
-建议后续修复 `ProductCollection.currentPage` resolver 或 schema 定义。
+因此本文主流程查询商品时没有请求 `currentPage` 字段。
 
-### 21.2 匿名购物车订单无法完成 NBC capture
+### 18.2 匿名购物车订单无法完成 NBC capture
 
-如果使用 `POST /api/carts` 创建购物车，即使带了客户 cookie，当前返回订单里的 `customer_id` 仍可能是 `null`。这种订单调用 NBC capture 会返回：
+真实测试中，如果使用 `POST /api/carts` 创建匿名购物车，订单会出现 `customer_id = null`，随后调用 NBC capture 返回：
 
 ```json
 {
@@ -777,7 +847,7 @@ jq . "$TMP_DIR/add-zone-method.json"
 }
 ```
 
-因此 NBC 钱包支付主流程需要使用：
+因此 NBC 钱包支付主流程必须使用：
 
 ```bash
 POST /api/cart/mine/items
@@ -785,9 +855,9 @@ POST /api/cart/mine/items
 
 来创建绑定当前客户的“我的购物车”。
 
-### 21.3 测试环境初始没有配送方式
+### 18.3 配送方式前置条件
 
-测试环境一开始 `allowedCountries` 为空，购物车查询 `availableShippingMethods` 也为空。需要先创建配送区域和配送方式，否则创建订单会返回：
+真实测试中，测试环境一开始没有可用配送方式，创建订单会返回：
 
 ```json
 {
@@ -798,23 +868,24 @@ POST /api/cart/mine/items
 }
 ```
 
-## 22. 本次验证结论
+已通过后台接口创建测试配送区域和配送方式后，主流程才完整跑通。
 
-已真实通过 curl 跑通：
+## 19. 本次真实验证结论
 
-- 商品查询：`200`
-- 钱包签名参数：`200`
-- 钱包签名登录：`200`
-- 后台登录：`200`
-- 后台钱包加款：`200`
-- 我的购物车加商品：`200`
-- 写入联系人：`200`
-- 写入收货地址：`200`
-- 写入账单地址：`200`
-- 查询可用配送/支付方式：`200`
-- 设置配送方式：`200`
-- 设置 NBC 钱包支付方式：`200`
-- 创建订单：`200`
-- NBC 钱包扣款：`200`
-- 查询扣款后余额：`200`
-- 查询交易流水：`200`
+以下接口均已通过真实 curl 调用验证为 `200`：
+
+- `POST /api/graphql` 商品列表
+- `POST /api/nbcWallet/auth/request`
+- `POST /api/nbcWallet/auth/verify`
+- `POST /admin/user/login`
+- `POST /api/admin/nbcWallet/adjust`
+- `GET /api/nbcWallet/balance`
+- `POST /api/cart/mine/items`
+- `POST /api/carts/:cart_id/contacts`
+- `POST /api/carts/:cart_id/addresses`
+- `POST /api/graphql` 查询购物车配送/支付方式
+- `POST /api/carts/:cart_id/shippingMethods`
+- `POST /api/carts/:cart_id/paymentMethods`
+- `POST /api/orders`
+- `POST /api/nbcWallet/orders/capture`
+- `GET /api/nbcWallet/transactions`
