@@ -132,7 +132,7 @@ export function PaymentMethods({
                                 </div>
                               </ItemTitle>
                               {component?.formRenderer && isSelected && (
-                                <ItemDescription className="text-inherit overflow-visible">
+                                <ItemDescription className="text-inherit overflow-visible line-clamp-none">
                                   {renderComponent(component.formRenderer, {
                                     isSelected
                                   })}

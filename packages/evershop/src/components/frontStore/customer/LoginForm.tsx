@@ -14,7 +14,7 @@ const SubmitButton: React.FC<{ formId: string }> = ({ formId }) => {
     formState: { isSubmitting }
   } = useFormContext();
   return (
-    <div className="form-submit-button flex border-t border-border mt-4 pt-4 justify-between">
+    <div className="form-submit-button flex flex-col gap-3 border-t border-border mt-4 pt-4">
       <Button
         className={'w-full'}
         size={'lg'}

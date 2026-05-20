@@ -59,7 +59,24 @@ extend type Order {
   nbcUsage: NbcOrderUsage
 }
 
+type NbcWalletPublicConfig {
+  exchangeRate: Float!
+  shopCurrency: String!
+  displayName: String!
+  chainId: Int
+  rpcUrl: String
+  chainName: String
+  nativeSymbol: String
+  tokenAddress: String
+  tokenDecimals: Int
+  blockExplorerUrl: String
+  chainBalanceEnabled: Boolean!
+  treasuryAddress: String
+  onchainEnabled: Boolean!
+}
+
 extend type Query {
   nbcWallet: NbcWallet
   nbcWalletTransactions(page: Int, limit: Int, transactionType: String): NbcWalletTransactionCollection
+  nbcWalletPublicConfig: NbcWalletPublicConfig!
 }

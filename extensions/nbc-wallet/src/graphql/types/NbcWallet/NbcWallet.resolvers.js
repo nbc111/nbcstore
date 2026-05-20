@@ -1,5 +1,8 @@
 import { GraphQLJSON } from 'graphql-type-json';
 import { pool } from '@evershop/evershop/lib/postgres';
+import { getConfig } from '@evershop/evershop/lib/util/getConfig';
+import { getChainRpcConfig, isChainRpcConfigured } from '../../../services/wallet/getChainRpcConfig.js';
+import { getExchangeRate } from '../../../services/wallet/getExchangeRate.js';
 import { getWalletSummary } from '../../../services/wallet/getWalletSummary.js';
 import { listWalletTransactions } from '../../../services/wallet/listWalletTransactions.js';
 
@@ -17,6 +20,27 @@ async function loadOrderUsage(orderId) {
 export default {
   JSON: GraphQLJSON,
   Query: {
+    nbcWalletPublicConfig: async () => {
+      const chain = getChainRpcConfig();
+      const treasuryAddress = String(
+        getConfig('nbcWallet.onchain.treasuryAddress', '')
+      );
+      return {
+        exchangeRate: await getExchangeRate(),
+        shopCurrency: String(getConfig('shop.currency', 'USD')).toUpperCase(),
+        displayName: String(getConfig('nbcWallet.displayName', 'NBC Wallet')),
+        chainId: chain.chainId > 0 ? chain.chainId : null,
+        rpcUrl: chain.rpcUrl || null,
+        chainName: chain.chainName,
+        nativeSymbol: chain.nativeSymbol,
+        tokenAddress: chain.tokenAddress || null,
+        tokenDecimals: chain.tokenDecimals,
+        blockExplorerUrl: chain.blockExplorerUrl || null,
+        chainBalanceEnabled: isChainRpcConfigured(chain),
+        treasuryAddress: treasuryAddress || null,
+        onchainEnabled: Number(getConfig('nbcWallet.onchain.enabled', 0)) === 1
+      };
+    },
     nbcWallet: async (_, args, { customer }) => {
       if (!customer) {
         return null;

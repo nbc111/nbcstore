@@ -233,6 +233,50 @@ export default {
   '标准快递（香港）': '标准快递（香港）',
   '标准快递（澳门）': '标准快递（澳门）',
   'NBC Wallet': 'NBC 钱包',
+  'Connect wallet': '连接钱包',
+  'Connecting wallet…': '正在连接钱包…',
+  'Pay with your NBC wallet balance. Connect your wallet to continue.':
+    '使用 NBC 钱包余额支付，请先连接钱包。',
+  'Sign in with your wallet to pay with NBC tokens.':
+    '使用钱包签名登录后即可用 NBC 代币支付。',
+  'Order total': '订单金额',
+  'Required NBC': '需支付 NBC',
+  'Exchange rate': '汇率',
+  'Wallet': '钱包',
+  'Available balance': '可用余额',
+  'Insufficient NBC balance. Top up your wallet before paying.':
+    'NBC 余额不足，请先充值后再支付。',
+  'Deposit to': '充值地址',
+  'Refresh balance': '刷新余额',
+  'Connect your wallet and ensure sufficient NBC balance':
+    '请连接钱包并确保 NBC 余额充足',
+  'No Web3 wallet detected. Install MetaMask or another wallet.':
+    '未检测到 Web3 钱包，请安装 MetaMask 或其他钱包。',
+  'Failed to connect wallet': '连接钱包失败',
+  'Failed to load wallet': '加载钱包失败',
+  'Connect your Web3 wallet to view NBC balance and pay with tokens at checkout.':
+    '连接 Web3 钱包以查看 NBC 余额，并在结账时使用代币支付。',
+  Address: '地址',
+  'Total balance': '总余额',
+  'Top up (on-chain deposit)': '充值（链上转入）',
+  'Send NBC tokens to the treasury address below. Balance updates after confirmations.':
+    '向下方金库地址转入 NBC，确认后余额将更新。',
+  'Recent transactions': '最近交易',
+  'No transactions yet': '暂无交易记录',
+  Payment: '支付',
+  Refund: '退款',
+  'Admin credit': '管理员入账',
+  'Admin debit': '管理员扣款',
+  'On-chain deposit': '链上充值',
+  'Or sign in with your Web3 wallet': '或使用 Web3 钱包登录',
+  'Sign in with wallet': '使用钱包登录',
+  'We will create a store account linked to your wallet address on first sign-in.':
+    '首次登录将自动创建与钱包地址绑定的商城账户。',
+  'You are already logged in.': '您已登录。',
+  'Go to my account': '前往我的账户',
+  'Wallet login': '钱包登录',
+  '${name} login': '${name} 登录',
+  'Connecting…': '连接中…',
   'Stripe Payment': 'Stripe 支付',
   PayPal: 'PayPal'
 };

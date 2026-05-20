@@ -297,6 +297,24 @@ async function updateStoreSettings() {
   await upsertSetting('storeName', 'NBCStore');
 }
 
+async function updateShopCurrency() {
+  const cartRes = await client.query(`UPDATE cart SET currency = 'USD'`);
+  console.log(`  ✓ Updated cart currency rows: ${cartRes.rowCount}`);
+
+  const orderRes = await client.query(
+    `UPDATE "order" SET currency = 'USD' WHERE currency IS DISTINCT FROM 'USD'`
+  );
+  console.log(`  ✓ Updated order currency rows: ${orderRes.rowCount}`);
+
+  await client.query(`DELETE FROM nbc_exchange_rate WHERE rate_key = 'NBC_TO_CNY'`);
+  await client.query(
+    `INSERT INTO nbc_exchange_rate (rate_key, rate_value)
+     VALUES ('NBC_TO_USD', 0.01)
+     ON CONFLICT (rate_key) DO UPDATE SET rate_value = EXCLUDED.rate_value`
+  );
+  console.log('  ✓ NBC exchange rate set to NBC_TO_USD');
+}
+
 function runSeedDefaultShipping() {
   return new Promise((resolve, reject) => {
     const child = spawn(
@@ -333,6 +351,8 @@ async function main() {
   await updatePaymentDisplayNames();
   console.log('Updating store settings…');
   await updateStoreSettings();
+  console.log('Updating shop currency to USD…');
+  await updateShopCurrency();
   await client.end();
   console.log('Done.');
 }

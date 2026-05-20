@@ -17,7 +17,7 @@ export async function getWalletSummary(customerId: number) {
 
   const balance = Number(wallet.balance);
   const frozenBalance = Number(wallet.frozen_balance);
-  const exchangeRate = await getExchangeRate('NBC_TO_CNY');
+  const exchangeRate = await getExchangeRate();
 
   return {
     walletId: wallet.wallet_id,

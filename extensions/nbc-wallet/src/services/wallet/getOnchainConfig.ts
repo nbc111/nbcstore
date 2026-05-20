@@ -1,4 +1,5 @@
 import { getConfig } from '@evershop/evershop/lib/util/getConfig';
+import { getChainRpcConfig } from './getChainRpcConfig.js';
 import { normalizeWalletAddress } from './normalizeWalletAddress.js';
 
 export type NbcOnchainConfig = {
@@ -15,16 +16,16 @@ export type NbcOnchainConfig = {
 };
 
 export function getOnchainConfig(): NbcOnchainConfig {
-  const tokenAddress = String(getConfig('nbcWallet.onchain.tokenAddress', ''));
+  const chain = getChainRpcConfig();
   const treasuryAddress = String(
     getConfig('nbcWallet.onchain.treasuryAddress', '')
   );
 
   return {
     enabled: Number(getConfig('nbcWallet.onchain.enabled', 0)) === 1,
-    rpcUrl: String(getConfig('nbcWallet.onchain.rpcUrl', '')),
-    chainId: Number(getConfig('nbcWallet.onchain.chainId', 0)),
-    tokenAddress: tokenAddress ? normalizeWalletAddress(tokenAddress) : '',
+    rpcUrl: chain.rpcUrl,
+    chainId: chain.chainId,
+    tokenAddress: chain.tokenAddress,
     treasuryAddress: treasuryAddress
       ? normalizeWalletAddress(treasuryAddress)
       : '',

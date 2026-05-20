@@ -4,16 +4,14 @@ export async function getWalletSummary(customerId) {
     const result = await pool.query(`SELECT wallet_id, uuid, customer_id, wallet_address, chain_id, balance,
             frozen_balance, status, last_login_at, created_at, updated_at
        FROM nbc_wallet
-      WHERE customer_id = $1`, [
-        customerId
-    ]);
+      WHERE customer_id = $1`, [customerId]);
     const wallet = result.rows[0];
     if (!wallet) {
         return null;
     }
     const balance = Number(wallet.balance);
     const frozenBalance = Number(wallet.frozen_balance);
-    const exchangeRate = await getExchangeRate('NBC_TO_CNY');
+    const exchangeRate = await getExchangeRate();
     return {
         walletId: wallet.wallet_id,
         uuid: wallet.uuid,
@@ -33,3 +31,4 @@ export async function getWalletSummary(customerId) {
         updatedAt: wallet.updated_at
     };
 }
+//# sourceMappingURL=getWalletSummary.js.map

@@ -5,6 +5,7 @@ type ConfigStructure = {
     language: string;
     timezone: string;
     currency: string;
+    currencyLocale?: string;
     weightUnit: string;
     homeUrl: string;
   };

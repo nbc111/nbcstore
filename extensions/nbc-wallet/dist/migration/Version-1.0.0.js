@@ -71,7 +71,7 @@ export default async function migrate(connection) {
       CONSTRAINT "NBC_EXCHANGE_RATE_KEY_UNIQUE" UNIQUE ("rate_key")
     )`);
     await execute(connection, `INSERT INTO "nbc_exchange_rate" ("rate_key", "rate_value")
-      VALUES ('NBC_TO_CNY', 0.01)`);
+      VALUES ('NBC_TO_USD', 0.01)`);
     await execute(connection, `CREATE TABLE "nbc_wallet_auth_nonce" (
       "nonce_id" INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
       "uuid" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -118,3 +118,4 @@ export default async function migrate(connection) {
       "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     )`);
 }
+//# sourceMappingURL=Version-1.0.0.js.map

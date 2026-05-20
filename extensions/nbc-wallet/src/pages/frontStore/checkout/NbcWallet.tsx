@@ -1,4 +1,5 @@
 import { Button } from '@evershop/evershop/components/common/ui/Button';
+import { useCartState } from '@evershop/evershop/components/frontStore/cart/CartContext';
 import {
   useCheckout,
   useCheckoutDispatch
@@ -6,52 +7,104 @@ import {
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React, { useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
+import { NbcWalletBridge } from '../../../components/NbcWalletBridge.js';
+import { NbcWalletCheckoutPanel } from '../../../components/NbcWalletCheckoutPanel.js';
+import { useCheckoutWalletSnapshot } from '../../../lib/checkoutWalletStore.js';
 
 interface NbcWalletProps {
   captureAPI: string;
+  authRequestApi: string;
+  authVerifyApi: string;
+  balanceApi: string;
+  onchainBalanceApi: string;
   checkoutSuccessUrl: string;
+  nbcWalletPublicConfig: {
+    exchangeRate: number;
+    shopCurrency: string;
+    displayName: string;
+    chainId?: number | null;
+    rpcUrl?: string | null;
+    chainName?: string;
+    nativeSymbol?: string;
+    tokenAddress?: string | null;
+    tokenDecimals?: number;
+    blockExplorerUrl?: string | null;
+    chainBalanceEnabled: boolean;
+    treasuryAddress?: string | null;
+    onchainEnabled: boolean;
+  };
 }
 
 export default function NbcWallet({
   captureAPI,
-  checkoutSuccessUrl
+  authRequestApi,
+  authVerifyApi,
+  balanceApi,
+  onchainBalanceApi,
+  checkoutSuccessUrl,
+  nbcWalletPublicConfig
 }: NbcWalletProps) {
-  const checkoutState = useCheckout() as any;
-  const checkoutDispatch = useCheckoutDispatch() as any;
-  const { orderPlaced, orderId, checkoutData } = checkoutState;
-  const { registerPaymentComponent } = checkoutDispatch;
+  const { data: cart } = useCartState() as {
+    data: { grandTotal?: { value: number; text: string } };
+  };
+  const checkoutState = useCheckout() as {
+    orderPlaced: boolean;
+    orderId?: string;
+    checkoutData?: { paymentMethod?: string };
+    loadingStates: { placingOrder: boolean };
+  };
+  const { orderPlaced, orderId, checkoutData, loadingStates } = checkoutState;
+  const { registerPaymentComponent } = useCheckoutDispatch() as {
+    registerPaymentComponent: (
+      code: string,
+      component: Record<string, React.ComponentType<unknown>>
+    ) => void;
+  };
   const captureRequestedRef = useRef(false);
+
+  const apis = { authRequestApi, authVerifyApi, balanceApi, onchainBalanceApi };
+  const publicConfig = {
+    exchangeRate: nbcWalletPublicConfig.exchangeRate,
+    shopCurrency: nbcWalletPublicConfig.shopCurrency,
+    displayName: nbcWalletPublicConfig.displayName,
+    chainId: nbcWalletPublicConfig.chainId,
+    rpcUrl: nbcWalletPublicConfig.rpcUrl,
+    chainName: nbcWalletPublicConfig.chainName,
+    nativeSymbol: nbcWalletPublicConfig.nativeSymbol,
+    tokenAddress: nbcWalletPublicConfig.tokenAddress,
+    tokenDecimals: nbcWalletPublicConfig.tokenDecimals,
+    blockExplorerUrl: nbcWalletPublicConfig.blockExplorerUrl,
+    chainBalanceEnabled: nbcWalletPublicConfig.chainBalanceEnabled,
+    treasuryAddress: nbcWalletPublicConfig.treasuryAddress,
+    onchainEnabled: nbcWalletPublicConfig.onchainEnabled
+  };
+
+  const orderCnyTotal = cart?.grandTotal?.value ?? 0;
+  const orderTotalText = cart?.grandTotal?.text;
+  const isNbcSelected = checkoutData?.paymentMethod === 'nbc_wallet';
 
   useEffect(() => {
     const captureOrder = async () => {
       if (!orderPlaced || !orderId || checkoutData?.paymentMethod !== 'nbc_wallet') {
         return;
       }
-
       if (captureRequestedRef.current) {
         return;
       }
-
       captureRequestedRef.current = true;
 
       try {
         const response = await fetch(captureAPI, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            order_uuid: orderId
-          })
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order_uuid: orderId })
         });
-
         const json = await response.json();
-
         if (!response.ok || json.error) {
           captureRequestedRef.current = false;
           throw new Error(json.error?.message || _('NBC payment failed'));
         }
-
         window.location.href = `${checkoutSuccessUrl}/${orderId}`;
       } catch (error) {
         captureRequestedRef.current = false;
@@ -60,56 +113,102 @@ export default function NbcWallet({
         );
       }
     };
-
     captureOrder();
-  }, [orderPlaced, orderId, checkoutData?.paymentMethod, captureAPI, checkoutSuccessUrl]);
+  }, [
+    orderPlaced,
+    orderId,
+    checkoutData?.paymentMethod,
+    captureAPI,
+    checkoutSuccessUrl
+  ]);
 
   useEffect(() => {
     registerPaymentComponent('nbc_wallet', {
-      nameRenderer: () => <span>{_('NBC Wallet')}</span>,
-      formRenderer: () => (
-        <div className="text-sm text-muted-foreground py-3 text-center">
-          {_('Pay directly with your NBC wallet balance.')}
-        </div>
+      nameRenderer: ({ isSelected }: { isSelected: boolean }) => (
+        <span className={isSelected ? 'font-medium' : ''}>
+          {nbcWalletPublicConfig.displayName || _('NBC Wallet')}
+        </span>
       ),
-      checkoutButtonRenderer: () => {
-        const dispatch = useCheckoutDispatch() as any;
-        const state = useCheckout() as any;
-        const { checkout } = dispatch;
-        const { loadingStates, orderPlaced } = state;
-
-        const onCheckout = async (event: React.MouseEvent) => {
-          event.preventDefault();
-          try {
-            await checkout();
-          } catch (error) {
-            toast.error(
-              error instanceof Error
-                ? error.message
-                : _('Failed to place order')
-            );
-          }
-        };
-
-        return (
-          <Button
-            variant="default"
-            size="xl"
-            type="button"
-            onClick={onCheckout}
-            disabled={loadingStates.placingOrder || orderPlaced}
-            className="w-full"
-          >
-            {loadingStates.placingOrder
-              ? _('Placing Order...')
-              : _('Pay with NBC Wallet')}
-          </Button>
-        );
-      }
+      formRenderer: ({ isSelected }: { isSelected: boolean }) => (
+        <NbcWalletCheckoutPanel
+          publicConfig={publicConfig}
+          orderCnyTotal={orderCnyTotal}
+          orderTotalText={orderTotalText}
+          isSelected={isSelected}
+        />
+      ),
+      checkoutButtonRenderer: () => (
+        <NbcWalletPayButton isNbcSelected={isNbcSelected} />
+      )
     });
-  }, [registerPaymentComponent]);
+  }, [
+    registerPaymentComponent,
+    nbcWalletPublicConfig.displayName,
+    orderCnyTotal,
+    orderTotalText,
+    isNbcSelected
+  ]);
 
-  return null;
+  return (
+    <NbcWalletBridge
+      apis={apis}
+      publicConfig={publicConfig}
+      orderCnyTotal={orderCnyTotal}
+      enabled={isNbcSelected}
+    />
+  );
+}
+
+function NbcWalletPayButton({ isNbcSelected }: { isNbcSelected: boolean }) {
+  const dispatch = useCheckoutDispatch() as { checkout: () => Promise<void> };
+  const { checkout } = dispatch;
+  const { loadingStates, orderPlaced } = useCheckout() as {
+    loadingStates: { placingOrder: boolean };
+    orderPlaced: boolean;
+  };
+  const {
+    isConnected,
+    hasSufficientBalance,
+    connecting,
+    loadingBalance
+  } = useCheckoutWalletSnapshot();
+
+  const canPay =
+    isConnected && hasSufficientBalance && !connecting && !loadingBalance;
+
+  const onCheckout = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    if (!canPay) {
+      toast.error(_('Connect your wallet and ensure sufficient NBC balance'));
+      return;
+    }
+    try {
+      await checkout();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : _('Failed to place order')
+      );
+    }
+  };
+
+  if (!isNbcSelected) {
+    return null;
+  }
+
+  return (
+    <Button
+      variant="default"
+      size="xl"
+      type="button"
+      onClick={onCheckout}
+      disabled={loadingStates.placingOrder || orderPlaced || !canPay}
+      className="w-full"
+    >
+      {loadingStates.placingOrder
+        ? _('Placing Order...')
+        : _('Pay with NBC Wallet')}
+    </Button>
+  );
 }
 
 export const layout = {
@@ -120,6 +219,31 @@ export const layout = {
 export const query = `
   query Query {
     captureAPI: url(routeId: "nbcWalletCapturePayment")
+    authRequestApi: url(routeId: "authRequest")
+    authVerifyApi: url(routeId: "authVerify")
+    balanceApi: url(routeId: "nbcWalletBalance")
+    onchainBalanceApi: url(routeId: "nbcWalletOnchainBalance")
     checkoutSuccessUrl: url(routeId: "checkoutSuccess")
+    nbcWalletPublicConfig {
+      exchangeRate
+      shopCurrency
+      displayName
+      chainId
+      rpcUrl
+      chainName
+      nativeSymbol
+      tokenAddress
+      tokenDecimals
+      blockExplorerUrl
+      chainBalanceEnabled
+      treasuryAddress
+      onchainEnabled
+    }
+    myCart {
+      grandTotal {
+        value
+        text
+      }
+    }
   }
 `;

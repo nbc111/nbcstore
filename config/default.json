@@ -1,7 +1,8 @@
 {
   "shop": {
     "language": "zh",
-    "currency": "CNY",
+    "currency": "USD",
+    "currencyLocale": "en-US",
     "timezone": "Asia/Shanghai"
   },
   "themeConfig": {
@@ -66,14 +67,26 @@
       "nonceTtlSeconds": 600,
       "messagePrefix": "请签名以登录 NBC 商城。"
     },
+    "market": {
+      "enabled": 1,
+      "tickerUrl": "https://www.nbcex.com/v1/rest/api/market/ticker",
+      "symbol": "nbcusdt",
+      "accessKey": "3PswIE0Z9w26R9MC5XrGU8b6LD4bQIWWO1x3nwix1xI=",
+      "cacheTtlSeconds": 60,
+      "priceField": "buy"
+    },
     "exchangeRate": {
-      "NBC_TO_CNY": 0.01
+      "NBC_TO_USD": 0.01
     },
     "onchain": {
       "enabled": 0,
-      "rpcUrl": "",
-      "chainId": 0,
+      "rpcUrl": "https://rpc.nbcex.com",
+      "chainId": 1281,
+      "chainName": "NBC Chain",
+      "nativeSymbol": "NBC",
       "tokenAddress": "",
+      "tokenDecimals": 18,
+      "blockExplorerUrl": "",
       "treasuryAddress": "",
       "startBlock": 0,
       "confirmations": 12,

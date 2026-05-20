@@ -1,6 +1,6 @@
 import { select } from '@evershop/postgres-query-builder';
 import { pool } from '../../../../lib/postgres/connection.js';
-import { getConfig } from '../../../../lib/util/getConfig.js';
+import { formatCurrency } from '../../../../lib/util/formatCurrency.js';
 export default (async (request, response, next)=>{
     const query = select();
     query.from('order').select('grand_total', 'total').select('payment_status').select('shipment_status');
@@ -17,12 +17,7 @@ export default (async (request, response, next)=>{
             cancelled += 1;
         }
     });
-    const currency = getConfig('shop.currency', 'USD');
-    const language = getConfig('shop.language', 'en');
-    const formatedTotal = new Intl.NumberFormat(language, {
-        style: 'currency',
-        currency
-    }).format(total);
+    const formatedTotal = formatCurrency(total);
     response.json({
         orders: results.length,
         total: formatedTotal,

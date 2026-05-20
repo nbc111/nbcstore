@@ -7,9 +7,7 @@ export async function refundOrderPayment(orderUuid, performedBy = 'system') {
     const connection = await getConnection();
     try {
         await startTransaction(connection);
-        const orderResult = await connection.query(`SELECT * FROM "order" WHERE uuid = $1 FOR UPDATE`, [
-            orderUuid
-        ]);
+        const orderResult = await connection.query(`SELECT * FROM "order" WHERE uuid = $1 FOR UPDATE`, [orderUuid]);
         const orderRow = orderResult.rows[0];
         if (!orderRow) {
             throw new Error('Order not found');
@@ -43,9 +41,7 @@ export async function refundOrderPayment(orderUuid, performedBy = 'system') {
                 balanceAfter: Number(existingRefund.balance_after)
             };
         }
-        const walletResult = await connection.query(`SELECT * FROM nbc_wallet WHERE wallet_id = $1 FOR UPDATE`, [
-            usage.wallet_id
-        ]);
+        const walletResult = await connection.query(`SELECT * FROM nbc_wallet WHERE wallet_id = $1 FOR UPDATE`, [usage.wallet_id]);
         const walletRow = walletResult.rows[0];
         if (!walletRow) {
             throw new Error('NBC wallet not found');
@@ -56,11 +52,9 @@ export async function refundOrderPayment(orderUuid, performedBy = 'system') {
         await connection.query(`UPDATE nbc_wallet
           SET balance = $1,
               updated_at = NOW()
-        WHERE wallet_id = $2`, [
-            balanceAfter,
-            walletRow.wallet_id
-        ]);
-        await insert('nbc_wallet_transaction').given({
+        WHERE wallet_id = $2`, [balanceAfter, walletRow.wallet_id]);
+        await insert('nbc_wallet_transaction')
+            .given({
             wallet_id: walletRow.wallet_id,
             order_id: orderRow.order_id,
             transaction_type: 'refund',
@@ -75,7 +69,8 @@ export async function refundOrderPayment(orderUuid, performedBy = 'system') {
                 source: 'order_refund',
                 performed_by: performedBy
             }
-        }).execute(connection);
+        })
+            .execute(connection);
         await updatePaymentStatus(orderRow.order_id, 'nbc_refunded', connection);
         await addOrderActivityLog(orderRow.order_id, `NBC Wallet refund completed: ${refundAmount} NBC`, false, connection);
         await commit(connection);
@@ -86,8 +81,10 @@ export async function refundOrderPayment(orderUuid, performedBy = 'system') {
             nbcAmount: refundAmount,
             balanceAfter
         };
-    } catch (error) {
+    }
+    catch (error) {
         await rollback(connection);
         throw error;
     }
 }
+//# sourceMappingURL=refundOrderPayment.js.map

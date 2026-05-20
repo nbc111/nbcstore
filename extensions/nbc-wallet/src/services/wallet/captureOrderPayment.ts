@@ -75,9 +75,9 @@ export async function captureOrderPayment(
       throw new Error('NBC wallet not found');
     }
 
-    const exchangeRate = await getExchangeRate('NBC_TO_CNY');
-    const cnyAmount = Number(orderRow.grand_total);
-    const nbcAmount = calculateNbcAmount(cnyAmount, exchangeRate);
+    const exchangeRate = await getExchangeRate();
+    const orderFiatAmount = Number(orderRow.grand_total);
+    const nbcAmount = calculateNbcAmount(orderFiatAmount, exchangeRate);
     const availableBalance =
       Number(walletRow.balance) - Number(walletRow.frozen_balance);
 
@@ -105,7 +105,7 @@ export async function captureOrderPayment(
         balance_before: balanceBefore,
         balance_after: balanceAfter,
         exchange_rate: exchangeRate,
-        cny_amount: cnyAmount,
+        cny_amount: orderFiatAmount,
         reference: orderRow.uuid,
         status: 'completed',
         metadata: {
@@ -120,7 +120,7 @@ export async function captureOrderPayment(
         wallet_id: walletRow.wallet_id,
         nbc_amount: nbcAmount,
         exchange_rate: exchangeRate,
-        cny_amount: cnyAmount
+        cny_amount: orderFiatAmount
       })
       .execute(connection);
 
@@ -140,7 +140,7 @@ export async function captureOrderPayment(
       orderUuid,
       orderId: orderRow.order_id,
       nbcAmount,
-      cnyAmount,
+      cnyAmount: orderFiatAmount,
       exchangeRate,
       balanceAfter
     };

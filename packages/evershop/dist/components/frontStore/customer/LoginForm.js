@@ -11,7 +11,7 @@ import React from 'react';
 const SubmitButton = ({ formId })=>{
     const { formState: { isSubmitting } } = useFormContext();
     return /*#__PURE__*/ React.createElement("div", {
-        className: "form-submit-button flex border-t border-border mt-4 pt-4 justify-between"
+        className: "form-submit-button flex flex-col gap-3 border-t border-border mt-4 pt-4"
     }, /*#__PURE__*/ React.createElement(Button, {
         className: 'w-full',
         size: 'lg',

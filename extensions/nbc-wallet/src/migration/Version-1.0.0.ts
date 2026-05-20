@@ -101,7 +101,7 @@ export default async function migrate(connection) {
   await execute(
     connection,
     `INSERT INTO "nbc_exchange_rate" ("rate_key", "rate_value")
-      VALUES ('NBC_TO_CNY', 0.01)`
+      VALUES ('NBC_TO_USD', 0.01)`
   );
 
   await execute(

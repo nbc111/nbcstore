@@ -84,7 +84,7 @@ export function PaymentMethods({ methods, isLoading }) {
         }, component?.nameRenderer ? renderComponent(component.nameRenderer, {
             isSelected
         }) : _(method.name)))), component?.formRenderer && isSelected && /*#__PURE__*/ React.createElement(ItemDescription, {
-            className: "text-inherit overflow-visible"
+            className: "text-inherit overflow-visible line-clamp-none"
         }, renderComponent(component.formRenderer, {
             isSelected
         }))));
@@ -92,3 +92,4 @@ export function PaymentMethods({ methods, isLoading }) {
         className: "text-destructive text-sm mt-2"
     }, formState.errors.paymentMethod?.message?.toString() || _('Please select a payment method')))))));
 }
+

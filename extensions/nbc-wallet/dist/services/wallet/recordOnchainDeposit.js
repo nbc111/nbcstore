@@ -20,11 +20,7 @@ export async function recordOnchainDeposit(input) {
         WHERE chain_id = $1
           AND tx_hash = $2
           AND log_index = $3
-        FOR UPDATE`, [
-            input.chainId,
-            input.txHash,
-            input.logIndex
-        ]);
+        FOR UPDATE`, [input.chainId, input.txHash, input.logIndex]);
         if (existing.rows[0]) {
             await commit(connection);
             return {
@@ -36,12 +32,11 @@ export async function recordOnchainDeposit(input) {
         const walletResult = await connection.query(`SELECT *
          FROM nbc_wallet
         WHERE wallet_address = $1
-        FOR UPDATE`, [
-            walletAddress
-        ]);
+        FOR UPDATE`, [walletAddress]);
         const wallet = walletResult.rows[0];
-        const deposit = await insert('nbc_onchain_deposit').given({
-            wallet_id: wallet?.wallet_id || null,
+        const deposit = await insert('nbc_onchain_deposit')
+            .given({
+            wallet_id: (wallet === null || wallet === void 0 ? void 0 : wallet.wallet_id) || null,
             wallet_address: walletAddress,
             chain_id: input.chainId,
             token_address: tokenAddress,
@@ -51,16 +46,19 @@ export async function recordOnchainDeposit(input) {
             amount,
             status: wallet ? 'pending' : 'unmatched',
             metadata: input.metadata || null
-        }).execute(connection);
+        })
+            .execute(connection);
         await commit(connection);
         return {
             depositId: deposit.insertId || deposit.deposit_id,
-            walletId: wallet?.wallet_id || null,
+            walletId: (wallet === null || wallet === void 0 ? void 0 : wallet.wallet_id) || null,
             status: wallet ? 'pending' : 'unmatched',
             alreadyRecorded: false
         };
-    } catch (error) {
+    }
+    catch (error) {
         await rollback(connection);
         throw error;
     }
 }
+//# sourceMappingURL=recordOnchainDeposit.js.map

@@ -1,3 +1,4 @@
+import { formatCurrency } from '../../../../../lib/util/formatCurrency.js';
 import { getConfig } from '../../../../../lib/util/getConfig.js';
 export default {
     Price: {
@@ -7,13 +8,9 @@ export default {
             return curr;
         },
         text: async (rawPrice, { currency })=>{
-            const price = parseFloat(rawPrice); // TODO: Format for decimal value?
+            const price = parseFloat(rawPrice);
             const curr = currency || getConfig('shop.currency', 'USD');
-            const language = getConfig('shop.language', 'en');
-            return new Intl.NumberFormat(language, {
-                style: 'currency',
-                currency: curr
-            }).format(price);
+            return formatCurrency(price, curr);
         }
     }
 };
