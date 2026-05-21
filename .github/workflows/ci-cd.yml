@@ -1,0 +1,135 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: nbcstore-production
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    name: Build Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile EverShop package
+        run: npm run compile
+
+      - name: Compile Postgres query builder
+        run: npm run compile:db
+
+      - name: Build storefront and admin assets
+        run: npm run build
+
+  deploy:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    needs: ci
+    if: github.ref == 'refs/heads/main'
+
+    env:
+      SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      SERVER_USER: ${{ secrets.SERVER_USER }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      PM2_APP_NAME: ${{ secrets.PM2_APP_NAME }}
+      DEPLOY_RESTART_COMMAND: ${{ secrets.DEPLOY_RESTART_COMMAND }}
+      HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare SSH
+        run: |
+          set -euo pipefail
+          test -n "$SERVER_HOST"
+          test -n "$SERVER_SSH_KEY"
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$SERVER_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          SSH_PORT="${SERVER_PORT:-22}"
+          ssh-keyscan -p "$SSH_PORT" -H "$SERVER_HOST" >> ~/.ssh/known_hosts
+
+      - name: Sync source to server
+        run: |
+          set -euo pipefail
+          SSH_PORT="${SERVER_PORT:-22}"
+          SSH_USER="${SERVER_USER:-root}"
+          TARGET_PATH="${DEPLOY_PATH:-/root/nbcstore}"
+
+          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "$SSH_USER@$SERVER_HOST" \
+            "mkdir -p '$TARGET_PATH'"
+
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT" \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude '.env' \
+            --exclude 'node_modules/' \
+            --exclude 'packages/evershop/dist/' \
+            --exclude 'packages/postgres-query-builder/dist/' \
+            --exclude 'public/' \
+            --exclude 'media/' \
+            ./ "$SSH_USER@$SERVER_HOST:$TARGET_PATH/"
+
+      - name: Build and restart on server
+        run: |
+          set -euo pipefail
+          SSH_PORT="${SERVER_PORT:-22}"
+          SSH_USER="${SERVER_USER:-root}"
+          TARGET_PATH="${DEPLOY_PATH:-/root/nbcstore}"
+          APP_NAME="${PM2_APP_NAME:-nbcstore}"
+
+          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "$SSH_USER@$SERVER_HOST" \
+            "DEPLOY_PATH='$TARGET_PATH' APP_NAME='$APP_NAME' DEPLOY_RESTART_COMMAND='$DEPLOY_RESTART_COMMAND' bash -s" <<'REMOTE'
+          set -euo pipefail
+          cd "$DEPLOY_PATH"
+
+          npm ci
+          npm run compile
+          npm run compile:db
+          npm run build
+          mkdir -p media public
+
+          if [ -n "${DEPLOY_RESTART_COMMAND:-}" ]; then
+            bash -lc "$DEPLOY_RESTART_COMMAND"
+          elif command -v pm2 >/dev/null 2>&1; then
+            if pm2 describe "$APP_NAME" >/dev/null 2>&1; then
+              pm2 restart "$APP_NAME" --update-env
+            else
+              pm2 start npm --name "$APP_NAME" -- run start
+            fi
+            pm2 save || true
+          else
+            echo "pm2 is not installed and DEPLOY_RESTART_COMMAND is empty." >&2
+            echo "Install pm2 on the server or set the DEPLOY_RESTART_COMMAND secret." >&2
+            exit 1
+          fi
+          REMOTE
+
+      - name: Health check
+        if: ${{ env.HEALTHCHECK_URL != '' }}
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --location --retry 10 --retry-delay 3 "$HEALTHCHECK_URL" >/dev/null
