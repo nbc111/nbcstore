@@ -25,7 +25,8 @@ export function NbcWalletBridge({
 }: NbcWalletBridgeProps) {
   const walletState = useNbcWallet(apis, publicConfig, {
     orderCnyTotal,
-    autoLoadBalance: enabled
+    autoLoadBalance: enabled,
+    syncPageContextOnConnect: false
   });
 
   useEffect(() => {

@@ -10,14 +10,12 @@ import { NbcWalletPublicConfig } from '../hooks/useNbcWallet.js';
 interface NbcWalletCheckoutPanelProps {
   publicConfig: NbcWalletPublicConfig;
   orderCnyTotal: number;
-  orderTotalText?: string;
   isSelected: boolean;
 }
 
 export function NbcWalletCheckoutPanel({
   publicConfig,
   orderCnyTotal,
-  orderTotalText,
   isSelected
 }: NbcWalletCheckoutPanelProps) {
   const {
@@ -55,11 +53,7 @@ export function NbcWalletCheckoutPanel({
         <div className="flex justify-between items-start gap-3">
           <span className="text-muted-foreground shrink-0">{_('Order total')}</span>
           <span className="font-medium text-right tabular-nums">
-            {orderTotalText ||
-              formatFiatAmount(
-                orderCnyTotal,
-                publicConfig.shopCurrency || 'USD'
-              )}
+            {formatFiatAmount(orderCnyTotal, publicConfig.shopCurrency || 'USD')}
           </span>
         </div>
         <div className="flex justify-between items-start gap-3">

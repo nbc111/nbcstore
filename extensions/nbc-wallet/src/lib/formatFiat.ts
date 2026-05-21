@@ -4,10 +4,13 @@ export function formatFiatAmount(
   locale = 'en-US'
 ): string {
   try {
-    return new Intl.NumberFormat(locale, {
+    const curr = currency.toUpperCase();
+    const formatted = new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: currency.toUpperCase()
+      currency: curr,
+      currencyDisplay: 'narrowSymbol'
     }).format(value);
+    return curr === 'USD' ? formatted.replace(/^US\$/, '$') : formatted;
   } catch {
     return `${currency} ${value}`;
   }
@@ -21,12 +24,15 @@ export function formatNbcExchangeRate(
 ): string {
   const fractionDigits = rate < 0.01 ? 6 : rate < 0.1 ? 4 : rate < 1 ? 3 : 2;
   try {
-    return new Intl.NumberFormat(locale, {
+    const curr = currency.toUpperCase();
+    const formatted = new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: currency.toUpperCase(),
+      currency: curr,
+      currencyDisplay: 'narrowSymbol',
       minimumFractionDigits: fractionDigits,
       maximumFractionDigits: fractionDigits
     }).format(rate);
+    return curr === 'USD' ? formatted.replace(/^US\$/, '$') : formatted;
   } catch {
     return `${currency} ${rate.toFixed(fractionDigits)}`;
   }

@@ -92,4 +92,3 @@ export function PaymentMethods({ methods, isLoading }) {
         className: "text-destructive text-sm mt-2"
     }, formState.errors.paymentMethod?.message?.toString() || _('Please select a payment method')))))));
 }
-

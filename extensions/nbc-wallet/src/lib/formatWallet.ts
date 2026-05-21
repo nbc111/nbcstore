@@ -5,7 +5,7 @@ export function shortenAddress(address: string): string {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
 }
 
-export function formatNbcAmount(amount: number, maxFractionDigits = 0): string {
+export function formatNbcAmount(amount: number, maxFractionDigits = 4): string {
   return new Intl.NumberFormat(undefined, {
     maximumFractionDigits: maxFractionDigits,
     minimumFractionDigits: 0

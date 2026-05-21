@@ -18,6 +18,12 @@ interface NbcWalletProps {
   balanceApi: string;
   onchainBalanceApi: string;
   checkoutSuccessUrl: string;
+  myCart?: {
+    grandTotal?: {
+      value: number;
+      text: string;
+    };
+  };
   nbcWalletPublicConfig: {
     exchangeRate: number;
     shopCurrency: string;
@@ -42,6 +48,7 @@ export default function NbcWallet({
   balanceApi,
   onchainBalanceApi,
   checkoutSuccessUrl,
+  myCart,
   nbcWalletPublicConfig
 }: NbcWalletProps) {
   const { data: cart } = useCartState() as {
@@ -79,8 +86,14 @@ export default function NbcWallet({
     onchainEnabled: nbcWalletPublicConfig.onchainEnabled
   };
 
-  const orderCnyTotal = cart?.grandTotal?.value ?? 0;
-  const orderTotalText = cart?.grandTotal?.text;
+  const checkoutGrandTotal = cart?.grandTotal?.value;
+  const initialGrandTotal = myCart?.grandTotal?.value;
+  const orderCnyTotal =
+    typeof checkoutGrandTotal === 'number' && checkoutGrandTotal > 0
+      ? checkoutGrandTotal
+      : typeof initialGrandTotal === 'number'
+        ? initialGrandTotal
+        : checkoutGrandTotal ?? 0;
   const isNbcSelected = checkoutData?.paymentMethod === 'nbc_wallet';
 
   useEffect(() => {
@@ -133,7 +146,6 @@ export default function NbcWallet({
         <NbcWalletCheckoutPanel
           publicConfig={publicConfig}
           orderCnyTotal={orderCnyTotal}
-          orderTotalText={orderTotalText}
           isSelected={isSelected}
         />
       ),
@@ -145,7 +157,6 @@ export default function NbcWallet({
     registerPaymentComponent,
     nbcWalletPublicConfig.displayName,
     orderCnyTotal,
-    orderTotalText,
     isNbcSelected
   ]);
 

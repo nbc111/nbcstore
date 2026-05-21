@@ -49,9 +49,15 @@ export function useNbcWallet(
     orderCnyTotal?: number;
     autoLoadBalance?: boolean;
     redirectUrl?: string;
+    syncPageContextOnConnect?: boolean;
   } = {}
 ) {
-  const { orderCnyTotal = 0, autoLoadBalance = true, redirectUrl } = options;
+  const {
+    orderCnyTotal = 0,
+    autoLoadBalance = true,
+    redirectUrl,
+    syncPageContextOnConnect = true
+  } = options;
   const appDispatch = useAppDispatch() as { fetchPageData: (url: string) => Promise<void> };
   const [wallet, setWallet] = useState<WalletSummary | null>(null);
   const [onchainBalance, setOnchainBalance] = useState<number | null>(null);
@@ -210,7 +216,9 @@ export function useNbcWallet(
         window.location.href = redirectUrl;
         return;
       }
-      await refreshPageContext();
+      if (syncPageContextOnConnect) {
+        await refreshPageContext();
+      }
       await refreshBalance();
     } finally {
       setConnecting(false);
@@ -222,7 +230,8 @@ export function useNbcWallet(
     refreshBalance,
     refreshOnchainBalance,
     refreshPageContext,
-    redirectUrl
+    redirectUrl,
+    syncPageContextOnConnect
   ]);
 
   const connectWithErrors = useCallback(async () => {

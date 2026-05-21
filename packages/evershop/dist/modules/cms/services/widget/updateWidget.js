@@ -11,7 +11,7 @@ function validateWidgetDataBeforeInsert(data) {
     widgetDataSchema.required = [
         'status'
     ];
-    const jsonSchema = getValueSync('updateWidgetDataJsonSchema', widgetDataSchema, {});
+    const jsonSchema = getValueSync('updateWidgetDataJsonSchema', widgetDataSchema);
     const validate = ajv.compile(jsonSchema);
     const valid = validate(data);
     if (valid) {
@@ -41,7 +41,7 @@ async function updateWidgetData(uuid, data, connection) {
         const widgetData = await getValue('widgetDataBeforeUpdate', data);
         // Validate widget data
         validateWidgetDataBeforeInsert(widgetData);
-        // Update widget data
+        // Insert widget data
         const widget = await hookable(updateWidgetData, {
             ...context,
             connection
@@ -72,4 +72,6 @@ export function hookBeforeUpdateWidget(callback, priority = 10) {
 }
 export function hookAfterUpdateWidget(callback, priority = 10) {
     hookAfter('updateWidget', callback, priority);
+}
+;
 }

@@ -7,8 +7,8 @@ import { toast } from 'react-toastify';
 import { NbcWalletBridge } from '../../../components/NbcWalletBridge.js';
 import { NbcWalletCheckoutPanel } from '../../../components/NbcWalletCheckoutPanel.js';
 import { useCheckoutWalletSnapshot } from '../../../lib/checkoutWalletStore.js';
-export default function NbcWallet({ captureAPI, authRequestApi, authVerifyApi, balanceApi, onchainBalanceApi, checkoutSuccessUrl, nbcWalletPublicConfig }) {
-    var _a, _b, _c;
+export default function NbcWallet({ captureAPI, authRequestApi, authVerifyApi, balanceApi, onchainBalanceApi, checkoutSuccessUrl, myCart, nbcWalletPublicConfig }) {
+    var _a, _b;
     const { data: cart } = useCartState();
     const checkoutState = useCheckout();
     const { orderPlaced, orderId, checkoutData, loadingStates } = checkoutState;
@@ -30,8 +30,13 @@ export default function NbcWallet({ captureAPI, authRequestApi, authVerifyApi, b
         treasuryAddress: nbcWalletPublicConfig.treasuryAddress,
         onchainEnabled: nbcWalletPublicConfig.onchainEnabled
     };
-    const orderCnyTotal = (_b = (_a = cart === null || cart === void 0 ? void 0 : cart.grandTotal) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : 0;
-    const orderTotalText = (_c = cart === null || cart === void 0 ? void 0 : cart.grandTotal) === null || _c === void 0 ? void 0 : _c.text;
+    const checkoutGrandTotal = (_a = cart === null || cart === void 0 ? void 0 : cart.grandTotal) === null || _a === void 0 ? void 0 : _a.value;
+    const initialGrandTotal = (_b = myCart === null || myCart === void 0 ? void 0 : myCart.grandTotal) === null || _b === void 0 ? void 0 : _b.value;
+    const orderCnyTotal = typeof checkoutGrandTotal === 'number' && checkoutGrandTotal > 0
+        ? checkoutGrandTotal
+        : typeof initialGrandTotal === 'number'
+            ? initialGrandTotal
+            : checkoutGrandTotal !== null && checkoutGrandTotal !== void 0 ? checkoutGrandTotal : 0;
     const isNbcSelected = (checkoutData === null || checkoutData === void 0 ? void 0 : checkoutData.paymentMethod) === 'nbc_wallet';
     useEffect(() => {
         const captureOrder = async () => {
@@ -73,14 +78,13 @@ export default function NbcWallet({ captureAPI, authRequestApi, authVerifyApi, b
     useEffect(() => {
         registerPaymentComponent('nbc_wallet', {
             nameRenderer: ({ isSelected }) => (React.createElement("span", { className: isSelected ? 'font-medium' : '' }, nbcWalletPublicConfig.displayName || _('NBC Wallet'))),
-            formRenderer: ({ isSelected }) => (React.createElement(NbcWalletCheckoutPanel, { publicConfig: publicConfig, orderCnyTotal: orderCnyTotal, orderTotalText: orderTotalText, isSelected: isSelected })),
+            formRenderer: ({ isSelected }) => (React.createElement(NbcWalletCheckoutPanel, { publicConfig: publicConfig, orderCnyTotal: orderCnyTotal, isSelected: isSelected })),
             checkoutButtonRenderer: () => (React.createElement(NbcWalletPayButton, { isNbcSelected: isNbcSelected }))
         });
     }, [
         registerPaymentComponent,
         nbcWalletPublicConfig.displayName,
         orderCnyTotal,
-        orderTotalText,
         isNbcSelected
     ]);
     return (React.createElement(NbcWalletBridge, { apis: apis, publicConfig: publicConfig, orderCnyTotal: orderCnyTotal, enabled: isNbcSelected }));

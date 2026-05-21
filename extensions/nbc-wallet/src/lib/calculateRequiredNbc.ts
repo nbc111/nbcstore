@@ -3,8 +3,9 @@ export function calculateRequiredNbc(
   cnyAmount: number,
   exchangeRate: number
 ): number {
-  if (!exchangeRate || exchangeRate <= 0) {
+  const amount = Number(cnyAmount);
+  if (!exchangeRate || exchangeRate <= 0 || !Number.isFinite(amount) || amount <= 0) {
     return 0;
   }
-  return Math.floor(cnyAmount / exchangeRate);
+  return Math.ceil(amount / exchangeRate);
 }
