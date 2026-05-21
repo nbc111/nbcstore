@@ -34,6 +34,9 @@ jobs:
       - name: Compile Postgres query builder
         run: npm run compile:db
 
+      - name: Compile NBC wallet extension
+        run: npm --workspace nbc-wallet run tsc
+
       - name: Build storefront and admin assets
         run: npm run build
 
@@ -89,6 +92,7 @@ jobs:
             --exclude 'node_modules/' \
             --exclude 'packages/evershop/dist/' \
             --exclude 'packages/postgres-query-builder/dist/' \
+            --exclude 'extensions/nbc-wallet/dist/' \
             --exclude 'public/' \
             --exclude 'media/' \
             ./ "$SSH_USER@$SERVER_HOST:$TARGET_PATH/"
@@ -109,6 +113,7 @@ jobs:
           npm ci
           npm run compile
           npm run compile:db
+          npm --workspace nbc-wallet run tsc
           npm run build
           mkdir -p media public
 
