@@ -137,4 +137,5 @@ jobs:
         if: ${{ env.HEALTHCHECK_URL != '' }}
         run: |
           set -euo pipefail
-          curl --fail --show-error --location --retry 10 --retry-delay 3 "$HEALTHCHECK_URL" >/dev/null
+          sleep 10
+          curl --fail --show-error --location --retry 10 --retry-delay 3 --retry-connrefused "$HEALTHCHECK_URL" >/dev/null
