@@ -1,8 +1,11 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
 import config from 'config';
 import { registerPaymentMethod } from '@evershop/evershop/checkout/services';
 import { registerJob } from '@evershop/evershop/lib/cronjob';
 import { getConfig } from '@evershop/evershop/lib/util/getConfig';
+
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default function bootstrap() {
   config.util.setModuleDefaults('oms', {
@@ -67,22 +70,14 @@ export default function bootstrap() {
   registerJob({
     name: 'nbcWalletOnchainDepositPoller',
     schedule: String(getConfig('nbcWallet.onchain.pollSchedule', '*/5 * * * *')),
-    resolve: path.resolve(
-      import.meta.dirname,
-      'crons',
-      'processOnchainDeposits.js'
-    ),
+    resolve: path.resolve(currentDir, 'crons', 'processOnchainDeposits.js'),
     enabled: onchainEnabled
   });
 
   registerJob({
     name: 'nbcWalletReconcileLedger',
     schedule: String(getConfig('nbcWallet.reconcile.schedule', '*/10 * * * *')),
-    resolve: path.resolve(
-      import.meta.dirname,
-      'crons',
-      'reconcileWalletLedger.js'
-    ),
+    resolve: path.resolve(currentDir, 'crons', 'reconcileWalletLedger.js'),
     enabled: Number(getConfig('nbcWallet.reconcile.enabled', 1)) === 1
   });
 }
