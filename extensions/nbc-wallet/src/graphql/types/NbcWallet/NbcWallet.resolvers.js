@@ -4,6 +4,7 @@ import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 import { getChainRpcConfig, isChainRpcConfigured } from '../../../services/wallet/getChainRpcConfig.js';
 import { getExchangeRate } from '../../../services/wallet/getExchangeRate.js';
 import { getWalletSummary } from '../../../services/wallet/getWalletSummary.js';
+import { listWithdrawals } from '../../../services/wallet/listWithdrawals.js';
 import { listWalletTransactions } from '../../../services/wallet/listWalletTransactions.js';
 
 async function loadOrderUsage(orderId) {
@@ -57,12 +58,20 @@ export default {
         };
       }
       return listWalletTransactions(customer.customer_id, args);
+    },
+    nbcWalletWithdrawals: async (_, args, { customer }) => {
+      if (!customer) {
+        return [];
+      }
+      return listWithdrawals(customer.customer_id, args.limit);
     }
   },
   Customer: {
     nbcWallet: ({ customerId }) => getWalletSummary(customerId),
     nbcWalletTransactions: ({ customerId }, args) =>
-      listWalletTransactions(customerId, args)
+      listWalletTransactions(customerId, args),
+    nbcWalletWithdrawals: ({ customerId }, args) =>
+      listWithdrawals(customerId, args.limit)
   },
   Order: {
     nbcUsage: async ({ orderId }, args, { customer }) => {

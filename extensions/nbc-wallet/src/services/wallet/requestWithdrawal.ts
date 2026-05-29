@@ -1,0 +1,90 @@
+import {
+  commit,
+  insert,
+  rollback,
+  startTransaction
+} from '@evershop/postgres-query-builder';
+import { getConnection } from '@evershop/evershop/lib/postgres';
+import { getChainRpcConfig } from './getChainRpcConfig.js';
+import { getWalletByCustomerId } from './getWalletByCustomerId.js';
+
+type RequestWithdrawalInput = {
+  customerId: number;
+  amount: number;
+};
+
+export async function requestWithdrawal(input: RequestWithdrawalInput) {
+  const amount = Math.floor(Number(input.amount || 0));
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new Error('Withdrawal amount must be greater than 0');
+  }
+
+  const connection = await getConnection();
+
+  try {
+    await startTransaction(connection);
+
+    const wallet = await getWalletByCustomerId(input.customerId);
+    if (!wallet) {
+      throw new Error('NBC wallet not found');
+    }
+
+    const lockedWalletResult = await connection.query(
+      'SELECT * FROM nbc_wallet WHERE wallet_id = $1 FOR UPDATE',
+      [wallet.wallet_id]
+    );
+    const lockedWallet = lockedWalletResult.rows[0];
+
+    if (!lockedWallet) {
+      throw new Error('NBC wallet not found');
+    }
+
+    const availableBalance =
+      Number(lockedWallet.balance) - Number(lockedWallet.frozen_balance);
+    if (availableBalance < amount) {
+      throw new Error('NBC balance is insufficient for withdrawal');
+    }
+
+    const chain = getChainRpcConfig();
+    if (!chain.chainId || !chain.tokenAddress) {
+      throw new Error('On-chain withdrawal configuration is incomplete');
+    }
+
+    const nextFrozenBalance = Number(lockedWallet.frozen_balance) + amount;
+
+    await connection.query(
+      `UPDATE nbc_wallet
+          SET frozen_balance = $1,
+              updated_at = NOW()
+        WHERE wallet_id = $2`,
+      [nextFrozenBalance, lockedWallet.wallet_id]
+    );
+
+    const withdrawal = await insert('nbc_withdrawal')
+      .given({
+        wallet_id: lockedWallet.wallet_id,
+        customer_id: lockedWallet.customer_id,
+        wallet_address: lockedWallet.wallet_address,
+        chain_id: chain.chainId,
+        token_address: chain.tokenAddress,
+        amount,
+        status: 'requested',
+        metadata: {
+          source: 'customer_request'
+        }
+      })
+      .execute(connection);
+
+    await commit(connection);
+
+    return {
+      withdrawalId: withdrawal.insertId || withdrawal.withdrawal_id,
+      amount,
+      walletAddress: lockedWallet.wallet_address,
+      frozenBalance: nextFrozenBalance
+    };
+  } catch (error) {
+    await rollback(connection);
+    throw error;
+  }
+}

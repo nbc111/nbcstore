@@ -8,10 +8,15 @@ import {
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Loader2, Wallet } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useNbcWallet, NbcWalletApis, NbcWalletPublicConfig } from '../hooks/useNbcWallet.js';
 import { formatFiatAmount, formatNbcExchangeRate } from '../lib/formatFiat.js';
 import { formatNbcAmount, shortenAddress } from '../lib/formatWallet.js';
-import { fetchWalletTransactions } from '../lib/nbcWalletApi.js';
+import {
+  fetchWalletTransactions,
+  fetchWalletWithdrawals,
+  requestWalletWithdrawal
+} from '../lib/nbcWalletApi.js';
 
 interface WalletTransactionRow {
   uuid: string;
@@ -23,8 +28,20 @@ interface WalletTransactionRow {
   orderNumber?: string;
 }
 
+interface WalletWithdrawalRow {
+  uuid: string;
+  amount: number;
+  status: string;
+  txHash?: string | null;
+  errorMessage?: string | null;
+}
+
 interface NbcWalletAccountSectionProps {
-  apis: NbcWalletApis & { transactionsApi: string };
+  apis: NbcWalletApis & {
+    transactionsApi: string;
+    withdrawalsApi: string;
+    withdrawApi: string;
+  };
   publicConfig: NbcWalletPublicConfig;
 }
 
@@ -52,6 +69,10 @@ export function NbcWalletAccountSection({
 
   const [transactions, setTransactions] = useState<WalletTransactionRow[]>([]);
   const [loadingTx, setLoadingTx] = useState(false);
+  const [withdrawals, setWithdrawals] = useState<WalletWithdrawalRow[]>([]);
+  const [loadingWithdrawals, setLoadingWithdrawals] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [submittingWithdrawal, setSubmittingWithdrawal] = useState(false);
 
   const loadTransactions = useCallback(async () => {
     if (!isConnected) {
@@ -69,11 +90,61 @@ export function NbcWalletAccountSection({
     }
   }, [apis.transactionsApi, isConnected]);
 
+  const loadWithdrawals = useCallback(async () => {
+    if (!isConnected) {
+      setWithdrawals([]);
+      return;
+    }
+    setLoadingWithdrawals(true);
+    try {
+      const data = await fetchWalletWithdrawals(apis.withdrawalsApi, 10);
+      setWithdrawals(data?.items || []);
+    } catch {
+      setWithdrawals([]);
+    } finally {
+      setLoadingWithdrawals(false);
+    }
+  }, [apis.withdrawalsApi, isConnected]);
+
+  const submitWithdrawal = useCallback(async () => {
+    const amount = Math.floor(Number(withdrawAmount || 0));
+    if (!amount || amount <= 0) {
+      toast.error(_('Withdrawal amount must be greater than 0'));
+      return;
+    }
+    if (amount > (wallet?.availableBalance || 0)) {
+      toast.error(_('Withdrawal amount exceeds available balance'));
+      return;
+    }
+
+    try {
+      setSubmittingWithdrawal(true);
+      await requestWalletWithdrawal(apis.withdrawApi, amount);
+      setWithdrawAmount('');
+      toast.success(_('Withdrawal request submitted'));
+      await refreshBalance();
+      await loadWithdrawals();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : _('Failed to request withdrawal')
+      );
+    } finally {
+      setSubmittingWithdrawal(false);
+    }
+  }, [
+    apis.withdrawApi,
+    loadWithdrawals,
+    refreshBalance,
+    wallet?.availableBalance,
+    withdrawAmount
+  ]);
+
   useEffect(() => {
     if (isConnected) {
       loadTransactions();
+      loadWithdrawals();
     }
-  }, [isConnected, loadTransactions, wallet?.balance]);
+  }, [isConnected, loadTransactions, loadWithdrawals, wallet?.balance, wallet?.frozenBalance]);
 
   return (
     <Card className="mb-7 w-full">
@@ -161,6 +232,41 @@ export function NbcWalletAccountSection({
               </Button>
             </div>
 
+            <div className="rounded-md border p-4 space-y-3">
+              <h4 className="font-medium">{_('Withdraw NBC')}</h4>
+              <p className="text-sm text-muted-foreground">
+                {_('Submit a withdrawal request to transfer NBC back to your connected wallet address.')}
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                <div className="flex-1">
+                  <label className="mb-1 block text-sm font-medium">
+                    {_('Amount')}
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={withdrawAmount}
+                    onChange={(event) => setWithdrawAmount(event.target.value)}
+                    placeholder={_('Withdraw amount')}
+                    className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+                  />
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {_('Funds will be frozen until the withdrawal is processed.')}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  onClick={() => submitWithdrawal()}
+                  isLoading={submittingWithdrawal}
+                  disabled={!wallet || submittingWithdrawal}
+                  className=""
+                >
+                  {_('Request withdrawal')}
+                </Button>
+              </div>
+            </div>
+
             <div>
               <h4 className="font-medium mb-2">{_('Recent transactions')}</h4>
               {loadingTx ? (
@@ -192,6 +298,41 @@ export function NbcWalletAccountSection({
                         {tx.amount >= 0 ? '+' : ''}
                         {formatNbcAmount(tx.amount)} NBC
                       </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div>
+              <h4 className="font-medium mb-2">{_('Recent withdrawals')}</h4>
+              {loadingWithdrawals ? (
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              ) : withdrawals.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {_('No withdrawals yet')}
+                </p>
+              ) : (
+                <ul className="divide-y border rounded-md text-sm">
+                  {withdrawals.map((item) => (
+                    <li
+                      key={item.uuid}
+                      className="flex flex-col gap-1 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div>
+                        <div className="font-medium">
+                          {formatNbcAmount(item.amount)} NBC
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {item.status}
+                          {item.txHash ? ` · ${item.txHash}` : ''}
+                        </div>
+                        {item.errorMessage ? (
+                          <div className="text-xs text-destructive">
+                            {item.errorMessage}
+                          </div>
+                        ) : null}
+                      </div>
                     </li>
                   ))}
                 </ul>

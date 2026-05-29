@@ -43,6 +43,27 @@ type NbcWalletTransactionCollection {
   total: Int!
 }
 
+type NbcWalletWithdrawal {
+  withdrawalId: Int!
+  uuid: String!
+  walletId: Int!
+  customerId: Int!
+  walletAddress: String!
+  chainId: Int!
+  tokenAddress: String!
+  amount: Float!
+  txHash: String
+  walletTxId: Int
+  status: String!
+  requestedAt: DateTime
+  processedAt: DateTime
+  failedAt: DateTime
+  errorMessage: String
+  metadata: JSON
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
 type NbcOrderUsage {
   nbcAmount: Float!
   exchangeRate: Float!
@@ -53,6 +74,7 @@ type NbcOrderUsage {
 extend type Customer {
   nbcWallet: NbcWallet
   nbcWalletTransactions(page: Int, limit: Int, transactionType: String): NbcWalletTransactionCollection
+  nbcWalletWithdrawals(limit: Int): [NbcWalletWithdrawal]
 }
 
 extend type Order {
@@ -78,5 +100,6 @@ type NbcWalletPublicConfig {
 extend type Query {
   nbcWallet: NbcWallet
   nbcWalletTransactions(page: Int, limit: Int, transactionType: String): NbcWalletTransactionCollection
+  nbcWalletWithdrawals(limit: Int): [NbcWalletWithdrawal]
   nbcWalletPublicConfig: NbcWalletPublicConfig!
 }

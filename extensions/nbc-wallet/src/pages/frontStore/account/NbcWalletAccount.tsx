@@ -6,6 +6,8 @@ interface NbcWalletAccountProps {
   authVerifyApi: string;
   balanceApi: string;
   transactionsApi: string;
+  withdrawalsApi: string;
+  withdrawApi: string;
   nbcWalletPublicConfig: {
     exchangeRate: number;
     shopCurrency: string;
@@ -21,6 +23,8 @@ export default function NbcWalletAccount({
   authVerifyApi,
   balanceApi,
   transactionsApi,
+  withdrawalsApi,
+  withdrawApi,
   nbcWalletPublicConfig
 }: NbcWalletAccountProps) {
   return (
@@ -29,7 +33,9 @@ export default function NbcWalletAccount({
         authRequestApi,
         authVerifyApi,
         balanceApi,
-        transactionsApi
+        transactionsApi,
+        withdrawalsApi,
+        withdrawApi
       }}
       publicConfig={{
         exchangeRate: nbcWalletPublicConfig.exchangeRate,
@@ -54,6 +60,8 @@ export const query = `
     authVerifyApi: url(routeId: "authVerify")
     balanceApi: url(routeId: "nbcWalletBalance")
     transactionsApi: url(routeId: "nbcWalletTransactions")
+    withdrawalsApi: url(routeId: "nbcWalletWithdrawals")
+    withdrawApi: url(routeId: "nbcWalletWithdraw")
     nbcWalletPublicConfig {
       exchangeRate
       shopCurrency

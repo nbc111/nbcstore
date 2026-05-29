@@ -88,6 +88,7 @@
       "tokenDecimals": 18,
       "blockExplorerUrl": "",
       "treasuryAddress": "",
+      "treasuryPrivateKey": "",
       "startBlock": 0,
       "confirmations": 12,
       "blockBatchSize": 500,

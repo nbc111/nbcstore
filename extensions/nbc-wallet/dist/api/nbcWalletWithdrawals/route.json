@@ -1,0 +1,5 @@
+{
+  "methods": ["GET"],
+  "path": "/nbcWallet/withdrawals",
+  "access": "public"
+}

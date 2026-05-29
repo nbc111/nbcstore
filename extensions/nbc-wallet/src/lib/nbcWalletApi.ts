@@ -97,3 +97,28 @@ export async function fetchOnchainNbcBalance(
     await fetch(url.toString(), { ...fetchOpts, method: 'GET' })
   ) as Promise<OnchainNbcBalance>;
 }
+
+export async function requestWalletWithdrawal(
+  withdrawApi: string,
+  amount: number
+) {
+  return parseJson(
+    await fetch(withdrawApi, {
+      ...fetchOpts,
+      method: 'POST',
+      body: JSON.stringify({ amount })
+    })
+  );
+}
+
+export async function fetchWalletWithdrawals(
+  withdrawalsApi: string,
+  limit = 10
+) {
+  const url = new URL(withdrawalsApi, window.location.origin);
+  url.searchParams.set('limit', String(limit));
+  const data = await parseJson(
+    await fetch(url.toString(), { ...fetchOpts, method: 'GET' })
+  );
+  return data;
+}
