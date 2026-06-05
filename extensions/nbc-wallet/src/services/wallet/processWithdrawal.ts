@@ -6,10 +6,20 @@ import {
 } from '@evershop/postgres-query-builder';
 import { getConnection } from '@evershop/evershop/lib/postgres';
 import { emit } from '@evershop/evershop/lib/event';
+import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 import { getTreasurySigner } from './getTreasurySigner.js';
 import { getChainRpcConfig } from './getChainRpcConfig.js';
+import { writeAuditLog } from './writeAuditLog.js';
 
-const PROCESSABLE_STATUSES = ['requested', 'approved'];
+/**
+ * When `nbcWallet.withdrawal.requireApproval` is 1 (default in production),
+ * processWithdrawal only accepts `approved` withdrawals, enforcing the two-step
+ * approve → process workflow. Set to 0 only during development/testing.
+ */
+function getProcessableStatuses(): string[] {
+  const requireApproval = Number(getConfig('nbcWallet.withdrawal.requireApproval', 1));
+  return requireApproval === 1 ? ['approved'] : ['requested', 'approved'];
+}
 
 /**
  * Two-phase withdrawal processing to prevent double-spend:
@@ -68,8 +78,15 @@ export async function processWithdrawal(
         return { withdrawalUuid, status: 'processing', txHash: wd.tx_hash, alreadyProcessed: true };
       }
 
-      if (!PROCESSABLE_STATUSES.includes(wd.status)) {
-        throw new Error(`Withdrawal status "${wd.status}" cannot be processed`);
+      const processableStatuses = getProcessableStatuses();
+      if (!processableStatuses.includes(wd.status)) {
+        const hint =
+          wd.status === 'requested'
+            ? ' (approval is required before processing — call /approve first)'
+            : '';
+        throw new Error(
+          `Withdrawal status "${wd.status}" cannot be processed${hint}`
+        );
       }
 
       const walletResult = await conn.query(
@@ -174,9 +191,18 @@ export async function processWithdrawal(
       );
     }
 
-    await emit('nbc_wallet_withdrawal_completed', {
-      withdrawalUuid, withdrawalId, walletId, txHash, amount, balanceAfter
-    }).catch(() => {});
+    await Promise.all([
+      emit('nbc_wallet_withdrawal_completed', {
+        withdrawalUuid, withdrawalId, walletId, txHash, amount, balanceAfter
+      }).catch(() => {}),
+      writeAuditLog({
+        entityType: 'withdrawal',
+        entityId: withdrawalId,
+        action: 'completed',
+        performedBy,
+        metadata: { tx_hash: txHash, amount, balance_after: balanceAfter }
+      })
+    ]);
 
     return {
       withdrawalUuid,

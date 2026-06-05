@@ -97,6 +97,12 @@
     "reconcile": {
       "enabled": 1,
       "schedule": "*/10 * * * *"
+    },
+    "withdrawal": {
+      "requireApproval": 1,
+      "minAmount": 1,
+      "maxAmount": 0,
+      "dailyLimit": 0
     }
   }
 }
