@@ -29,6 +29,8 @@ export async function failWithdrawal(
       throw new Error('Completed withdrawal cannot be failed');
     }
 
+    // processing withdrawals may only be failed manually after confirming the
+    // chain tx was NOT mined (to avoid reversing an already-sent transfer)
     if (withdrawal.status === 'failed') {
       await commit(connection);
       return {

@@ -5,6 +5,14 @@ import {
   startTransaction
 } from '@evershop/postgres-query-builder';
 import { getConnection } from '@evershop/evershop/lib/postgres';
+import { emit } from '@evershop/evershop/lib/event';
+import { getChainRpcConfig } from './getChainRpcConfig.js';
+
+function normalizeDepositAmount(rawAmount: bigint, tokenDecimals: number): bigint {
+  if (tokenDecimals <= 0) return rawAmount;
+  const divisor = BigInt(10) ** BigInt(tokenDecimals);
+  return rawAmount / divisor;
+}
 
 export async function settleOnchainDeposit(depositId: number) {
   const connection = await getConnection();
@@ -61,8 +69,24 @@ export async function settleOnchainDeposit(depositId: number) {
       };
     }
 
+    const { tokenDecimals } = getChainRpcConfig();
+    const rawOnchainAmount = BigInt(deposit.amount);
+    const amount = normalizeDepositAmount(rawOnchainAmount, tokenDecimals);
+
+    if (amount <= BigInt(0)) {
+      await connection.query(
+        `UPDATE nbc_onchain_deposit
+            SET status = 'failed',
+                error_message = 'Normalized amount is zero (check tokenDecimals config)',
+                updated_at = NOW()
+          WHERE deposit_id = $1`,
+        [depositId]
+      );
+      await commit(connection);
+      return { depositId, status: 'failed', alreadySettled: false };
+    }
+
     const balanceBefore = BigInt(wallet.balance);
-    const amount = BigInt(deposit.amount);
     const balanceAfter = balanceBefore + amount;
 
     await connection.query(
@@ -110,15 +134,23 @@ export async function settleOnchainDeposit(depositId: number) {
 
     await commit(connection);
 
-    return {
+    const result = {
       depositId,
       walletId: wallet.wallet_id,
+      customerId: wallet.customer_id,
       walletTxId,
-      status: 'completed',
+      txHash: deposit.tx_hash,
+      chainId: deposit.chain_id,
+      tokenAddress: deposit.token_address,
+      status: 'completed' as const,
       amount: amount.toString(),
       balanceAfter: balanceAfter.toString(),
       alreadySettled: false
     };
+
+    await emit('nbc_wallet_deposit_completed', result).catch(() => {});
+
+    return result;
   } catch (error) {
     await rollback(connection);
     throw error;
