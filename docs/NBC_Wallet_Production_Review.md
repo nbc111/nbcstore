@@ -17,6 +17,7 @@ Review 日期：2026-06-04
 | USDT 入金 | ☆ | 未实现（`nbcusdt` 仅用于汇率行情） |
 | 审核出金 | ⭐⭐ | 有 API 与前台申请，无后台 UI、无完整审核态、存在双花风险 |
 | 邮件通知 | ☆ | 入金/出金均无邮件 |
+| 充值完成回调通知 | ☆ | 入账后无事件、邮件、Webhook、前台推送 |
 | 生产安全 | ⭐⭐ | 登录与账本基础尚可，出金事务与密钥管理未达标 |
 
 **与业务基本需求的对照：**
@@ -27,6 +28,7 @@ Review 日期：2026-06-04
 | 入金 USDT | 未实现 |
 | 出金需审核 | 半实现（`requested` → 管理员 `process`/`fail`，无独立审核态与后台页） |
 | 邮件通知出入金 | 未实现 |
+| 充值完成回调通知 | 未实现（仅 DB 入账，用户需主动查余额/流水） |
 
 **粗估离生产：** 商城内支付约 70% 可用；链上出入金生产闭环约 35–40%。完整满足 NBC+USDT 入金、审核出金、邮件通知，预计还需 **1–2 个迭代（约 4–8 周，视 USDT 与风控范围而定）**。
 
@@ -75,6 +77,50 @@ Review 日期：2026-06-04
 | 🟠 | **原生 NBC 主链币转账不能入账**：`processOnchainDeposits` 只扫 ERC20 日志，不监听 native transfer |
 | 🟠 | **未注册用户先入金**：链上先到、后登录 → 状态 `unmatched`，依赖对账或人工 |
 | 🟡 | 入金成功/失败无邮件、无用户侧充值指引产品化（二维码、最小金额、确认数说明） |
+| 🟡 | **充值完成回调通知未实现**（见 §3.3） |
+
+### 3.3 充值完成回调通知 — **未完成**
+
+**结论：链上充值入账成功后，当前没有任何「回调通知」机制。**
+
+入账终点在 `settleOnchainDeposit.ts`：更新 `nbc_wallet` 余额、写入 `nbc_wallet_transaction`（`transaction_type: onchain_deposit`）、将 `nbc_onchain_deposit.status` 置为 `completed` 后 `commit` 即结束。该函数内 **未** 调用 `emit`、未发邮件、未调 Webhook、未推送前台。
+
+对比：扩展内仅有的 `emit` 出现在订单支付 `captureOrderPayment.ts`（`order_placed`），与充值无关。
+
+#### 入账后实际触发的链路
+
+```text
+cron nbcWalletOnchainDepositPoller（或 POST /admin/nbcWallet/onchain/process）
+  → processOnchainDeposits
+  → recordOnchainDeposit
+  → settleOnchainDeposit（DB 入账完成，无后续通知）
+```
+
+#### 当前缺失的通知形态
+
+| 类型 | 状态 | 说明 |
+|------|------|------|
+| 应用内事件 `emit` | ❌ | 无 `nbc_wallet_deposit_completed` 等事件供订阅 |
+| 邮件通知 | ❌ | 未集成 SendGrid/Resend；见 §5 |
+| HTTP Webhook 回调 | ❌ | 无对外 POST 充值结果 |
+| WebSocket / SSE | ❌ | 无实时推送到浏览器 |
+| 前台自动刷新 | ❌ | 账户页仅展示金库地址，用户需手动刷新余额/流水 |
+
+#### 用户如何感知「充值到账」
+
+| 方式 | 接口/行为 |
+|------|-----------|
+| 定时扫块 | cron `nbcWalletOnchainDepositPoller`（`onchain.enabled: 0` 时默认不跑） |
+| 运营手动触发 | `POST /admin/nbcWallet/onchain/process` |
+| 用户主动查询 | `GET /nbcWallet/balance`、`GET /nbcWallet/transactions?transactionType=onchain_deposit` |
+| 前台 | `NbcWalletAccountSection.tsx` 展示充值说明与流水列表，**无到账 toast/弹窗** |
+
+#### 建议实现（纳入 P1-3 / P1-4）
+
+1. **事件**：`settleOnchainDeposit` 在 `commit` 成功后 `emit('nbc_wallet_deposit_completed', { depositId, walletId, customerId, amount, txHash, balanceAfter, ... })`；`unmatched` / `failed` 可另发 `nbc_wallet_deposit_failed`。
+2. **邮件**：订阅上述事件，向用户真实邮箱发送到账模板（需先解决影子邮箱 `wallet_0x...@nbc.local`，见 §5）。
+3. **Webhook（可选）**：配置 `nbcWallet.notify.depositWebhookUrl`，POST JSON 给外部系统。
+4. **前台**：账户页轮询余额/流水，或 WebSocket，到账后 toast 并刷新 UI。
 
 ---
 
@@ -109,14 +155,16 @@ Review 日期：2026-06-04
 
 ---
 
-## 5. 邮件通知
+## 5. 通知（邮件与回调）
 
-扩展内 **无** 入金/出金邮件逻辑（未集成 SendGrid/Resend，无 event hook）。
+扩展内 **无** 入金/出金通知逻辑：未集成 SendGrid/Resend，**无充值完成 event/Webhook**（详见 §3.3）。
 
 | 现状 | 影响 |
 |------|------|
-| 钱包用户邮箱为影子账号 `wallet_0x...@nbc.local` | 无法向真实邮箱发通知 |
+| `settleOnchainDeposit` 入账后无 `emit` | 无法挂邮件、Webhook、站内信等下游 |
+| 钱包用户邮箱为影子账号 `wallet_0x...@nbc.local` | 即使接邮件也缺真实收件地址 |
 | 结账联系人邮箱与钱包流水未绑定 | 即使用户填了邮箱，出入金也不通知 |
+| 全扩展仅 `captureOrderPayment` 有 `emit('order_placed')` | 支付有事件钩子，充值没有 |
 
 ---
 
@@ -161,11 +209,12 @@ Review 日期：2026-06-04
 |---|------|------|----------------|
 | P1-1 | **USDT 入金** | 支持 NBC + USDT 两种入金 | 多 token 配置或多表字段；分别扫块；内部余额分币种或统一折算（产品定） |
 | P1-2 | **原生 NBC 入金**（若业务需要） | 用户转主链币到金库 | 监听 native transfer 或明确仅支持 ERC20 并在产品说明 |
-| P1-3 | **邮件通知 — 入金** | 到账/失败/待确认 | 绑定真实邮箱（注册/KYC/账户设置）；模板：金额、tx、时间 |
-| P1-4 | **邮件通知 — 出金** | 申请/通过/拒绝/到账 | 同上；含 `withdrawal_uuid`、链上 hash |
-| P1-5 | **API 与 Curl 文档** | 出入金纳入主流程文档 | 更新 [NBC_Store_API.md](./NBC_Store_API.md)、[NBC_Store_Main_Flow_Curl.md](./NBC_Store_Main_Flow_Curl.md) |
-| P1-6 | **出金风控** | 限额与审计 | 单笔/日累计上限、最小出金额、admin 操作 audit log |
-| P1-7 | **未匹配入金处理** | `unmatched` 运营工具 | 后台列表 + 手工关联钱包或退款流程 |
+| P1-3 | **充值完成通知（事件 + 邮件）** | 到账/失败/待确认 | `settleOnchainDeposit` 成功后 `emit`；订阅发邮件；模板含金额、tx、时间；见 §3.3 |
+| P1-4 | **充值 Webhook / 前台到账提示**（可选） | 对外回调与 UX | 配置 Webhook URL；或前台轮询/WebSocket + 到账 toast |
+| P1-5 | **邮件通知 — 出金** | 申请/通过/拒绝/到账 | 绑定真实邮箱；含 `withdrawal_uuid`、链上 hash |
+| P1-6 | **API 与 Curl 文档** | 出入金纳入主流程文档 | 更新 [NBC_Store_API.md](./NBC_Store_API.md)、[NBC_Store_Main_Flow_Curl.md](./NBC_Store_Main_Flow_Curl.md) |
+| P1-7 | **出金风控** | 限额与审计 | 单笔/日累计上限、最小出金额、admin 操作 audit log |
+| P1-8 | **未匹配入金处理** | `unmatched` 运营工具 | 后台列表 + 手工关联钱包或退款流程 |
 
 ### P2 — 体验与运维增强
 
@@ -203,7 +252,8 @@ Review 日期：2026-06-04
 2. 用户 `POST /nbcWallet/withdraw` → 后台 `withdrawals/process` → 查链上 hash 与余额  
 3. 拒绝路径：`withdrawals/fail` → 冻结余额恢复  
 4. （USDT 实现后）USDT 入金独立用例  
-5. 邮件断言（实现后）：检查发送记录或 mock
+5. 充值完成通知断言（实现后）：`emit` 订阅、邮件 mock 或 Webhook 收到 payload  
+6. 邮件断言（实现后）：检查发送记录或 mock
 
 ---
 
@@ -223,3 +273,4 @@ Review 日期：2026-06-04
 | 日期 | 说明 |
 |------|------|
 | 2026-06-04 | 初版：基于代码与 Curl 主流程的后端 Review 与待完善功能清单 |
+| 2026-06-04 | 补充 §3.3 充值完成回调通知（未完成）及 P1-3/P1-4、§5 通知章节 |
