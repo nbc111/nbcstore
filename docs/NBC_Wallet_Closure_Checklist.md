@@ -1,26 +1,31 @@
 # NBC Web3 钱包集成闭环检查清单
 
-最后检查日期：2026-05-29
+最后检查日期：2026-06-04
+
+> **生产 Review 与待完善功能（P0/P1/P2）** 见 [NBC_Wallet_Production_Review.md](./NBC_Wallet_Production_Review.md)。
 
 ## 1. 当前结论
 
-基于当前代码，NBC Web3 钱包集成已经完成了大部分主链路，但还没有完全闭环。
+基于当前代码，NBC Web3 钱包集成已经完成了大部分主链路，但离生产环境仍有明显差距。
 
 目前可以认为：
 
 - 钱包签名登录：已接通
 - 钱包账户页与余额展示：已接通
-- 链上充值入账到商城余额：已接通
-- NBC 余额下单支付：已接通
+- 链上充值入账到商城余额：代码已接通（默认配置关闭，需验证精度与 Curl 用例）
+- NBC 余额下单支付：已接通（见 [NBC_Store_Main_Flow_Curl.md](./NBC_Store_Main_Flow_Curl.md)）
 - NBC 订单退款回商城余额：已接通
 - 后台人工调账与账本对账：已接通
+- 用户出金申请 + 后台 process/fail API：已接通（**无后台 UI，事务安全未达标**）
 
 但以下能力还没有真正闭环：
 
-- 用户链上出金 / 提现到外部钱包
+- 出金审核工作流与后台管理页（生产级）
+- USDT 入金、邮件通知出入金
+- 链上/账本单位统一、出金防双花、密钥托管
 - 后台订单页的 NBC 专属运营按钮
 - 充值流程的产品化闭环
-- 文档与当前代码状态同步
+- API/Curl 文档与当前代码状态同步
 
 ---
 
@@ -124,31 +129,25 @@
 
 ## 3. 未闭环内容
 
-### 3.1 P0：没有真正的链上出金 / 提现能力
+### 3.1 P0：链上出金 / 提现未达生产闭环
 
-这是当前最核心的未闭环点。
+**2026-06-04 更新：** 后端已有出金 API 与前台申请 UI，但尚未达到生产要求。详见 [NBC_Wallet_Production_Review.md](./NBC_Wallet_Production_Review.md) §4。
 
-现在的退款逻辑只是：
+已实现（API 级）：
 
-- 把 NBC 退回商城内部钱包余额
+- 用户发起提现：`POST /api/nbcWallet/withdraw`（`requestWithdrawal.ts`）
+- 后台打款：`POST /api/admin/nbcWallet/withdrawals/process`（链上 `transfer` + 扣账）
+- 后台拒绝：`POST /api/admin/nbcWallet/withdrawals/fail`（解冻）
+- 表：`nbc_withdrawal`（迁移 `Version-1.0.1.ts`）
 
-并没有：
+仍缺失或未达标：
 
-- 用户发起提现申请
-- 审核或风控
-- 从平台金库地址向用户链上钱包打币
-- 记录链上出金交易哈希
-- 出金失败补偿
+- 独立审核态（`approved` / `processing`）与后台出金列表页
+- 链上成功 + DB 失败时的防双花
+- 金库私钥安全托管
+- 出金邮件通知与限额风控
 
-也就是说，当前“入金”是链上的，“消费”是商城余额内的，但“出金”还不存在。
-
-结论：
-
-- 如果业务定义里的“出金”是“用户把商城余额提回链上钱包”，那么当前没有闭环。
-
-直接证据：
-
-- [refundOrderPayment.ts](/Users/vincent/IdeaProjects/nbcstore/extensions/nbc-wallet/src/services/wallet/refundOrderPayment.ts:74) 到 [refundOrderPayment.ts](/Users/vincent/IdeaProjects/nbcstore/extensions/nbc-wallet/src/services/wallet/refundOrderPayment.ts:103) 只是在更新本地钱包余额和账本，没有链上转账逻辑。
+说明：订单 **退款**（`refundOrderPayment.ts`）仍是退回商城内部余额，与 **出金**（提回链上钱包）是两条链路。
 
 ### 3.2 P0：后台订单页没有看到 NBC 专属操作按钮接入
 
