@@ -4,7 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@comp
 import React from 'react';
 export default function Setting({ type }) {
     const areaId = `widget_setting_form`;
-    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Widget Settings')), /*#__PURE__*/ React.createElement(CardDescription, null, "Configure the settings for the ", type.name, " widget.")), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Area, {
+    return /*#__PURE__*/ React.createElement(Card, null, /*#__PURE__*/ React.createElement(CardHeader, null, /*#__PURE__*/ React.createElement(CardTitle, null, _('Widget Settings')), /*#__PURE__*/ React.createElement(CardDescription, null, _('Configure the settings for the ${widgetName} widget.', {
+        widgetName: _(type.name)
+    }))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Area, {
         id: areaId,
         noOurter: true
     })));

@@ -70,20 +70,22 @@ export default function Attributes({ product, groups: { items } }) {
         name: "group_id"
     }), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("span", {
         className: "font-semibold"
-    }, getGroup(items, product?.groupId).groupName), /*#__PURE__*/ React.createElement("p", {
+    }, _(getGroup(items, product?.groupId).groupName)), /*#__PURE__*/ React.createElement("p", {
         className: "text-muted-foreground italic"
-    }, "Can not change the attribute group of a product that is already in a variant group."))), !product?.variantGroupId && /*#__PURE__*/ React.createElement(SelectField, {
+    }, _('Cannot change the attribute group of a product that is already in a variant group.')))), !product?.variantGroupId && /*#__PURE__*/ React.createElement(SelectField, {
         name: "group_id",
         label: _('Attribute group'),
         options: items.map((group)=>({
                 value: group.groupId,
-                label: group.groupName
+                label: _(group.groupName)
             })),
         defaultValue: product?.groupId || currentGroup,
         required: true
     }))), /*#__PURE__*/ React.createElement(CardContent, null, /*#__PURE__*/ React.createElement(Table, null, /*#__PURE__*/ React.createElement(TableBody, null, fields.map((attribute, index)=>{
         const validation = attribute.is_required === 1 ? {
-            required: `${attribute.attribute_name} is required`
+            required: _('${field} is required', {
+                field: attribute.attribute_name
+            })
         } : {};
         let Field = null;
         switch(attribute.type){

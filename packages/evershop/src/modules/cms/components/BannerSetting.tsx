@@ -2,6 +2,7 @@
 import { FileBrowser } from '@components/admin/FileBrowser.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
@@ -114,7 +115,7 @@ export default function BannerSetting({
                     }
                   }
                 }}
-                alt="Banner Image"
+                alt={_('Banner Image')}
               />
             </div>
           )}
@@ -128,7 +129,7 @@ export default function BannerSetting({
           }}
           className="absolute bottom-2 right-2 z-10"
         >
-          Select Image
+          {_('Select Image')}
         </Button>
       </div>
 
@@ -140,7 +141,7 @@ export default function BannerSetting({
 
       <div className="mb-4">
         <div className="mb-2">
-          <label>Alignment</label>
+          <label>{_('Alignment')}</label>
         </div>
         <div className="grid grid-cols-3 gap-2">
           <div
@@ -244,21 +245,23 @@ export default function BannerSetting({
       {/* Display image dimensions as information */}
       <div className="mb-4">
         <div className="text-sm text-gray-500">
-          Image dimensions: {imageDimensions.width} × {imageDimensions.height}{' '}
-          pixels
+          {_('Image dimensions: ${width} × ${height} pixels', {
+            width: imageDimensions.width,
+            height: imageDimensions.height
+          })}
         </div>
       </div>
       <InputField
         type="text"
-        label="Alt Text"
-        placeholder='e.g., "Promotional Banner"'
+        label={_('Alt Text')}
+        placeholder={_('e.g., "Promotional Banner"')}
         name="settings.alt"
         defaultValue={alt}
       />
       <InputField
         type="text"
-        placeholder="e.g., https://example.com"
-        label="Banner Link"
+        placeholder={_('e.g., https://example.com')}
+        label={_('Banner Link')}
         name="settings.link"
         defaultValue={link || ''}
       />

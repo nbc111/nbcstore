@@ -19,6 +19,7 @@ import {
   useSensor,
   useSensors
 } from '@dnd-kit/core';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   arrayMove,
   SortableContext,
@@ -150,7 +151,7 @@ const SortableMenuItem: React.FC<SortableMenuItemProps> = ({
           }}
           size={'sm'}
         >
-          Edit
+          {_('Edit')}
         </Button>
         {!isChild && (
           <Button
@@ -168,17 +169,19 @@ const SortableMenuItem: React.FC<SortableMenuItemProps> = ({
             }}
             size={'sm'}
           >
-            Add child
+            {_('Add child')}
           </Button>
         )}
         <Button variant={'destructive'} onClick={() => deleteItem(item)}>
-          Delete
+          {_('Delete')}
         </Button>
       </div>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{`Edit Menu Item: ${itemInEdit.name}`}</DialogTitle>
+            <DialogTitle>
+              {_('Edit Menu Item: ${name}', { name: itemInEdit.name })}
+            </DialogTitle>
           </DialogHeader>
           <MenuSettingPopup item={itemInEdit} updateItem={updateItemFunc} />
         </DialogContent>
@@ -223,18 +226,18 @@ const MenuSettingPopup: React.FC<{
 
   const groupOptions = [
     {
-      label: 'Categories',
+      label: _('Categories'),
       options: data.categories.items.map((i) => ({
         ...i,
         label: i.path.map((p) => p.name).join(' > ')
       }))
     },
     {
-      label: 'CMS Pages',
+      label: _('CMS Pages'),
       options: data.cmsPages.items
     },
     {
-      label: 'Custom',
+      label: _('Custom'),
       options:
         currentItem.type === 'custom'
           ? [
@@ -264,7 +267,7 @@ const MenuSettingPopup: React.FC<{
           id="menuName"
           type="text"
           value={currentItem.name}
-          placeholder="Menu name"
+          placeholder={_('Menu name')}
           onChange={(e) =>
             setCurrentItem({
               ...currentItem,
@@ -307,17 +310,17 @@ const MenuSettingPopup: React.FC<{
         <Button
           onClick={() => {
             if (currentItem.uuid === '') {
-              setErr('Please select a menu item');
+              setErr(_('Please select a menu item'));
               return;
             }
             if (currentItem.name === '') {
-              setErr('Please enter a name');
+              setErr(_('Please enter a name'));
               return;
             }
             updateItem(currentItem);
           }}
         >
-          Save
+          {_('Save')}
         </Button>
       </div>
     </div>
@@ -484,13 +487,13 @@ export default function BasicMenuSetting({
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger>
             <Button variant={'outline'} size={'sm'}>
-              Add Menu Item
+              {_('Add Menu Item')}
             </Button>
           </DialogTrigger>
 
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add Menu Item</DialogTitle>
+              <DialogTitle>{_('Add Menu Item')}</DialogTitle>
             </DialogHeader>
             <MenuSettingPopup
               item={{
@@ -511,17 +514,17 @@ export default function BasicMenuSetting({
 
         <div>
           <CheckboxField
-            label="Is Main Menu?"
+            label={_('Is Main Menu?')}
             name="settings.isMain"
             defaultValue={isMain}
           />
         </div>
         <div>
           <InputField
-            label="Custom CSS classes"
+            label={_('Custom CSS classes')}
             name="settings.className"
             defaultValue={className}
-            helperText="Custom CSS classes for the menu"
+            helperText={_('Custom CSS classes for the menu')}
           />
         </div>
       </div>

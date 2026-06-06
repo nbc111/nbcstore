@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTrigger, DialogTitle } from 
 import { Input } from '@components/common/ui/Input.js';
 import { Item, ItemContent } from '@components/common/ui/Item.js';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -94,7 +95,7 @@ const SortableMenuItem = ({ item, updateItem, deleteItem, isChild = false })=>{
             setDialogOpen(true);
         },
         size: 'sm'
-    }, "Edit"), !isChild && /*#__PURE__*/ React.createElement(Button, {
+    }, _('Edit')), !isChild && /*#__PURE__*/ React.createElement(Button, {
         variant: 'outline',
         onClick: ()=>{
             setItemInEdit({
@@ -108,13 +109,15 @@ const SortableMenuItem = ({ item, updateItem, deleteItem, isChild = false })=>{
             setDialogOpen(true);
         },
         size: 'sm'
-    }, "Add child"), /*#__PURE__*/ React.createElement(Button, {
+    }, _('Add child')), /*#__PURE__*/ React.createElement(Button, {
         variant: 'destructive',
         onClick: ()=>deleteItem(item)
-    }, "Delete")), /*#__PURE__*/ React.createElement(Dialog, {
+    }, _('Delete'))), /*#__PURE__*/ React.createElement(Dialog, {
         open: dialogOpen,
         onOpenChange: setDialogOpen
-    }, /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, `Edit Menu Item: ${itemInEdit.name}`)), /*#__PURE__*/ React.createElement(MenuSettingPopup, {
+    }, /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Edit Menu Item: ${name}', {
+        name: itemInEdit.name
+    }))), /*#__PURE__*/ React.createElement(MenuSettingPopup, {
         item: itemInEdit,
         updateItem: updateItemFunc
     }))));
@@ -146,18 +149,18 @@ const MenuSettingPopup = ({ item, updateItem })=>{
     }
     const groupOptions = [
         {
-            label: 'Categories',
+            label: _('Categories'),
             options: data.categories.items.map((i)=>({
                     ...i,
                     label: i.path.map((p)=>p.name).join(' > ')
                 }))
         },
         {
-            label: 'CMS Pages',
+            label: _('CMS Pages'),
             options: data.cmsPages.items
         },
         {
-            label: 'Custom',
+            label: _('Custom'),
             options: currentItem.type === 'custom' ? [
                 {
                     value: currentItem.uuid,
@@ -181,7 +184,7 @@ const MenuSettingPopup = ({ item, updateItem })=>{
         id: "menuName",
         type: "text",
         value: currentItem.name,
-        placeholder: "Menu name",
+        placeholder: _('Menu name'),
         onChange: (e)=>setCurrentItem({
                 ...currentItem,
                 name: e.target.value
@@ -213,16 +216,16 @@ const MenuSettingPopup = ({ item, updateItem })=>{
     }, /*#__PURE__*/ React.createElement(Button, {
         onClick: ()=>{
             if (currentItem.uuid === '') {
-                setErr('Please select a menu item');
+                setErr(_('Please select a menu item'));
                 return;
             }
             if (currentItem.name === '') {
-                setErr('Please enter a name');
+                setErr(_('Please enter a name'));
                 return;
             }
             updateItem(currentItem);
         }
-    }, "Save")));
+    }, _('Save'))));
 };
 export default function BasicMenuSetting({ basicMenuWidget: { menus, isMain, className } }) {
     const { register, setValue } = useFormContext();
@@ -342,7 +345,7 @@ export default function BasicMenuSetting({ basicMenuWidget: { menus, isMain, cla
     }, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, {
         variant: 'outline',
         size: 'sm'
-    }, "Add Menu Item")), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, "Add Menu Item")), /*#__PURE__*/ React.createElement(MenuSettingPopup, {
+    }, _('Add Menu Item'))), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Add Menu Item'))), /*#__PURE__*/ React.createElement(MenuSettingPopup, {
         item: {
             id: uniqid(),
             name: '',
@@ -359,14 +362,14 @@ export default function BasicMenuSetting({ basicMenuWidget: { menus, isMain, cla
             setDialogOpen(false);
         }
     }))), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(CheckboxField, {
-        label: "Is Main Menu?",
+        label: _('Is Main Menu?'),
         name: "settings.isMain",
         defaultValue: isMain
     })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(InputField, {
-        label: "Custom CSS classes",
+        label: _('Custom CSS classes'),
         name: "settings.className",
         defaultValue: className,
-        helperText: "Custom CSS classes for the menu"
+        helperText: _('Custom CSS classes for the menu')
     }))));
 }
 export const query = `

@@ -19,30 +19,30 @@ export default function Shipping({ product, setting }) {
         name: "no_shipping_required",
         label: _('No shipping required?'),
         defaultValue: shipping.noShippingRequired === true,
-        helperText: "Select this option if the product is a digital product or service that does not require shipping.",
+        helperText: _('Select this option if the product is a digital product or service that does not require shipping.'),
         wrapperClassName: "mb-0"
     })), /*#__PURE__*/ React.createElement(CardContent, null, !noShippingRequired && /*#__PURE__*/ React.createElement(NumberField, {
         name: "weight",
         placeholder: _('Enter weight'),
-        label: `Weight`,
+        label: _('Weight'),
         defaultValue: shipping.weight?.value,
         unit: setting?.weightUnit,
         required: true,
         validation: {
             min: {
                 value: 0,
-                message: 'Weight must be a positive number'
+                message: _('Weight must be a positive number')
             }
         },
-        helperText: 'Weight must be a positive number'
+        helperText: _('Weight must be a positive number')
     }), noShippingRequired && /*#__PURE__*/ React.createElement(NumberField, {
         name: "weight_no_shipping",
         placeholder: _('Enter weight'),
-        label: `Weight`,
+        label: _('Weight'),
         defaultValue: shipping.weight?.value,
         unit: setting?.weightUnit,
         disabled: true,
-        helperText: 'Weight must be a positive number'
+        helperText: _('Weight must be a positive number')
     })));
 }
 export const layout = {

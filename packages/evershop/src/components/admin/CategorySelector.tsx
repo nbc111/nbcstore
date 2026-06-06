@@ -125,7 +125,7 @@ const CategorySelector: React.FC<{
   if (error) {
     return (
       <p className="text-destructive">
-        There was an error fetching categories.
+        {_('There was an error fetching categories.')}
         {error.message}
       </p>
     );
@@ -151,7 +151,11 @@ const CategorySelector: React.FC<{
             {data.categories.items.length === 0 && (
               <div className="p-2 border border-divider rounded flex justify-center items-center">
                 {inputValue ? (
-                  <p>No categories found for query &quot;{inputValue}&rdquo;</p>
+                  <p>
+                    {_('No categories found for query "${query}"', {
+                      query: inputValue
+                    })}
+                  </p>
                 ) : (
                   <p>{_('You have no categories to display')}</p>
                 )}
@@ -166,7 +170,7 @@ const CategorySelector: React.FC<{
                   <h3>
                     {cat.path.map((item, index) => (
                       <span key={item.name} className="text-gray-500">
-                        {item.name}
+                        {_(item.name)}
                         {index < cat.path.length - 1 && ' > '}
                       </span>
                     ))}
@@ -189,7 +193,7 @@ const CategorySelector: React.FC<{
                         onSelect(cat.categoryId, cat.uuid, cat.name);
                       }}
                     >
-                      Select
+                      {_('Select')}
                     </Button>
                   )}
                   {isCategorySelected(cat, internalSelectedCategories) && (

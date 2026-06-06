@@ -1,7 +1,8 @@
 /**
  * Wrapper for @editorjs/raw that fixes keyboard event handling issues
  * This ensures backspace and other keys work properly in the raw HTML block
- */ export class RawToolWrapper {
+ */ import { _ } from '@evershop/evershop/lib/locale/translate/_';
+export class RawToolWrapper {
     rawTool;
     api;
     data;
@@ -24,7 +25,7 @@
     }
     static get toolbox() {
         return {
-            title: 'Raw HTML',
+            title: _('Raw HTML'),
             icon: '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>'
         };
     }
@@ -33,7 +34,7 @@
         wrapper.classList.add('ce-rawtool');
         const textarea = document.createElement('textarea');
         textarea.classList.add('ce-rawtool__textarea');
-        textarea.placeholder = 'Enter HTML code';
+        textarea.placeholder = _('Enter HTML code');
         textarea.value = this.data?.html || '';
         // Prevent EditorJS from handling keyboard events inside textarea
         textarea.addEventListener('keydown', (event)=>{

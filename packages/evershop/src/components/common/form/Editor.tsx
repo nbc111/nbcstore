@@ -20,10 +20,65 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable';
 import { CircleX } from 'lucide-react';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import './Editor.scss';
+
+const EDITOR_TOOL_TITLE_MAP: Record<string, string> = {
+  Text: _('Text'),
+  Heading: _('Heading'),
+  List: _('List'),
+  'Raw HTML': _('Raw HTML'),
+  Quote: _('Quote'),
+  Image: _('Image')
+};
+
+function localizeEditorUi(holderId: string): MutationObserver | null {
+  const holder = document.getElementById(holderId);
+  if (!holder) {
+    return null;
+  }
+  const root = holder.closest('.codex-editor');
+  if (!root) {
+    return null;
+  }
+
+  const applyLocalization = () => {
+    root.querySelectorAll('.cdx-search-field__input').forEach((el) => {
+      const input = el as HTMLInputElement;
+      input.placeholder = _('Filter');
+    });
+    root.querySelectorAll('.ce-popover__nothing-found-message').forEach((el) => {
+      el.textContent = _('Nothing found');
+    });
+    root.querySelectorAll('.ce-popover-item__title').forEach((el) => {
+      const text = el.textContent?.trim() || '';
+      if (EDITOR_TOOL_TITLE_MAP[text]) {
+        el.textContent = EDITOR_TOOL_TITLE_MAP[text];
+      }
+    });
+    root.querySelectorAll('.ce-paragraph').forEach((el) => {
+      if (el.getAttribute('data-placeholder-active')) {
+        el.setAttribute(
+          'data-placeholder-active',
+          _('Type / to see the available blocks')
+        );
+      }
+    });
+  };
+
+  applyLocalization();
+  const observer = new MutationObserver(applyLocalization);
+  observer.observe(root, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['data-placeholder-active']
+  });
+  return observer;
+}
 
 async function loadEditorJS(): Promise<any> {
   const { default: EditorJS } = await import('@editorjs/editorjs');
@@ -208,8 +263,26 @@ export const Editor: React.FC<EditorProps> = ({ name, value = [], label }) => {
             editors.current[column.id] = {};
             editors.current[column.id].instance = new EditorJS({
               holder: column.id,
-              placeholder: 'Type / to see the available blocks',
+              placeholder: _('Type / to see the available blocks'),
               minHeight: 0,
+              i18n: {
+                messages: {
+                  ui: {
+                    popover: {
+                      Filter: _('Filter'),
+                      'Nothing found': _('Nothing found')
+                    }
+                  },
+                  toolNames: {
+                    Text: _('Text'),
+                    Heading: _('Heading'),
+                    List: _('List'),
+                    'Raw HTML': _('Raw HTML'),
+                    Quote: _('Quote'),
+                    Image: _('Image')
+                  }
+                }
+              },
               tools: {
                 header: Header,
                 list: List,
@@ -255,6 +328,7 @@ export const Editor: React.FC<EditorProps> = ({ name, value = [], label }) => {
                 });
               }
             });
+            editors.current[column.id].observer = localizeEditorUi(column.id);
           }
         });
       });
@@ -278,6 +352,13 @@ export const Editor: React.FC<EditorProps> = ({ name, value = [], label }) => {
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
+          accessibility={{
+            screenReaderInstructions: {
+              draggable: _(
+                'To pick up a draggable item press the space bar. While dragging use the arrow keys to move the item. Press space again to drop the item in its new position or press escape to cancel.'
+              )
+            }
+          }}
         >
           <SortableContext
             items={rows.map((row) => row.id)}

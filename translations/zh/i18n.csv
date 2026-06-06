@@ -4953,3 +4953,89 @@ Zuzemberk,Zuzemberk
 标准快递,标准快递
 标准快递（澳门）,标准快递（澳门）
 标准快递（香港）,标准快递（香港）
+Unassign,取消关联
+There was an error fetching categories.,加载分类时发生错误。
+Weight must be a positive number,重量必须为正数
+Disabled products will not be visible in the store and cannot be purchased.,禁用商品将不会在商城中展示且无法购买。
+Not visible individually,不单独展示
+Catalog Search,目录与搜索
+Visibility determines where the product appears in the store. It does not affect whether the product can be purchased.,可见性决定商品在商城中的展示位置，不影响商品是否可购买。
+URL Key is required,URL Key 为必填项
+URL Key can only contain lowercase letters numbers and hyphens,URL Key 只能包含小写字母数字和连字符
+Meta Title is required,Meta 标题为必填项
+Cannot change the attribute group of a product that is already in a variant group.,已加入变体组的商品不能修改属性组。
+Product created successfully,商品创建成功
+No categories found for query "${query}",未找到与“${query}”匹配的分类
+Select this option if the product is a digital product or service that does not require shipping.,若商品为数字产品或服务且无需配送，请勾选此项。
+Nothing found,未找到内容
+Heading,标题
+List,列表
+Raw HTML,原始 HTML
+Quote,引用
+Type / to see the available blocks,输入 / 查看可用模块
+Enter HTML code,输入 HTML 代码
+To pick up a draggable item press the space bar. While dragging use the arrow keys to move the item. Press space again to drop the item in its new position or press escape to cancel.,按空格键选中可拖拽项；拖动时使用方向键移动；再次按空格放下，或按 Escape 取消。
+Choose,选择
+Collection products,分类商品
+A list of products from a collection,显示某个商品合集中的商品列表
+Text block,文本区块
+Add rich text content,添加富文本内容
+Navigation links,导航链接
+Image with call-to-action,带行动按钮的图片横幅
+Simple Slideshow,简易轮播图
+Rotating image carousel,自动轮播图片
+Configure the settings for the ${widgetName} widget.,配置 ${widgetName} 小部件的设置。
+Banner Image,横幅图片
+Select Image,选择图片
+Alignment,对齐方式
+Image dimensions: ${width} × ${height} pixels,图片尺寸：${width} × ${height} 像素
+Alt Text,替代文本
+e.g., https://example.com,例如：https://example.com
+Banner Link,横幅链接
+Select...,请选择...
+The order in which this widget will be displayed. Lower numbers appear first.,该小部件的显示顺序，数字越小越靠前。
+e.g., "Promotional Banner",例如：“促销横幅”
+Slideshow Settings,轮播设置
+Show Navigation Arrows,显示导航箭头
+Enable Autoplay,启用自动播放
+Autoplay Speed (ms),自动播放速度（毫秒）
+e.g., 3000 for 3 seconds,例如：3000（3 秒）
+Minimum speed is 1000ms,最小速度为 1000 毫秒
+Slides,轮播项
+Add New Slide,新增轮播项
+Slide ${index},轮播项 ${index}
+No Image,无图片
+No slides have been added yet.,尚未添加任何轮播项。
+Add Your First Slide,添加第一个轮播项
+Edit Slide ${index},编辑轮播项 ${index}
+Change Image,更换图片
+Detecting image dimensions...,正在识别图片尺寸...
+Headline,主标题
+e.g., New Collection Available,例如：新品系列已上线
+Sub Text,副文本
+e.g., Check out our latest products with special discounts,例如：查看最新商品并享受专属优惠
+Button Text,按钮文字
+e.g., Shop Now,例如：立即选购
+Button Link,按钮链接
+e.g., /category/new-arrivals,例如：/category/new-arrivals
+Button Color,按钮颜色
+There was an error fetching collections.,加载商品集时发生错误。
+No collections found for query "${query}",未找到与“${query}”匹配的商品集
+Please select a collection,请选择一个商品集
+Total products,商品总数
+Count is required,数量为必填项
+Number of products,商品数量
+Products per row,每行商品数
+Count per row is required,每行数量为必填项
+Number of products per row,每行商品数量
+Custom CSS classes,自定义 CSS 类
+Custom CSS classes for the text block,文本区块的自定义 CSS 类
+Add child,添加子项
+Edit Menu Item: ${name},编辑菜单项：${name}
+CMS Pages,CMS 页面
+Menu name,菜单名称
+Please select a menu item,请选择一个菜单项
+Please enter a name,请输入名称
+Add Menu Item,添加菜单项
+Is Main Menu?,是否主菜单？
+Custom CSS classes for the menu,菜单的自定义 CSS 类

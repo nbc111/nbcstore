@@ -9,13 +9,13 @@ const WidgetTypes = ({ types })=>{
     }, types.map((type, index)=>/*#__PURE__*/ React.createElement(Item, {
             key: index,
             variant: "outline"
-        }, /*#__PURE__*/ React.createElement(ItemContent, null, /*#__PURE__*/ React.createElement(ItemTitle, null, " ", type.name), /*#__PURE__*/ React.createElement(ItemDescription, null, type.description)), /*#__PURE__*/ React.createElement(ItemActions, null, /*#__PURE__*/ React.createElement(Button, {
+        }, /*#__PURE__*/ React.createElement(ItemContent, null, /*#__PURE__*/ React.createElement(ItemTitle, null, _(type.name)), /*#__PURE__*/ React.createElement(ItemDescription, null, _(type.description))), /*#__PURE__*/ React.createElement(ItemActions, null, /*#__PURE__*/ React.createElement(Button, {
             variant: "outline",
             size: "sm",
             onClick: (e)=>{
                 window.location.href = type.createWidgetUrl;
             }
-        }, "Choose")))));
+        }, _('Choose'))))));
 };
 export default function NewWidgetButton({ widgetTypes }) {
     return /*#__PURE__*/ React.createElement(Dialog, null, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, null, _('New Widget'))), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('New Widget'))), /*#__PURE__*/ React.createElement(WidgetTypes, {

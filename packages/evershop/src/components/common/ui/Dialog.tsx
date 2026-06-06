@@ -1,6 +1,7 @@
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
 import { Button } from '@components/common/ui/Button.js';
 import { cn } from '@evershop/evershop/lib/util/cn';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { XIcon } from 'lucide-react';
 import * as React from 'react';
 
@@ -71,7 +72,7 @@ function DialogContent({
             }
           >
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{_('Close')}</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Popup>
@@ -109,7 +110,7 @@ function DialogFooter({
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close render={<Button variant="outline" />}>
-          Close
+          {_('Close')}
         </DialogPrimitive.Close>
       )}
     </div>

@@ -5,6 +5,7 @@ import { Checkbox } from '@components/common/ui/Checkbox.js';
 import { Input } from '@components/common/ui/Input.js';
 import { Item, ItemContent, ItemTitle } from '@components/common/ui/Item.js';
 import { Label } from '@components/common/ui/Label.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React, { useEffect } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
@@ -119,7 +120,7 @@ export default function SlideshowSetting({ slideshowWidget }) {
         close: ()=>setOpenFileBrowser(false)
     })), /*#__PURE__*/ React.createElement(Item, {
         variant: 'outline'
-    }, /*#__PURE__*/ React.createElement(ItemContent, null, /*#__PURE__*/ React.createElement(ItemTitle, null, "Slideshow Settings"), /*#__PURE__*/ React.createElement("div", {
+    }, /*#__PURE__*/ React.createElement(ItemContent, null, /*#__PURE__*/ React.createElement(ItemTitle, null, _('Slideshow Settings')), /*#__PURE__*/ React.createElement("div", {
         className: "space-y-2 mt-3"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "col-span-2 md:col-span-1 space-y-2"
@@ -134,7 +135,7 @@ export default function SlideshowSetting({ slideshowWidget }) {
         className: "mr-2 h-4 w-4"
     }), /*#__PURE__*/ React.createElement(Label, {
         htmlFor: "arrows"
-    }, "Show Navigation Arrows")), /*#__PURE__*/ React.createElement("div", {
+    }, _('Show Navigation Arrows'))), /*#__PURE__*/ React.createElement("div", {
         className: "flex justify-start items-center"
     }, /*#__PURE__*/ React.createElement(Checkbox, {
         id: "autoplay",
@@ -146,16 +147,16 @@ export default function SlideshowSetting({ slideshowWidget }) {
     }), /*#__PURE__*/ React.createElement(Label, {
         htmlFor: "autoplay",
         className: "text-sm"
-    }, "Enable Autoplay")), Boolean(currentAutoplay) && /*#__PURE__*/ React.createElement(InputField, {
+    }, _('Enable Autoplay'))), Boolean(currentAutoplay) && /*#__PURE__*/ React.createElement(InputField, {
         type: "number",
-        label: "Autoplay Speed (ms)",
+        label: _('Autoplay Speed (ms)'),
         name: "settings.autoplaySpeed",
         defaultValue: Number(autoplaySpeed) || 3000,
-        placeholder: "e.g., 3000 for 3 seconds",
+        placeholder: _('e.g., 3000 for 3 seconds'),
         validation: {
             min: {
                 value: 1000,
-                message: 'Minimum speed is 1000ms'
+                message: _('Minimum speed is 1000ms')
             }
         }
     })), /*#__PURE__*/ React.createElement("div", {
@@ -166,10 +167,10 @@ export default function SlideshowSetting({ slideshowWidget }) {
         className: "flex justify-between items-center mb-2"
     }, /*#__PURE__*/ React.createElement("h2", {
         className: "text-lg font-medium"
-    }, "Slides"), /*#__PURE__*/ React.createElement(Button, {
+    }, _('Slides')), /*#__PURE__*/ React.createElement(Button, {
         onClick: addSlide,
         variant: 'outline'
-    }, "Add New Slide")), fields.length > 0 ? /*#__PURE__*/ React.createElement("div", {
+    }, _('Add New Slide'))), fields.length > 0 ? /*#__PURE__*/ React.createElement("div", {
         className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4"
     }, fields.map((slide, index)=>/*#__PURE__*/ React.createElement("div", {
             key: slide.id,
@@ -179,15 +180,19 @@ export default function SlideshowSetting({ slideshowWidget }) {
             className: "aspect-[16/9] bg-gray-100 flex items-center justify-center"
         }, currentSlides[index]?.image ? /*#__PURE__*/ React.createElement("img", {
             src: currentSlides[index].image,
-            alt: `Slide ${index + 1}`,
+            alt: _('Slide ${index}', {
+                index: index + 1
+            }),
             className: "w-full h-full object-cover"
         }) : /*#__PURE__*/ React.createElement("div", {
             className: "text-gray-400"
-        }, "No Image")), /*#__PURE__*/ React.createElement("div", {
+        }, _('No Image'))), /*#__PURE__*/ React.createElement("div", {
             className: "p-2 bg-white border-t border-border"
         }, /*#__PURE__*/ React.createElement("p", {
             className: "text-sm font-medium truncate"
-        }, currentSlides[index]?.headline || `Slide ${index + 1}`), /*#__PURE__*/ React.createElement("div", {
+        }, currentSlides[index]?.headline || _('Slide ${index}', {
+            index: index + 1
+        })), /*#__PURE__*/ React.createElement("div", {
             className: "flex mt-2"
         }, /*#__PURE__*/ React.createElement(Button, {
             variant: 'outline',
@@ -263,14 +268,16 @@ export default function SlideshowSetting({ slideshowWidget }) {
         className: "bg-gray-50 border border-dashed border-gray-300 rounded-lg p-8 text-center mb-4"
     }, /*#__PURE__*/ React.createElement("p", {
         className: "text-gray-500 mb-4"
-    }, "No slides have been added yet."), /*#__PURE__*/ React.createElement(Button, {
+    }, _('No slides have been added yet.')), /*#__PURE__*/ React.createElement(Button, {
         variant: "outline",
         onClick: addSlide
-    }, "Add Your First Slide"))), activeSlideIndex !== null && fields[activeSlideIndex] && /*#__PURE__*/ React.createElement("div", {
+    }, _('Add Your First Slide')))), activeSlideIndex !== null && fields[activeSlideIndex] && /*#__PURE__*/ React.createElement("div", {
         className: "bg-white p-4 rounded border border-border"
     }, /*#__PURE__*/ React.createElement("h3", {
         className: "text-sm font-normal mb-4"
-    }, "Edit Slide ", activeSlideIndex + 1), /*#__PURE__*/ React.createElement("div", {
+    }, _('Edit Slide ${index}', {
+        index: activeSlideIndex + 1
+    })), /*#__PURE__*/ React.createElement("div", {
         className: "mb-2 border border-border rounded overflow-hidden"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "aspect-[16/9] bg-gray-100 relative"
@@ -278,7 +285,9 @@ export default function SlideshowSetting({ slideshowWidget }) {
         className: "relative w-full h-full"
     }, /*#__PURE__*/ React.createElement("img", {
         src: currentSlides[activeSlideIndex].image,
-        alt: `Slide ${activeSlideIndex + 1}`,
+        alt: _('Slide ${index}', {
+            index: activeSlideIndex + 1
+        }),
         className: "w-full h-full object-cover",
         onLoad: (e)=>{
             // Additional dimensions detection when the preview image loads
@@ -314,11 +323,11 @@ export default function SlideshowSetting({ slideshowWidget }) {
     }, /*#__PURE__*/ React.createElement(Button, {
         variant: "outline",
         onClick: ()=>setOpenFileBrowser(true)
-    }, "Select Image")), currentSlides[activeSlideIndex]?.image && /*#__PURE__*/ React.createElement(Button, {
+    }, _('Select Image'))), currentSlides[activeSlideIndex]?.image && /*#__PURE__*/ React.createElement(Button, {
         variant: "outline",
         onClick: ()=>setOpenFileBrowser(true),
         className: "absolute bottom-2 right-2"
-    }, "Change Image"))), /*#__PURE__*/ React.createElement("div", {
+    }, _('Change Image')))), /*#__PURE__*/ React.createElement("div", {
         className: "grid grid-cols-1 md:grid-cols-2 gap-4"
     }, /*#__PURE__*/ React.createElement("input", {
         type: "hidden",
@@ -340,11 +349,14 @@ export default function SlideshowSetting({ slideshowWidget }) {
         className: "md:col-span-2 mb-2"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "text-sm text-gray-500"
-    }, currentSlides[activeSlideIndex]?.width && currentSlides[activeSlideIndex]?.height ? /*#__PURE__*/ React.createElement("p", null, "Image dimensions: ", currentSlides[activeSlideIndex].width, ' ', "× ", currentSlides[activeSlideIndex].height, " pixels") : /*#__PURE__*/ React.createElement("p", null, "Detecting image dimensions..."))), /*#__PURE__*/ React.createElement("div", {
+    }, currentSlides[activeSlideIndex]?.width && currentSlides[activeSlideIndex]?.height ? /*#__PURE__*/ React.createElement("p", null, _('Image dimensions: ${width} × ${height} pixels', {
+        width: currentSlides[activeSlideIndex].width,
+        height: currentSlides[activeSlideIndex].height
+    })) : /*#__PURE__*/ React.createElement("p", null, _('Detecting image dimensions...')))), /*#__PURE__*/ React.createElement("div", {
         className: "md:col-span-2"
     }, /*#__PURE__*/ React.createElement("label", {
         className: "block mb-1 text-sm"
-    }, "Headline"), /*#__PURE__*/ React.createElement("input", {
+    }, _('Headline')), /*#__PURE__*/ React.createElement("input", {
         type: "text",
         className: "w-full p-2 border border-gray-300 rounded",
         name: `settings.slides.${activeSlideIndex}.headline`,
@@ -359,12 +371,12 @@ export default function SlideshowSetting({ slideshowWidget }) {
             };
             setValue('settings.slides', newSlides);
         },
-        placeholder: "e.g., New Collection Available"
+        placeholder: _('e.g., New Collection Available')
     })), /*#__PURE__*/ React.createElement("div", {
         className: "md:col-span-2"
     }, /*#__PURE__*/ React.createElement("label", {
         className: "block mb-1 text-sm"
-    }, "Sub Text"), /*#__PURE__*/ React.createElement("textarea", {
+    }, _('Sub Text')), /*#__PURE__*/ React.createElement("textarea", {
         className: "w-full p-2 border border-gray-300 rounded",
         name: `settings.slides.${activeSlideIndex}.subText`,
         value: currentSlides[activeSlideIndex]?.subText || '',
@@ -378,11 +390,11 @@ export default function SlideshowSetting({ slideshowWidget }) {
             };
             setValue('settings.slides', newSlides);
         },
-        placeholder: "e.g., Check out our latest products with special discounts",
+        placeholder: _('e.g., Check out our latest products with special discounts'),
         rows: 3
     })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("label", {
         className: "block mb-1 text-sm"
-    }, "Button Text"), /*#__PURE__*/ React.createElement("input", {
+    }, _('Button Text')), /*#__PURE__*/ React.createElement("input", {
         type: "text",
         className: "w-full p-2 border border-gray-300 rounded",
         name: `settings.slides.${activeSlideIndex}.buttonText`,
@@ -397,10 +409,10 @@ export default function SlideshowSetting({ slideshowWidget }) {
             };
             setValue('settings.slides', newSlides);
         },
-        placeholder: "e.g., Shop Now"
+        placeholder: _('e.g., Shop Now')
     })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("label", {
         className: "block mb-1 text-sm"
-    }, "Button Link"), /*#__PURE__*/ React.createElement("input", {
+    }, _('Button Link')), /*#__PURE__*/ React.createElement("input", {
         type: "text",
         className: "w-full p-2 border border-gray-300 rounded",
         name: `settings.slides.${activeSlideIndex}.buttonLink`,
@@ -415,10 +427,10 @@ export default function SlideshowSetting({ slideshowWidget }) {
             };
             setValue('settings.slides', newSlides);
         },
-        placeholder: "e.g., /category/new-arrivals"
+        placeholder: _('e.g., /category/new-arrivals')
     })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("label", {
         className: "block mb-1 text-sm"
-    }, "Button Color"), /*#__PURE__*/ React.createElement("div", {
+    }, _('Button Color')), /*#__PURE__*/ React.createElement("div", {
         className: "flex items-center"
     }, /*#__PURE__*/ React.createElement("input", {
         type: "color",

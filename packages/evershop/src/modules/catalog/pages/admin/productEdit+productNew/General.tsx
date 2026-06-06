@@ -48,7 +48,7 @@ const SKUAndPrice: React.FC<{
       <NumberField
         name="price"
         placeholder={_('Enter price')}
-        label={`Price`}
+        label={_('Price')}
         defaultValue={price?.value}
         unit={setting.storeCurrency}
         min={0}
@@ -86,13 +86,13 @@ const ProductCategory: React.FC<{
   if (error) {
     return (
       <p className="text-destructive">
-        There was an error fetching categories.
+        {_('There was an error fetching categories.')}
         {error.message}
       </p>
     );
   }
   if (fetching) {
-    return <span>Loading...</span>;
+    return <span>{_('Loading...')}</span>;
   }
   return (
     <div>
@@ -110,7 +110,7 @@ const ProductCategory: React.FC<{
             onChange();
           }}
         >
-          Change
+          {_('Change')}
         </a>
         <a
           href="#"
@@ -120,7 +120,7 @@ const ProductCategory: React.FC<{
           }}
           className="text-destructive ml-5"
         >
-          Unassign
+          {_('Unassign')}
         </a>
       </span>
       <input type="hidden" {...register('category_id')} value={categoryId} />
@@ -153,7 +153,7 @@ const CategorySelect: React.FC<{
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <div className="space-y-3">
-        <Label>Category</Label>
+        <Label>{_('Category')}</Label>
         {category && (
           <div className="border rounded border-border p-2">
             <ProductCategory
@@ -177,7 +177,7 @@ const CategorySelect: React.FC<{
               setDialogOpen(true);
             }}
           >
-            Select category
+            {_('Select category')}
           </Button>
         )}
         <DialogContent>

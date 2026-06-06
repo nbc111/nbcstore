@@ -17,11 +17,11 @@ export default function Inventory({ product }) {
         options: [
             {
                 value: 1,
-                label: 'Yes'
+                label: _('Yes')
             },
             {
                 value: 0,
-                label: 'No'
+                label: _('No')
             }
         ],
         defaultValue: inventory.manageStock === 0 ? 0 : 1,
@@ -34,11 +34,11 @@ export default function Inventory({ product }) {
         options: [
             {
                 value: 1,
-                label: 'In Stock'
+                label: _('In Stock')
             },
             {
                 value: 0,
-                label: 'Out of Stock'
+                label: _('Out of Stock')
             }
         ],
         defaultValue: inventory.stockAvailability === 0 ? 0 : 1,

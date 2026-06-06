@@ -110,7 +110,7 @@ export default function General({ widget, routes }: GeneralProps) {
   const allRoutes = [
     {
       value: 'all',
-      label: 'All',
+      label: _('All'),
       isAdmin: false,
       isApi: false,
       method: ['GET']
@@ -138,8 +138,8 @@ export default function General({ widget, routes }: GeneralProps) {
           required
           validation={{ required: 'Status is required' }}
           options={[
-            { value: 0, label: 'Disabled' },
-            { value: 1, label: 'Enabled' }
+            { value: 0, label: _('Disabled') },
+            { value: 1, label: _('Enabled') }
           ]}
         />
       </CardContent>
@@ -154,7 +154,7 @@ export default function General({ widget, routes }: GeneralProps) {
             data-slot="field-label"
             className="text-sm font-medium group-data-[disabled=true]:opacity-50 peer-disabled:opacity-50 items-center select-none group-data-[disabled=true]:pointer-events-none peer-disabled:cursor-not-allowed has-data-checked:bg-primary/5 has-data-checked:border-primary dark:has-data-checked:bg-primary/10 gap-1 group-data-[disabled=true]/field:opacity-50 has-[&gt;[data-slot=field]]:rounded-md has-[&gt;[data-slot=field]]:border [&amp;&gt;*]:data-[slot=field]:p-3 group/field-label peer/field-label flex w-fit leading-snug has-[&gt;[data-slot=field]]:w-full has-[&gt;[data-slot=field]]:flex-col"
           >
-            Areas
+            {_('Areas')}
           </label>
           <AreaInput
             control={control}
@@ -177,7 +177,7 @@ export default function General({ widget, routes }: GeneralProps) {
             data-slot="field-label"
             className="text-sm font-medium group-data-[disabled=true]:opacity-50 peer-disabled:opacity-50 items-center select-none group-data-[disabled=true]:pointer-events-none peer-disabled:cursor-not-allowed has-data-checked:bg-primary/5 has-data-checked:border-primary dark:has-data-checked:bg-primary/10 gap-1 group-data-[disabled=true]/field:opacity-50 has-[&gt;[data-slot=field]]:rounded-md has-[&gt;[data-slot=field]]:border [&amp;&gt;*]:data-[slot=field]:p-3 group/field-label peer/field-label flex w-fit leading-snug has-[&gt;[data-slot=field]]:w-full has-[&gt;[data-slot=field]]:flex-col"
           >
-            Pages
+            {_('Pages')}
           </label>
           <Controller
             name="route"
@@ -199,6 +199,7 @@ export default function General({ widget, routes }: GeneralProps) {
                 hideSelectedOptions
                 isMulti
                 aria-label={_('Select pages')}
+                placeholder={_('Select...')}
                 onChange={(selectedOptions) => {
                   const stringArray = selectedOptions
                     ? selectedOptions.map((option) => option.value)
@@ -226,7 +227,9 @@ export default function General({ widget, routes }: GeneralProps) {
             }
           }}
           required
-          helperText="The order in which this widget will be displayed. Lower numbers appear first."
+          helperText={_(
+            'The order in which this widget will be displayed. Lower numbers appear first.'
+          )}
         />
       </CardContent>
     </Card>

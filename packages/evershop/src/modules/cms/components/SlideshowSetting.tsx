@@ -6,6 +6,7 @@ import { Checkbox } from '@components/common/ui/Checkbox.js';
 import { Input } from '@components/common/ui/Input.js';
 import { Item, ItemContent, ItemTitle } from '@components/common/ui/Item.js';
 import { Label } from '@components/common/ui/Label.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React, { useEffect } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
@@ -196,7 +197,7 @@ export default function SlideshowSetting({
 
       <Item variant={'outline'}>
         <ItemContent>
-          <ItemTitle>Slideshow Settings</ItemTitle>
+          <ItemTitle>{_('Slideshow Settings')}</ItemTitle>
           <div className="space-y-2 mt-3">
             <div className="col-span-2 md:col-span-1 space-y-2">
               <div className="flex items-center mb-4">
@@ -208,7 +209,7 @@ export default function SlideshowSetting({
                   }}
                   className="mr-2 h-4 w-4"
                 />
-                <Label htmlFor="arrows">Show Navigation Arrows</Label>
+                <Label htmlFor="arrows">{_('Show Navigation Arrows')}</Label>
               </div>
               <div className="flex justify-start items-center">
                 <Checkbox
@@ -220,19 +221,22 @@ export default function SlideshowSetting({
                   className="mr-2 h-4 w-4"
                 />
                 <Label htmlFor="autoplay" className="text-sm">
-                  Enable Autoplay
+                  {_('Enable Autoplay')}
                 </Label>
               </div>
 
               {Boolean(currentAutoplay) && (
                 <InputField
                   type="number"
-                  label="Autoplay Speed (ms)"
+                  label={_('Autoplay Speed (ms)')}
                   name="settings.autoplaySpeed"
                   defaultValue={Number(autoplaySpeed) || 3000}
-                  placeholder="e.g., 3000 for 3 seconds"
+                  placeholder={_('e.g., 3000 for 3 seconds')}
                   validation={{
-                    min: { value: 1000, message: 'Minimum speed is 1000ms' }
+                    min: {
+                      value: 1000,
+                      message: _('Minimum speed is 1000ms')
+                    }
                   }}
                 />
               )}
@@ -260,9 +264,9 @@ export default function SlideshowSetting({
       </Item>
       <div className="mt-4">
         <div className="flex justify-between items-center mb-2">
-          <h2 className="text-lg font-medium">Slides</h2>
+          <h2 className="text-lg font-medium">{_('Slides')}</h2>
           <Button onClick={addSlide} variant={'outline'}>
-            Add New Slide
+            {_('Add New Slide')}
           </Button>
         </div>
 
@@ -280,16 +284,17 @@ export default function SlideshowSetting({
                   {currentSlides[index]?.image ? (
                     <img
                       src={currentSlides[index].image}
-                      alt={`Slide ${index + 1}`}
+                      alt={_('Slide ${index}', { index: index + 1 })}
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="text-gray-400">No Image</div>
+                    <div className="text-gray-400">{_('No Image')}</div>
                   )}
                 </div>
                 <div className="p-2 bg-white border-t border-border">
                   <p className="text-sm font-medium truncate">
-                    {currentSlides[index]?.headline || `Slide ${index + 1}`}
+                    {currentSlides[index]?.headline ||
+                      _('Slide ${index}', { index: index + 1 })}
                   </p>
                   <div className="flex mt-2">
                     <Button
@@ -379,9 +384,11 @@ export default function SlideshowSetting({
           </div>
         ) : (
           <div className="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-8 text-center mb-4">
-            <p className="text-gray-500 mb-4">No slides have been added yet.</p>
+            <p className="text-gray-500 mb-4">
+              {_('No slides have been added yet.')}
+            </p>
             <Button variant="outline" onClick={addSlide}>
-              Add Your First Slide
+              {_('Add Your First Slide')}
             </Button>
           </div>
         )}
@@ -390,7 +397,7 @@ export default function SlideshowSetting({
       {activeSlideIndex !== null && fields[activeSlideIndex] && (
         <div className="bg-white p-4 rounded border border-border">
           <h3 className="text-sm font-normal mb-4">
-            Edit Slide {activeSlideIndex + 1}
+            {_('Edit Slide ${index}', { index: activeSlideIndex + 1 })}
           </h3>
           <div className="mb-2 border border-border rounded overflow-hidden">
             <div className="aspect-[16/9] bg-gray-100 relative">
@@ -398,7 +405,7 @@ export default function SlideshowSetting({
                 <div className="relative w-full h-full">
                   <img
                     src={currentSlides[activeSlideIndex].image}
-                    alt={`Slide ${activeSlideIndex + 1}`}
+                    alt={_('Slide ${index}', { index: activeSlideIndex + 1 })}
                     className="w-full h-full object-cover"
                     onLoad={(e) => {
                       // Additional dimensions detection when the preview image loads
@@ -451,7 +458,7 @@ export default function SlideshowSetting({
                     variant="outline"
                     onClick={() => setOpenFileBrowser(true)}
                   >
-                    Select Image
+                    {_('Select Image')}
                   </Button>
                 </div>
               )}
@@ -462,7 +469,7 @@ export default function SlideshowSetting({
                   onClick={() => setOpenFileBrowser(true)}
                   className="absolute bottom-2 right-2"
                 >
-                  Change Image
+                  {_('Change Image')}
                 </Button>
               )}
             </div>
@@ -505,18 +512,20 @@ export default function SlideshowSetting({
                   {currentSlides[activeSlideIndex]?.width &&
                   currentSlides[activeSlideIndex]?.height ? (
                     <p>
-                      Image dimensions: {currentSlides[activeSlideIndex].width}{' '}
-                      × {currentSlides[activeSlideIndex].height} pixels
+                      {_('Image dimensions: ${width} × ${height} pixels', {
+                        width: currentSlides[activeSlideIndex].width,
+                        height: currentSlides[activeSlideIndex].height
+                      })}
                     </p>
                   ) : (
-                    <p>Detecting image dimensions...</p>
+                    <p>{_('Detecting image dimensions...')}</p>
                   )}
                 </div>
               </div>
             )}
 
             <div className="md:col-span-2">
-              <label className="block mb-1 text-sm">Headline</label>
+              <label className="block mb-1 text-sm">{_('Headline')}</label>
               <input
                 type="text"
                 className="w-full p-2 border border-gray-300 rounded"
@@ -530,12 +539,12 @@ export default function SlideshowSetting({
                   };
                   setValue('settings.slides', newSlides);
                 }}
-                placeholder="e.g., New Collection Available"
+                placeholder={_('e.g., New Collection Available')}
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block mb-1 text-sm">Sub Text</label>
+              <label className="block mb-1 text-sm">{_('Sub Text')}</label>
               <textarea
                 className="w-full p-2 border border-gray-300 rounded"
                 name={`settings.slides.${activeSlideIndex}.subText`}
@@ -548,13 +557,15 @@ export default function SlideshowSetting({
                   };
                   setValue('settings.slides', newSlides);
                 }}
-                placeholder="e.g., Check out our latest products with special discounts"
+                placeholder={_(
+                  'e.g., Check out our latest products with special discounts'
+                )}
                 rows={3}
               ></textarea>
             </div>
 
             <div>
-              <label className="block mb-1 text-sm">Button Text</label>
+              <label className="block mb-1 text-sm">{_('Button Text')}</label>
               <input
                 type="text"
                 className="w-full p-2 border border-gray-300 rounded"
@@ -568,12 +579,12 @@ export default function SlideshowSetting({
                   };
                   setValue('settings.slides', newSlides);
                 }}
-                placeholder="e.g., Shop Now"
+                placeholder={_('e.g., Shop Now')}
               />
             </div>
 
             <div>
-              <label className="block mb-1 text-sm">Button Link</label>
+              <label className="block mb-1 text-sm">{_('Button Link')}</label>
               <input
                 type="text"
                 className="w-full p-2 border border-gray-300 rounded"
@@ -587,12 +598,12 @@ export default function SlideshowSetting({
                   };
                   setValue('settings.slides', newSlides);
                 }}
-                placeholder="e.g., /category/new-arrivals"
+                placeholder={_('e.g., /category/new-arrivals')}
               />
             </div>
 
             <div>
-              <label className="block mb-1 text-sm">Button Color</label>
+              <label className="block mb-1 text-sm">{_('Button Color')}</label>
               <div className="flex items-center">
                 <input
                   type="color"

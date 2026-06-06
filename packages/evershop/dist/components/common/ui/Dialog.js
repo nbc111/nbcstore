@@ -1,6 +1,7 @@
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
 import { Button } from '@components/common/ui/Button.js';
 import { cn } from '@evershop/evershop/lib/util/cn';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { XIcon } from 'lucide-react';
 import * as React from 'react';
 function Dialog({ modal = 'trap-focus', ...props }) {
@@ -49,7 +50,7 @@ function DialogContent({ className, children, showCloseButton = true, ...props }
         })
     }, /*#__PURE__*/ React.createElement(XIcon, null), /*#__PURE__*/ React.createElement("span", {
         className: "sr-only"
-    }, "Close"))));
+    }, _('Close')))));
 }
 function DialogHeader({ className, ...props }) {
     return /*#__PURE__*/ React.createElement("div", {
@@ -67,7 +68,7 @@ function DialogFooter({ className, showCloseButton = false, children, ...props }
         render: /*#__PURE__*/ React.createElement(Button, {
             variant: "outline"
         })
-    }, "Close"));
+    }, _('Close')));
 }
 function DialogTitle({ className, ...props }) {
     return /*#__PURE__*/ React.createElement(DialogPrimitive.Title, {

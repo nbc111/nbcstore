@@ -1,9 +1,13 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 export function SimplePagination({ total, count, page, hasNext, setPage }) {
     return /*#__PURE__*/ React.createElement("div", {
         className: "simple__pagination flex gap-2 items-center"
-    }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("span", null, count, " of ", total)), /*#__PURE__*/ React.createElement("div", {
+    }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("span", null, _('Showing ${showing} of ${total}', {
+        showing: count,
+        total
+    }))), /*#__PURE__*/ React.createElement("div", {
         className: "flex gap-2"
     }, page > 1 && /*#__PURE__*/ React.createElement("a", {
         className: "hover:text-interactive border rounded p-1.25 border-divider",
