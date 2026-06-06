@@ -1,13 +1,19 @@
 declare global {
   interface Window {
-    ethereum?: {
-      request: (args: {
-        method: string;
-        params?: unknown[];
-      }) => Promise<unknown>;
-      isMetaMask?: boolean;
+    ethereum?: EthereumProvider;
+    okxwallet?: {
+      ethereum?: EthereumProvider;
     };
   }
+}
+
+export type WalletProviderKind = 'any' | 'metamask' | 'okx';
+
+export interface EthereumProvider {
+  request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
+  isMetaMask?: boolean;
+  isOkxWallet?: boolean;
+  providers?: EthereumProvider[];
 }
 
 export class WalletNotFoundError extends Error {
@@ -25,15 +31,48 @@ export type WalletChainParams = {
   blockExplorerUrl?: string;
 };
 
-export function hasWalletProvider(): boolean {
-  return typeof window !== 'undefined' && Boolean(window.ethereum);
+function getInjectedProviders(): EthereumProvider[] {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+  const base = window.ethereum;
+  const list = base?.providers?.length ? base.providers : base ? [base] : [];
+  if (window.okxwallet?.ethereum) {
+    return [...list, window.okxwallet.ethereum];
+  }
+  return list;
 }
 
-export async function connectWalletAddress(): Promise<string> {
-  if (!hasWalletProvider()) {
+function pickProvider(kind: WalletProviderKind = 'any'): EthereumProvider | null {
+  const providers = getInjectedProviders();
+  if (!providers.length) {
+    return null;
+  }
+  if (kind === 'metamask') {
+    return providers.find((p) => Boolean(p.isMetaMask)) || null;
+  }
+  if (kind === 'okx') {
+    return (
+      providers.find((p) => Boolean(p.isOkxWallet)) ||
+      window.okxwallet?.ethereum ||
+      null
+    );
+  }
+  return providers[0] || null;
+}
+
+export function hasWalletProvider(kind: WalletProviderKind = 'any'): boolean {
+  return Boolean(pickProvider(kind));
+}
+
+export async function connectWalletAddress(
+  kind: WalletProviderKind = 'any'
+): Promise<string> {
+  const provider = pickProvider(kind);
+  if (!provider) {
     throw new WalletNotFoundError();
   }
-  const accounts = (await window.ethereum!.request({
+  const accounts = (await provider.request({
     method: 'eth_requestAccounts'
   })) as string[];
   if (!accounts?.[0]) {
@@ -42,11 +81,14 @@ export async function connectWalletAddress(): Promise<string> {
   return accounts[0];
 }
 
-export async function getConnectedWalletAddress(): Promise<string | null> {
-  if (!hasWalletProvider()) {
+export async function getConnectedWalletAddress(
+  kind: WalletProviderKind = 'any'
+): Promise<string | null> {
+  const provider = pickProvider(kind);
+  if (!provider) {
     return null;
   }
-  const accounts = (await window.ethereum!.request({
+  const accounts = (await provider.request({
     method: 'eth_accounts'
   })) as string[];
   return accounts?.[0] || null;
@@ -54,12 +96,14 @@ export async function getConnectedWalletAddress(): Promise<string | null> {
 
 export async function signWalletMessage(
   walletAddress: string,
-  message: string
+  message: string,
+  kind: WalletProviderKind = 'any'
 ): Promise<string> {
-  if (!hasWalletProvider()) {
+  const provider = pickProvider(kind);
+  if (!provider) {
     throw new WalletNotFoundError();
   }
-  const signature = await window.ethereum!.request({
+  const signature = await provider.request({
     method: 'personal_sign',
     params: [message, walletAddress]
   });
@@ -79,17 +123,19 @@ function resolveChainParams(
 }
 
 export async function ensureWalletChain(
-  chain: WalletChainParams | number | null | undefined
+  chain: WalletChainParams | number | null | undefined,
+  kind: WalletProviderKind = 'any'
 ) {
   const params = resolveChainParams(chain);
-  if (!params || !hasWalletProvider()) {
+  const provider = pickProvider(kind);
+  if (!params || !provider) {
     return;
   }
 
   const hexChainId = `0x${params.chainId.toString(16)}`;
 
   try {
-    await window.ethereum!.request({
+    await provider.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: hexChainId }]
     });
@@ -103,7 +149,7 @@ export async function ensureWalletChain(
       throw new Error(`Please add ${params.chainName || 'NBC Chain'} to your wallet`);
     }
 
-    await window.ethereum!.request({
+    await provider.request({
       method: 'wallet_addEthereumChain',
       params: [
         {

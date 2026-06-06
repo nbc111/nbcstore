@@ -5039,3 +5039,10 @@ Please enter a name,请输入名称
 Add Menu Item,添加菜单项
 Is Main Menu?,是否主菜单？
 Custom CSS classes for the menu,菜单的自定义 CSS 类
+Use MetaMask to login,使用 MetaMask 登录
+Use OKX Wallet to login,使用 OKX Wallet 登录
+${walletName} is not installed or unavailable.,${walletName} 未安装或不可用。
+MetaMask is not installed or unavailable.,MetaMask 未安装或不可用。
+OKX Wallet is not installed or unavailable.,OKX Wallet 未安装或不可用。
+No wallet account returned,未获取到钱包账户
+Wallet login failed,钱包登录失败
