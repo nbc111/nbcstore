@@ -1,4 +1,5 @@
 import {
+  FORBIDDEN,
   INTERNAL_SERVER_ERROR,
   OK
 } from '@evershop/evershop/lib/util/httpStatus';
@@ -9,6 +10,14 @@ export default async function processNbcOnchainDeposits(
   response: any
 ) {
   try {
+    const adminUser = request.getCurrentUser?.();
+    if (!adminUser?.uuid) {
+      response.status(FORBIDDEN).json({
+        error: { status: FORBIDDEN, message: 'Admin login is required' }
+      });
+      return;
+    }
+
     const result = await processOnchainDeposits();
 
     response.status(OK).json({

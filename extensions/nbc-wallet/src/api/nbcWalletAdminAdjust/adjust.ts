@@ -1,4 +1,5 @@
 import {
+  FORBIDDEN,
   INTERNAL_SERVER_ERROR,
   INVALID_PAYLOAD,
   OK
@@ -11,6 +12,13 @@ export default async function adjustNbcWalletBalance(
 ) {
   try {
     const adminUser = request.getCurrentUser?.();
+    if (!adminUser?.uuid) {
+      response.status(FORBIDDEN).json({
+        error: { status: FORBIDDEN, message: 'Admin login is required' }
+      });
+      return;
+    }
+
     const {
       walletId,
       customerId,
