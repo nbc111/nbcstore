@@ -8,6 +8,7 @@ import {
   getConnectedWalletAddress,
   hasWalletProvider,
   signWalletMessage,
+  WalletProviderKind,
   WalletChainParams,
   WalletNotFoundError
 } from '../lib/ethereum.js';
@@ -192,20 +193,21 @@ export function useNbcWallet(
     await appDispatch.fetchPageData(url.toString());
   }, [appDispatch]);
 
-  const connect = useCallback(async () => {
-    if (!hasWalletProvider()) {
+  const connect = useCallback(async (walletProvider: WalletProviderKind = 'any') => {
+    if (!hasWalletProvider(walletProvider)) {
       throw new WalletNotFoundError();
     }
     setConnecting(true);
     setError(null);
     try {
-      await ensureWalletChain(chainParams);
-      const walletAddress = await connectWalletAddress();
+      await ensureWalletChain(chainParams, walletProvider);
+      const walletAddress = await connectWalletAddress(walletProvider);
       await refreshOnchainBalance(walletAddress);
       const auth = await requestWalletAuth(apis.authRequestApi, walletAddress);
       const signature = await signWalletMessage(
         auth.walletAddress,
-        auth.message
+        auth.message,
+        walletProvider
       );
       await verifyWalletAuth(apis.authVerifyApi, {
         walletAddress: auth.walletAddress,
@@ -234,13 +236,21 @@ export function useNbcWallet(
     syncPageContextOnConnect
   ]);
 
-  const connectWithErrors = useCallback(async () => {
+  const connectWithErrors = useCallback(async (walletProvider: WalletProviderKind = 'any') => {
     try {
-      await connect();
+      await connect(walletProvider);
     } catch (err) {
       if (err instanceof WalletNotFoundError) {
+        const walletName =
+          walletProvider === 'metamask'
+            ? 'MetaMask'
+            : walletProvider === 'okx'
+            ? 'OKX Wallet'
+            : null;
         setError(
-          _('No Web3 wallet detected. Install MetaMask or another wallet.')
+          walletName
+            ? _('${walletName} is not installed or unavailable.', { walletName })
+            : _('No Web3 wallet detected. Install MetaMask or another wallet.')
         );
       } else {
         setError(

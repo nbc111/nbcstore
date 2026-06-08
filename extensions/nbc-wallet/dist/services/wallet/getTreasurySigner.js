@@ -8,7 +8,9 @@ const ERC20_ABI = [
 export function getTreasurySigner() {
     const chain = getChainRpcConfig();
     const onchain = getOnchainConfig();
-    const privateKey = String(getConfig('nbcWallet.onchain.treasuryPrivateKey', '')).trim();
+    // Prefer env var over config file to keep private keys out of source control
+    const privateKey = (process.env.NBC_WALLET_TREASURY_PRIVATE_KEY ||
+        String(getConfig('nbcWallet.onchain.treasuryPrivateKey', ''))).trim();
     if (!onchain.enabled) {
         throw new Error('NBC on-chain transfer is disabled');
     }

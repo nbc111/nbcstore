@@ -26,7 +26,7 @@ const SKUAndPrice = ({ sku, price, setting })=>{
     }), /*#__PURE__*/ React.createElement(NumberField, {
         name: "price",
         placeholder: _('Enter price'),
-        label: `Price`,
+        label: _('Price'),
         defaultValue: price?.value,
         unit: setting.storeCurrency,
         min: 0,
@@ -56,10 +56,10 @@ const ProductCategory = ({ categoryId, onChange, onUnassign })=>{
     if (error) {
         return /*#__PURE__*/ React.createElement("p", {
             className: "text-destructive"
-        }, "There was an error fetching categories.", error.message);
+        }, _('There was an error fetching categories.'), error.message);
     }
     if (fetching) {
-        return /*#__PURE__*/ React.createElement("span", null, "Loading...");
+        return /*#__PURE__*/ React.createElement("span", null, _('Loading...'));
     }
     return /*#__PURE__*/ React.createElement("div", null, data.category.path.map((item, index)=>/*#__PURE__*/ React.createElement("span", {
             key: item.name,
@@ -72,14 +72,14 @@ const ProductCategory = ({ categoryId, onChange, onUnassign })=>{
             e.preventDefault();
             onChange();
         }
-    }, "Change"), /*#__PURE__*/ React.createElement("a", {
+    }, _('Change')), /*#__PURE__*/ React.createElement("a", {
         href: "#",
         onClick: (e)=>{
             e.preventDefault();
             onUnassign();
         },
         className: "text-destructive ml-5"
-    }, "Unassign")), /*#__PURE__*/ React.createElement("input", {
+    }, _('Unassign'))), /*#__PURE__*/ React.createElement("input", {
         type: "hidden",
         ...register('category_id'),
         value: categoryId
@@ -101,7 +101,7 @@ const CategorySelect = ({ product })=>{
         onOpenChange: setDialogOpen
     }, /*#__PURE__*/ React.createElement("div", {
         className: "space-y-3"
-    }, /*#__PURE__*/ React.createElement(Label, null, "Category"), category && /*#__PURE__*/ React.createElement("div", {
+    }, /*#__PURE__*/ React.createElement(Label, null, _('Category')), category && /*#__PURE__*/ React.createElement("div", {
         className: "border rounded border-border p-2"
     }, /*#__PURE__*/ React.createElement(ProductCategory, {
         categoryId: category.categoryId,
@@ -119,7 +119,7 @@ const CategorySelect = ({ product })=>{
             e.preventDefault();
             setDialogOpen(true);
         }
-    }, "Select category"), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Select Category'))), /*#__PURE__*/ React.createElement(CategorySelector, {
+    }, _('Select category')), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Select Category'))), /*#__PURE__*/ React.createElement(CategorySelector, {
         onSelect: onSelect,
         onUnSelect: ()=>{},
         selectedCategories: category ? [

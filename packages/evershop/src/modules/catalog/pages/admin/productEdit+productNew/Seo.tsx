@@ -33,11 +33,12 @@ export default function SEO({ product }: SEOProps) {
             required
             defaultValue={product?.urlKey}
             validation={{
-              required: 'URL Key is required',
+              required: _('URL Key is required'),
               pattern: {
                 value: /^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$/,
-                message:
-                  'URL Key must be lowercase and can only contain letters, numbers, and hyphens'
+                message: _(
+                  'URL Key can only contain lowercase letters numbers and hyphens'
+                )
               }
             }}
           />
@@ -55,7 +56,7 @@ export default function SEO({ product }: SEOProps) {
             required
             defaultValue={product?.metaTitle}
             validation={{
-              required: 'Meta Title is required'
+              required: _('Meta Title is required')
             }}
           />
         )

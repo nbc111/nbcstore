@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 
 interface SimplePaginationProps {
@@ -19,7 +20,7 @@ export function SimplePagination({
     <div className="simple__pagination flex gap-2 items-center">
       <div>
         <span>
-          {count} of {total}
+          {_('Showing ${showing} of ${total}', { showing: count, total })}
         </span>
       </div>
       <div className="flex gap-2">

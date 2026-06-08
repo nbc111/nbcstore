@@ -4,6 +4,7 @@ import { NumberField } from '@components/common/form/NumberField.js';
 import { Input } from '@components/common/ui/Input.js';
 import { Item, ItemContent } from '@components/common/ui/Item.js';
 import { Label } from '@components/common/ui/Label.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { RadioGroup, RadioGroupItem } from '@components/common/ui/RadioGroup.js';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -89,14 +90,14 @@ function CollectionProductsSetting({ collectionProductsWidget: { collection, cou
     if (error) {
         return /*#__PURE__*/ React.createElement("p", {
             className: "text-destructive"
-        }, "There was an error fetching collections.", error.message);
+        }, _('There was an error fetching collections.'), error.message);
     }
     return /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", {
         className: "mb-3"
     }, /*#__PURE__*/ React.createElement(Input, {
         type: "text",
         value: inputValue || '',
-        placeholder: "Search collections",
+        placeholder: _('Search collections'),
         onChange: (e)=>setInputValue(e.target.value)
     })), fetching && /*#__PURE__*/ React.createElement(Item, {
         variant: 'outline'
@@ -105,7 +106,9 @@ function CollectionProductsSetting({ collectionProductsWidget: { collection, cou
         height: 25
     }))), !fetching && data && /*#__PURE__*/ React.createElement("div", null, data.collections.items.length === 0 && /*#__PURE__*/ React.createElement("div", {
         className: "p-2 border border-divider rounded flex justify-center items-center"
-    }, inputValue ? /*#__PURE__*/ React.createElement("p", null, 'No collections found for query "', inputValue, "”") : /*#__PURE__*/ React.createElement("p", null, "You have no collections to display")), /*#__PURE__*/ React.createElement(RadioGroup, {
+    }, inputValue ? /*#__PURE__*/ React.createElement("p", null, _('No collections found for query "${query}"', {
+        query: inputValue
+    })) : /*#__PURE__*/ React.createElement("p", null, _('You have no collections to display'))), /*#__PURE__*/ React.createElement(RadioGroup, {
         defaultValue: selectedCollection,
         onValueChange: (value)=>{
             setSelectedCollection(value);
@@ -129,35 +132,35 @@ function CollectionProductsSetting({ collectionProductsWidget: { collection, cou
         name: "settings[collection]",
         required: true,
         validation: {
-            required: 'Please select a collection'
+            required: _('Please select a collection')
         },
         defaultValue: selectedCollection
     })))), /*#__PURE__*/ React.createElement("div", {
         className: "mt-3 space-y-3"
     }, /*#__PURE__*/ React.createElement(NumberField, {
         name: "settings[count]",
-        label: "Total products",
+        label: _('Total products'),
         defaultValue: count,
         required: true,
         validation: {
             min: 1,
-            required: 'Count is required'
+            required: _('Count is required')
         },
         min: 1,
-        placeholder: "Number of products"
+        placeholder: _('Number of products')
     }), /*#__PURE__*/ React.createElement("div", {
         className: "form-field"
     }, /*#__PURE__*/ React.createElement(NumberField, {
         name: "settings[countPerRow]",
-        label: "Products per row",
+        label: _('Products per row'),
         min: 1,
         validation: {
             min: 1,
-            required: 'Count per row is required'
+            required: _('Count per row is required')
         },
         required: true,
         defaultValue: countPerRow,
-        placeholder: "Number of products per row"
+        placeholder: _('Number of products per row')
     }))));
 }
 export default CollectionProductsSetting;

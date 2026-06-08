@@ -38,8 +38,8 @@ export default function Inventory({ product }: InventoryProps) {
           name="manage_stock"
           label={_('Manage Stock')}
           options={[
-            { value: 1, label: 'Yes' },
-            { value: 0, label: 'No' }
+            { value: 1, label: _('Yes') },
+            { value: 0, label: _('No') }
           ]}
           defaultValue={inventory.manageStock === 0 ? 0 : 1}
           required
@@ -50,8 +50,8 @@ export default function Inventory({ product }: InventoryProps) {
           name="stock_availability"
           label={_('Stock Availability')}
           options={[
-            { value: 1, label: 'In Stock' },
-            { value: 0, label: 'Out of Stock' }
+            { value: 1, label: _('In Stock') },
+            { value: 0, label: _('Out of Stock') }
           ]}
           defaultValue={inventory.stockAvailability === 0 ? 0 : 1}
           required

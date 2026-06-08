@@ -23,7 +23,9 @@ export default function Setting({ type }: SettingProps) {
       <CardHeader>
         <CardTitle>{_('Widget Settings')}</CardTitle>
         <CardDescription>
-          Configure the settings for the {type.name} widget.
+          {_('Configure the settings for the ${widgetName} widget.', {
+            widgetName: _(type.name)
+          })}
         </CardDescription>
       </CardHeader>
       <CardContent>

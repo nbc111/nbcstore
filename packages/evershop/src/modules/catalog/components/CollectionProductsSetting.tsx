@@ -4,6 +4,7 @@ import { NumberField } from '@components/common/form/NumberField.js';
 import { Input } from '@components/common/ui/Input.js';
 import { Item, ItemContent } from '@components/common/ui/Item.js';
 import { Label } from '@components/common/ui/Label.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   RadioGroup,
   RadioGroupItem
@@ -82,7 +83,7 @@ function CollectionProductsSetting({
   if (error) {
     return (
       <p className="text-destructive">
-        There was an error fetching collections.
+        {_('There was an error fetching collections.')}
         {error.message}
       </p>
     );
@@ -95,7 +96,7 @@ function CollectionProductsSetting({
           <Input
             type="text"
             value={inputValue || ''}
-            placeholder="Search collections"
+            placeholder={_('Search collections')}
             onChange={(e) => setInputValue(e.target.value)}
           />
         </div>
@@ -112,10 +113,12 @@ function CollectionProductsSetting({
               <div className="p-2 border border-divider rounded flex justify-center items-center">
                 {inputValue ? (
                   <p>
-                    No collections found for query &quot;{inputValue}&rdquo;
+                    {_('No collections found for query "${query}"', {
+                      query: inputValue
+                    })}
                   </p>
                 ) : (
-                  <p>You have no collections to display</p>
+                  <p>{_('You have no collections to display')}</p>
                 )}
               </div>
             )}
@@ -148,7 +151,7 @@ function CollectionProductsSetting({
                 name="settings[collection]"
                 required
                 validation={{
-                  required: 'Please select a collection'
+                  required: _('Please select a collection')
                 }}
                 defaultValue={selectedCollection}
               />
@@ -159,22 +162,22 @@ function CollectionProductsSetting({
       <div className="mt-3 space-y-3">
         <NumberField
           name="settings[count]"
-          label="Total products"
+          label={_('Total products')}
           defaultValue={count}
           required
-          validation={{ min: 1, required: 'Count is required' }}
+          validation={{ min: 1, required: _('Count is required') }}
           min={1}
-          placeholder="Number of products"
+          placeholder={_('Number of products')}
         />
         <div className="form-field">
           <NumberField
             name="settings[countPerRow]"
-            label="Products per row"
+            label={_('Products per row')}
             min={1}
-            validation={{ min: 1, required: 'Count per row is required' }}
+            validation={{ min: 1, required: _('Count per row is required') }}
             required
             defaultValue={countPerRow}
-            placeholder="Number of products per row"
+            placeholder={_('Number of products per row')}
           />
         </div>
       </div>

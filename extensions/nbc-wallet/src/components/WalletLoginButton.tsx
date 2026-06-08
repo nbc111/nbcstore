@@ -31,30 +31,44 @@ export function WalletLoginButton({
     return null;
   }
 
-  const label =
-    publicConfig.displayName && publicConfig.displayName !== 'NBC Wallet'
-      ? _('${name} login', { name: publicConfig.displayName })
-      : _('Wallet login');
-
   return (
     <div className="space-y-1.5">
-      <Button
-        type="button"
-        variant="outline"
-        size="lg"
-        className="w-full font-normal text-foreground/90"
-        disabled={connecting}
-        onClick={() => connect()}
-      >
-        {connecting ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin opacity-70" />
-            {_('Connecting…')}
-          </>
-        ) : (
-          label
-        )}
-      </Button>
+      <div className="grid grid-cols-2 gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          className="w-full font-normal text-foreground/90"
+          disabled={connecting}
+          onClick={() => connect('okx')}
+        >
+          {connecting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin opacity-70" />
+              {_('Connecting…')}
+            </>
+          ) : (
+            _('Use OKX Wallet to login')
+          )}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          className="w-full font-normal text-foreground/90"
+          disabled={connecting}
+          onClick={() => connect('metamask')}
+        >
+          {connecting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin opacity-70" />
+              {_('Connecting…')}
+            </>
+          ) : (
+            _('Use MetaMask to login')
+          )}
+        </Button>
+      </div>
       {error && (
         <p className="text-xs text-destructive text-center leading-snug" role="alert">
           {error}

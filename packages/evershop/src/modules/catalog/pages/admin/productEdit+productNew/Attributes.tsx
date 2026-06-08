@@ -166,11 +166,12 @@ export default function Attributes({
               />
               <div>
                 <span className="font-semibold">
-                  {getGroup(items, product?.groupId).groupName}
+                  {_(getGroup(items, product?.groupId).groupName)}
                 </span>
                 <p className="text-muted-foreground italic">
-                  Can not change the attribute group of a product that is
-                  already in a variant group.
+                  {_(
+                    'Cannot change the attribute group of a product that is already in a variant group.'
+                  )}
                 </p>
               </div>
             </div>
@@ -181,7 +182,7 @@ export default function Attributes({
               label={_('Attribute group')}
               options={items.map((group) => ({
                 value: group.groupId,
-                label: group.groupName
+                label: _(group.groupName)
               }))}
               defaultValue={product?.groupId || currentGroup}
               required
@@ -196,7 +197,9 @@ export default function Attributes({
               const validation =
                 attribute.is_required === 1
                   ? {
-                      required: `${attribute.attribute_name} is required`
+                      required: _('${field} is required', {
+                        field: attribute.attribute_name
+                      })
                     }
                   : {};
               let Field: React.ReactNode = null;

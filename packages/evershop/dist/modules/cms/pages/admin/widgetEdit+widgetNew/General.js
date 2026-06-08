@@ -62,7 +62,7 @@ export default function General({ widget, routes }) {
     const allRoutes = [
         {
             value: 'all',
-            label: 'All',
+            label: _('All'),
             isAdmin: false,
             isApi: false,
             method: [
@@ -93,11 +93,11 @@ export default function General({ widget, routes }) {
         options: [
             {
                 value: 0,
-                label: 'Disabled'
+                label: _('Disabled')
             },
             {
                 value: 1,
-                label: 'Enabled'
+                label: _('Enabled')
             }
         ]
     })), /*#__PURE__*/ React.createElement(CardContent, {
@@ -110,7 +110,7 @@ export default function General({ widget, routes }) {
     }, /*#__PURE__*/ React.createElement("label", {
         "data-slot": "field-label",
         className: "text-sm font-medium group-data-[disabled=true]:opacity-50 peer-disabled:opacity-50 items-center select-none group-data-[disabled=true]:pointer-events-none peer-disabled:cursor-not-allowed has-data-checked:bg-primary/5 has-data-checked:border-primary dark:has-data-checked:bg-primary/10 gap-1 group-data-[disabled=true]/field:opacity-50 has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border [&>*]:data-[slot=field]:p-3 group/field-label peer/field-label flex w-fit leading-snug has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col"
-    }, "Areas"), /*#__PURE__*/ React.createElement(AreaInput, {
+    }, _('Areas')), /*#__PURE__*/ React.createElement(AreaInput, {
         control: control,
         values: widget?.area?.length ? widget.area.map((a)=>({
                 value: a,
@@ -126,7 +126,7 @@ export default function General({ widget, routes }) {
     }, /*#__PURE__*/ React.createElement("label", {
         "data-slot": "field-label",
         className: "text-sm font-medium group-data-[disabled=true]:opacity-50 peer-disabled:opacity-50 items-center select-none group-data-[disabled=true]:pointer-events-none peer-disabled:cursor-not-allowed has-data-checked:bg-primary/5 has-data-checked:border-primary dark:has-data-checked:bg-primary/10 gap-1 group-data-[disabled=true]/field:opacity-50 has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border [&>*]:data-[slot=field]:p-3 group/field-label peer/field-label flex w-fit leading-snug has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col"
-    }, "Pages"), /*#__PURE__*/ React.createElement(Controller, {
+    }, _('Pages')), /*#__PURE__*/ React.createElement(Controller, {
         name: "route",
         control: control,
         defaultValue: widget?.route ? widget.route // Keep as string array
@@ -136,6 +136,7 @@ export default function General({ widget, routes }) {
                 hideSelectedOptions: true,
                 isMulti: true,
                 "aria-label": _('Select pages'),
+                placeholder: _('Select...'),
                 onChange: (selectedOptions)=>{
                     const stringArray = selectedOptions ? selectedOptions.map((option)=>option.value) : [];
                     field.onChange(stringArray);
@@ -158,7 +159,7 @@ export default function General({ widget, routes }) {
             }
         },
         required: true,
-        helperText: "The order in which this widget will be displayed. Lower numbers appear first."
+        helperText: _('The order in which this widget will be displayed. Lower numbers appear first.')
     })));
 }
 export const layout = {

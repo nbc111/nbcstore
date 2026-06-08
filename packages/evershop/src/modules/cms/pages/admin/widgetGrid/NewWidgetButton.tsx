@@ -31,8 +31,8 @@ const WidgetTypes: React.FC<{
       {types.map((type, index) => (
         <Item key={index} variant="outline">
           <ItemContent>
-            <ItemTitle> {type.name}</ItemTitle>
-            <ItemDescription>{type.description}</ItemDescription>
+            <ItemTitle>{_(type.name)}</ItemTitle>
+            <ItemDescription>{_(type.description)}</ItemDescription>
           </ItemContent>
           <ItemActions>
             <Button
@@ -42,7 +42,7 @@ const WidgetTypes: React.FC<{
                 window.location.href = type.createWidgetUrl;
               }}
             >
-              Choose
+              {_('Choose')}
             </Button>
           </ItemActions>
         </Item>

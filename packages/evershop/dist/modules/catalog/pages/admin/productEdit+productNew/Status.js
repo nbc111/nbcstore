@@ -11,16 +11,16 @@ export default function Status({ product }) {
         options: [
             {
                 value: 0,
-                label: 'Disabled'
+                label: _('Disabled')
             },
             {
                 value: 1,
-                label: 'Enabled'
+                label: _('Enabled')
             }
         ],
         defaultValue: product?.status === 0 ? 0 : 1,
         required: true,
-        helperText: "Disabled products will not be visible in the store and cannot be purchased."
+        helperText: _('Disabled products will not be visible in the store and cannot be purchased.')
     })), /*#__PURE__*/ React.createElement(CardContent, {
         className: "border-t border-t-border pt-6"
     }, /*#__PURE__*/ React.createElement(RadioGroupField, {
@@ -29,16 +29,16 @@ export default function Status({ product }) {
         options: [
             {
                 value: 0,
-                label: 'Not visible individually'
+                label: _('Not visible individually')
             },
             {
                 value: 1,
-                label: 'Catalog, Search'
+                label: _('Catalog Search')
             }
         ],
         defaultValue: product?.visibility === 0 ? 0 : 1,
         required: true,
-        helperText: "Visibility determines where the product appears in the store. It does not affect the saleability of the product."
+        helperText: _('Visibility determines where the product appears in the store. It does not affect whether the product can be purchased.')
     })), /*#__PURE__*/ React.createElement(CardFooter, null));
 }
 export const layout = {

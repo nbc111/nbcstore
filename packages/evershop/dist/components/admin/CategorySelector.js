@@ -105,7 +105,7 @@ const CategorySelector = ({ onSelect, onUnSelect, selectedCategories })=>{
     if (error) {
         return /*#__PURE__*/ React.createElement("p", {
             className: "text-destructive"
-        }, "There was an error fetching categories.", error.message);
+        }, _('There was an error fetching categories.'), error.message);
     }
     return /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", {
         className: "p-2"
@@ -121,7 +121,9 @@ const CategorySelector = ({ onSelect, onUnSelect, selectedCategories })=>{
         className: "divide-y"
     }, data.categories.items.length === 0 && /*#__PURE__*/ React.createElement("div", {
         className: "p-2 border border-divider rounded flex justify-center items-center"
-    }, inputValue ? /*#__PURE__*/ React.createElement("p", null, 'No categories found for query "', inputValue, "”") : /*#__PURE__*/ React.createElement("p", null, _('You have no categories to display'))), data.categories.items.map((cat)=>/*#__PURE__*/ React.createElement("div", {
+    }, inputValue ? /*#__PURE__*/ React.createElement("p", null, _('No categories found for query "${query}"', {
+        query: inputValue
+    })) : /*#__PURE__*/ React.createElement("p", null, _('You have no categories to display'))), data.categories.items.map((cat)=>/*#__PURE__*/ React.createElement("div", {
             key: cat.uuid,
             className: "grid grid-cols-8 gap-5 py-2 border-divider items-center"
         }, /*#__PURE__*/ React.createElement("div", {
@@ -129,7 +131,7 @@ const CategorySelector = ({ onSelect, onUnSelect, selectedCategories })=>{
         }, /*#__PURE__*/ React.createElement("h3", null, cat.path.map((item, index)=>/*#__PURE__*/ React.createElement("span", {
                 key: item.name,
                 className: "text-gray-500"
-            }, item.name, index < cat.path.length - 1 && ' > ')))), /*#__PURE__*/ React.createElement("div", {
+            }, _(item.name), index < cat.path.length - 1 && ' > ')))), /*#__PURE__*/ React.createElement("div", {
             className: "col-span-3 text-right"
         }, !isCategorySelected(cat, internalSelectedCategories) && /*#__PURE__*/ React.createElement(Button, {
             variant: 'outline',
@@ -145,7 +147,7 @@ const CategorySelector = ({ onSelect, onUnSelect, selectedCategories })=>{
                     ]);
                 onSelect(cat.categoryId, cat.uuid, cat.name);
             }
-        }, "Select"), isCategorySelected(cat, internalSelectedCategories) && /*#__PURE__*/ React.createElement(Button, {
+        }, _('Select')), isCategorySelected(cat, internalSelectedCategories) && /*#__PURE__*/ React.createElement(Button, {
             variant: 'default',
             onClick: (e)=>{
                 e.preventDefault();

@@ -1,9 +1,12 @@
 import { PageHeading } from '@components/admin/PageHeading.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 export default function ProductEditPageHeading({ backUrl, product }) {
     return /*#__PURE__*/ React.createElement(PageHeading, {
         backUrl: backUrl,
-        heading: product ? `Editing ${product.name}` : 'Create a new product'
+        heading: product ? _('Editing ${name}', {
+            name: product.name || ''
+        }) : _('Create a new product')
     });
 }
 export const layout = {

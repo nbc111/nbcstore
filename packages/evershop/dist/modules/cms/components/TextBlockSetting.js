@@ -1,5 +1,6 @@
 import { Editor } from '@components/common/form/Editor.js';
 import { InputField } from '@components/common/form/InputField.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 export default function TextBlockSetting({ textWidget: { text, className } }) {
@@ -16,17 +17,17 @@ export default function TextBlockSetting({ textWidget: { text, className } }) {
     return /*#__PURE__*/ React.createElement("div", {
         className: "space-y-3"
     }, /*#__PURE__*/ React.createElement(InputField, {
-        label: "Custom CSS classes",
+        label: _('Custom CSS classes'),
         name: "settings.className",
         defaultValue: className,
-        helperText: "Custom CSS classes for the text block"
+        helperText: _('Custom CSS classes for the text block')
     }), /*#__PURE__*/ React.createElement("input", {
         type: "hidden",
         ...register('settings.text'),
         defaultValue: typeof text === 'string' ? text : JSON.stringify(text)
     }), /*#__PURE__*/ React.createElement(Editor, {
         name: "temp_editor_text",
-        label: "Content",
+        label: _('Content'),
         value: typeof text === 'string' ? JSON.parse(text) : text
     }));
 }

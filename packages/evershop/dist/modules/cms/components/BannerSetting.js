@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/img-redundant-alt */ import { FileBrowser } from '@components/admin/FileBrowser.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 export default function BannerSetting({ bannerWidget: { src, alignment = 'left', width, height, alt, link } }) {
@@ -76,7 +77,7 @@ export default function BannerSetting({ bannerWidget: { src, alignment = 'left',
                 }
             }
         },
-        alt: "Banner Image"
+        alt: _('Banner Image')
     }))), /*#__PURE__*/ React.createElement(Button, {
         variant: "outline",
         onClick: (e)=>{
@@ -84,7 +85,7 @@ export default function BannerSetting({ bannerWidget: { src, alignment = 'left',
             setOpenFileBrowser(true);
         },
         className: "absolute bottom-2 right-2 z-10"
-    }, "Select Image")), /*#__PURE__*/ React.createElement(InputField, {
+    }, _('Select Image'))), /*#__PURE__*/ React.createElement(InputField, {
         type: "hidden",
         name: "settings.src",
         defaultValue: image || ''
@@ -92,7 +93,7 @@ export default function BannerSetting({ bannerWidget: { src, alignment = 'left',
         className: "mb-4"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "mb-2"
-    }, /*#__PURE__*/ React.createElement("label", null, "Alignment")), /*#__PURE__*/ React.createElement("div", {
+    }, /*#__PURE__*/ React.createElement("label", null, _('Alignment'))), /*#__PURE__*/ React.createElement("div", {
         className: "grid grid-cols-3 gap-2"
     }, /*#__PURE__*/ React.createElement("div", {
         onClick: ()=>{
@@ -200,16 +201,19 @@ export default function BannerSetting({ bannerWidget: { src, alignment = 'left',
         className: "mb-4"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "text-sm text-gray-500"
-    }, "Image dimensions: ", imageDimensions.width, " × ", imageDimensions.height, ' ', "pixels")), /*#__PURE__*/ React.createElement(InputField, {
+    }, _('Image dimensions: ${width} × ${height} pixels', {
+        width: imageDimensions.width,
+        height: imageDimensions.height
+    }))), /*#__PURE__*/ React.createElement(InputField, {
         type: "text",
-        label: "Alt Text",
-        placeholder: 'e.g., "Promotional Banner"',
+        label: _('Alt Text'),
+        placeholder: _('e.g., "Promotional Banner"'),
         name: "settings.alt",
         defaultValue: alt
     }), /*#__PURE__*/ React.createElement(InputField, {
         type: "text",
-        placeholder: "e.g., https://example.com",
-        label: "Banner Link",
+        placeholder: _('e.g., https://example.com'),
+        label: _('Banner Link'),
         name: "settings.link",
         defaultValue: link || ''
     }));
