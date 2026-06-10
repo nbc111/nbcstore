@@ -29,7 +29,9 @@ export async function captureOrderPayment(orderUuid, customerId) {
                 nbcAmount: String(existingUsage.nbc_amount),
                 cnyAmount: String(existingUsage.cny_amount),
                 exchangeRate: String(existingUsage.exchange_rate),
-                balanceAfter: null,
+                balanceAfter: existingUsage.balance_after === null
+                    ? null
+                    : Number(existingUsage.balance_after),
                 alreadyCaptured: true
             };
         }
@@ -63,7 +65,7 @@ export async function captureOrderPayment(orderUuid, customerId) {
           SET balance = $1,
               updated_at = NOW()
         WHERE wallet_id = $2`, [balanceAfter, walletRow.wallet_id]);
-        await insert('nbc_wallet_transaction')
+        const walletTx = await insert('nbc_wallet_transaction')
             .given({
             wallet_id: walletRow.wallet_id,
             order_id: orderRow.order_id,
@@ -86,7 +88,8 @@ export async function captureOrderPayment(orderUuid, customerId) {
             wallet_id: walletRow.wallet_id,
             nbc_amount: nbcAmount,
             exchange_rate: exchangeRate,
-            cny_amount: orderFiatAmount
+            cny_amount: orderFiatAmount,
+            wallet_tx_id: walletTx.insertId || walletTx.wallet_tx_id
         })
             .execute(connection);
         await updatePaymentStatus(orderRow.order_id, 'nbc_paid', connection);

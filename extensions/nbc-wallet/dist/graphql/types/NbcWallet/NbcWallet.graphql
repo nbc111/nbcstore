@@ -65,9 +65,16 @@ type NbcWalletWithdrawal {
 }
 
 type NbcOrderUsage {
+  walletTxId: Int
+  transactionUuid: String
   nbcAmount: Float!
   exchangeRate: Float!
   cnyAmount: Float!
+  balanceBefore: Float
+  balanceAfter: Float
+  transactionStatus: String
+  paidAt: DateTime
+  transaction: NbcWalletTransaction
   wallet: NbcWallet
 }
 

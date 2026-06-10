@@ -9,10 +9,38 @@ import { listWalletTransactions } from '../../../services/wallet/listWalletTrans
 
 async function loadOrderUsage(orderId) {
   const result = await pool.query(
-    `SELECT u.nbc_amount, u.exchange_rate, u.cny_amount, u.wallet_id, w.customer_id
+    `SELECT u.nbc_amount,
+            u.exchange_rate,
+            u.cny_amount,
+            u.wallet_id,
+            u.wallet_tx_id,
+            w.customer_id,
+            t.wallet_tx_id AS transaction_wallet_tx_id,
+            t.uuid AS transaction_uuid,
+            t.transaction_type,
+            t.amount AS transaction_amount,
+            t.balance_before,
+            t.balance_after,
+            t.reference,
+            t.status AS transaction_status,
+            t.metadata AS transaction_metadata,
+            t.created_at AS transaction_created_at,
+            o.uuid AS order_uuid,
+            o.order_number
        FROM nbc_order_usage u
        INNER JOIN nbc_wallet w ON w.wallet_id = u.wallet_id
-      WHERE u.order_id = $1`,
+       LEFT JOIN nbc_wallet_transaction t
+         ON t.wallet_tx_id = u.wallet_tx_id
+         OR (
+           u.wallet_tx_id IS NULL
+           AND t.order_id = u.order_id
+           AND t.wallet_id = u.wallet_id
+           AND t.transaction_type = 'debit'
+         )
+       LEFT JOIN "order" o ON o.order_id = u.order_id
+      WHERE u.order_id = $1
+      ORDER BY t.wallet_tx_id DESC NULLS LAST
+      LIMIT 1`,
     [orderId]
   );
   return result.rows[0] || null;
@@ -84,14 +112,45 @@ export default {
       }
 
       return {
+        walletTxId: usage.transaction_wallet_tx_id
+          ? Number(usage.transaction_wallet_tx_id)
+          : null,
+        transactionUuid: usage.transaction_uuid || null,
         nbcAmount: Number(usage.nbc_amount),
         exchangeRate: Number(usage.exchange_rate),
         cnyAmount: Number(usage.cny_amount),
+        balanceBefore:
+          usage.balance_before === null ? null : Number(usage.balance_before),
+        balanceAfter:
+          usage.balance_after === null ? null : Number(usage.balance_after),
+        transactionStatus: usage.transaction_status || null,
+        paidAt: usage.transaction_created_at || null,
+        transaction: usage.transaction_uuid
+          ? {
+              walletTxId: Number(usage.transaction_wallet_tx_id),
+              uuid: usage.transaction_uuid,
+              walletId: Number(usage.wallet_id),
+              orderId,
+              orderUuid: usage.order_uuid || null,
+              orderNumber: usage.order_number || null,
+              transactionType: usage.transaction_type,
+              amount: Number(usage.transaction_amount),
+              balanceBefore: Number(usage.balance_before),
+              balanceAfter: Number(usage.balance_after),
+              exchangeRate: Number(usage.exchange_rate),
+              cnyAmount: Number(usage.cny_amount),
+              reference: usage.reference || null,
+              status: usage.transaction_status,
+              metadata: usage.transaction_metadata,
+              createdAt: usage.transaction_created_at
+            }
+          : null,
         wallet: () => getWalletSummary(usage.customer_id)
       };
     }
   },
   NbcOrderUsage: {
+    transaction: (usage) => usage.transaction || null,
     wallet: (usage) => {
       if (typeof usage.wallet === 'function') {
         return usage.wallet();
