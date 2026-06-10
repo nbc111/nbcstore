@@ -1,9 +1,15 @@
-import { INTERNAL_SERVER_ERROR, INVALID_PAYLOAD, OK } from '@evershop/evershop/lib/util/httpStatus';
+import { FORBIDDEN, INTERNAL_SERVER_ERROR, INVALID_PAYLOAD, OK } from '@evershop/evershop/lib/util/httpStatus';
 import { adjustWalletBalance } from '../../services/wallet/adjustWalletBalance.js';
 export default async function adjustNbcWalletBalance(request, response) {
     var _a;
     try {
         const adminUser = (_a = request.getCurrentUser) === null || _a === void 0 ? void 0 : _a.call(request);
+        if (!(adminUser === null || adminUser === void 0 ? void 0 : adminUser.uuid)) {
+            response.status(FORBIDDEN).json({
+                error: { status: FORBIDDEN, message: 'Admin login is required' }
+            });
+            return;
+        }
         const { walletId, customerId, walletAddress, type, amount, reason, reference } = request.body || {};
         if (!walletId && !customerId && !walletAddress) {
             response.status(INVALID_PAYLOAD).json({
