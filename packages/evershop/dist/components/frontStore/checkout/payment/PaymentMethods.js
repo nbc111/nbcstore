@@ -40,7 +40,19 @@ function PaymentMethodSkeleton() {
 export function PaymentMethods({ methods, isLoading }) {
     const { form, registeredPaymentComponents } = useCheckout();
     const { formState, watch, setValue } = form;
+    const visibleMethods = React.useMemo(()=>(methods || []).filter((method)=>method.code.toLowerCase() !== 'cod'), [
+        methods
+    ]);
     const selectedPaymentMethod = watch('paymentMethod');
+    React.useEffect(()=>{
+        if (selectedPaymentMethod && !visibleMethods.some((method)=>method.code === selectedPaymentMethod)) {
+            setValue('paymentMethod', visibleMethods[0]?.code || '');
+        }
+    }, [
+        selectedPaymentMethod,
+        setValue,
+        visibleMethods
+    ]);
     const getPaymentComponent = (methodCode)=>{
         return registeredPaymentComponents[methodCode] || null;
     };
@@ -55,7 +67,7 @@ export function PaymentMethods({ methods, isLoading }) {
         className: "gap-2"
     }, /*#__PURE__*/ React.createElement(ItemTitle, null, _('Pick a payment method')), /*#__PURE__*/ React.createElement(ItemDescription, null, isLoading ? /*#__PURE__*/ React.createElement(PaymentMethodSkeleton, null) : /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("div", {
         className: "payment-methods-list"
-    }, methods?.length === 0 ? /*#__PURE__*/ React.createElement("div", {
+    }, visibleMethods.length === 0 ? /*#__PURE__*/ React.createElement("div", {
         className: "text-muted-foreground text-center py-8"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "mb-2"
@@ -64,7 +76,7 @@ export function PaymentMethods({ methods, isLoading }) {
         onValueChange: (value)=>{
             setValue('paymentMethod', value);
         }
-    }, methods.map((method)=>{
+    }, visibleMethods.map((method)=>{
         const isSelected = selectedPaymentMethod === method.code;
         const component = getPaymentComponent(method.code);
         return /*#__PURE__*/ React.createElement(Item, {

@@ -10,9 +10,23 @@ import { ProductSingleForm } from '@components/frontStore/catalog/ProductSingleF
 import { ProductSingleName } from '@components/frontStore/catalog/ProductSingleName.js';
 import React from 'react';
 
-export default function ProductView({ product }: ProductData) {
+interface ProductViewProps extends ProductData {
+  nbcWalletPublicConfig?: {
+    exchangeRate?: number | null;
+  } | null;
+}
+
+export default function ProductView({
+  product,
+  nbcWalletPublicConfig
+}: ProductViewProps) {
+  const productWithNbcRate = {
+    ...product,
+    nbcExchangeRate: nbcWalletPublicConfig?.exchangeRate
+  };
+
   return (
-    <ProductProvider product={product}>
+    <ProductProvider product={productWithNbcRate}>
       <div className="product__detail">
         <Area id="productPageTop" className="product__page__top" />
         <div className="product__page__middle page-width">
@@ -122,5 +136,8 @@ query Query {
           }
         }
       }
+    }
+    nbcWalletPublicConfig {
+      exchangeRate
     }
 }`;

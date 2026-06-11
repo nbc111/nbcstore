@@ -6,9 +6,13 @@ import { ProductSingleDescription } from '@components/frontStore/catalog/Product
 import { ProductSingleForm } from '@components/frontStore/catalog/ProductSingleForm.js';
 import { ProductSingleName } from '@components/frontStore/catalog/ProductSingleName.js';
 import React from 'react';
-export default function ProductView({ product }) {
+export default function ProductView({ product, nbcWalletPublicConfig }) {
+    const productWithNbcRate = {
+        ...product,
+        nbcExchangeRate: nbcWalletPublicConfig?.exchangeRate
+    };
     return /*#__PURE__*/ React.createElement(ProductProvider, {
-        product: product
+        product: productWithNbcRate
     }, /*#__PURE__*/ React.createElement("div", {
         className: "product__detail"
     }, /*#__PURE__*/ React.createElement(Area, {
@@ -126,5 +130,8 @@ query Query {
           }
         }
       }
+    }
+    nbcWalletPublicConfig {
+      exchangeRate
     }
 }`;
