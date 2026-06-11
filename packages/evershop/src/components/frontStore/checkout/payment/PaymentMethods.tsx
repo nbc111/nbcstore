@@ -62,7 +62,24 @@ export function PaymentMethods({
   const { form, registeredPaymentComponents } = useCheckout();
   const { formState, watch, setValue } = form;
 
+  const visibleMethods = React.useMemo(
+    () =>
+      (methods || []).filter(
+        (method) => method.code.toLowerCase() !== 'cod'
+      ),
+    [methods]
+  );
+
   const selectedPaymentMethod = watch('paymentMethod');
+
+  React.useEffect(() => {
+    if (
+      selectedPaymentMethod &&
+      !visibleMethods.some((method) => method.code === selectedPaymentMethod)
+    ) {
+      setValue('paymentMethod', visibleMethods[0]?.code || '');
+    }
+  }, [selectedPaymentMethod, setValue, visibleMethods]);
 
   const getPaymentComponent = (methodCode: string) => {
     return registeredPaymentComponents[methodCode] || null;
@@ -86,7 +103,7 @@ export function PaymentMethods({
             ) : (
               <>
                 <div className="payment-methods-list">
-                  {methods?.length === 0 ? (
+                  {visibleMethods.length === 0 ? (
                     <div className="text-muted-foreground text-center py-8">
                       <div className="mb-2">
                         {_('No payment methods available')}
@@ -99,7 +116,7 @@ export function PaymentMethods({
                         setValue('paymentMethod', value);
                       }}
                     >
-                      {methods.map((method: PaymentMethod) => {
+                      {visibleMethods.map((method: PaymentMethod) => {
                         const isSelected =
                           selectedPaymentMethod === method.code;
                         const component = getPaymentComponent(method.code);

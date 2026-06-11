@@ -10,9 +10,22 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 export function ProductSingleForm() {
-    const { price, sku, inventory: { isInStock } } = useProduct();
+    const { price, sku, nbcExchangeRate, inventory: { isInStock } } = useProduct();
     const form = useForm();
     const [addingToCart, setAddingToCart] = React.useState(false);
+    const nbcAmountText = React.useMemo(()=>{
+        const rate = typeof nbcExchangeRate === 'number' && nbcExchangeRate > 0 ? nbcExchangeRate : null;
+        const usdValue = price?.regular?.value;
+        if (!rate || typeof usdValue !== 'number' || usdValue <= 0) {
+            return null;
+        }
+        const nbcAmount = usdValue / rate;
+        const formatted = nbcAmount.toFixed(4).replace(/\.?0+$/, '');
+        return `${formatted} NBC`;
+    }, [
+        nbcExchangeRate,
+        price?.regular?.value
+    ]);
     return /*#__PURE__*/ React.createElement(Form, {
         id: "productForm",
         method: "POST",
@@ -24,8 +37,10 @@ export function ProductSingleForm() {
             {
                 component: {
                     default: /*#__PURE__*/ React.createElement("div", {
-                        className: "product__single__price text-2xl"
-                    }, price.regular.text)
+                        className: "product__single__price text-2xl flex items-center gap-3"
+                    }, /*#__PURE__*/ React.createElement("span", null, price.regular.text), nbcAmountText && /*#__PURE__*/ React.createElement("span", {
+                        className: "text-base text-muted-foreground"
+                    }, "(", nbcAmountText, ")"))
                 },
                 sortOrder: 5,
                 id: 'price'
