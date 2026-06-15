@@ -1,6 +1,8 @@
 import { Interface, JsonRpcProvider, id, zeroPadValue } from 'ethers';
 import { assertOnchainConfig, getOnchainConfig } from './getOnchainConfig.js';
 import { getSyncState } from './getSyncState.js';
+import { listAssignedDepositAddresses } from './listAssignedDepositAddresses.js';
+import { normalizeWalletAddress } from './normalizeWalletAddress.js';
 import { recordOnchainDeposit } from './recordOnchainDeposit.js';
 import { setSyncState } from './setSyncState.js';
 import { settleOnchainDeposit } from './settleOnchainDeposit.js';
@@ -10,7 +12,39 @@ const TRANSFER_TOPIC = id('Transfer(address,address,uint256)');
 function topicAddress(address) {
     return zeroPadValue(address, 32);
 }
+async function getDepositLogs(provider, config, fromBlock, toBlock) {
+    if (config.depositMode === 'treasury') {
+        return {
+            logs: await provider.getLogs({
+                address: config.tokenAddress,
+                fromBlock,
+                toBlock,
+                topics: [TRANSFER_TOPIC, null, topicAddress(config.treasuryAddress)]
+            }),
+            assignedAddresses: new Map()
+        };
+    }
+    const assignedAddresses = await listAssignedDepositAddresses();
+    if (assignedAddresses.size === 0) {
+        return {
+            logs: [],
+            assignedAddresses
+        };
+    }
+    const topics = Array.from(assignedAddresses.keys()).map(topicAddress);
+    const logs = await provider.getLogs({
+        address: config.tokenAddress,
+        fromBlock,
+        toBlock,
+        topics: [TRANSFER_TOPIC, null, topics]
+    });
+    return {
+        logs,
+        assignedAddresses
+    };
+}
 export async function processOnchainDeposits() {
+    var _a;
     const config = getOnchainConfig();
     assertOnchainConfig(config);
     const provider = new JsonRpcProvider(config.rpcUrl, config.chainId);
@@ -26,7 +60,7 @@ export async function processOnchainDeposits() {
             settled: 0
         };
     }
-    const stateKey = `onchainDeposit:${config.chainId}:${config.tokenAddress}`;
+    const stateKey = `onchainDeposit:${config.chainId}:${config.tokenAddress}:${config.depositMode}`;
     const state = await getSyncState(stateKey, {});
     const fromBlock = Math.max(Number(state.lastProcessedBlock || config.startBlock - 1) + 1, config.startBlock);
     const toBlock = Math.min(fromBlock + config.blockBatchSize - 1, safeLatestBlock);
@@ -40,12 +74,7 @@ export async function processOnchainDeposits() {
             settled: 0
         };
     }
-    const logs = await provider.getLogs({
-        address: config.tokenAddress,
-        fromBlock,
-        toBlock,
-        topics: [TRANSFER_TOPIC, null, topicAddress(config.treasuryAddress)]
-    });
+    const { logs, assignedAddresses } = await getDepositLogs(provider, config, fromBlock, toBlock);
     let processed = 0;
     let settled = 0;
     for (const log of logs) {
@@ -56,8 +85,15 @@ export async function processOnchainDeposits() {
         if (!parsed) {
             continue;
         }
+        const fromAddress = normalizeWalletAddress(String(parsed.args.from));
+        const toAddress = normalizeWalletAddress(String(parsed.args.to));
+        const assigned = assignedAddresses.get(toAddress);
+        if (config.depositMode === 'hd' && !assigned) {
+            continue;
+        }
         const record = await recordOnchainDeposit({
-            walletAddress: String(parsed.args.from),
+            walletId: (assigned === null || assigned === void 0 ? void 0 : assigned.walletId) || null,
+            walletAddress: config.depositMode === 'hd' ? toAddress : fromAddress,
             chainId: config.chainId,
             tokenAddress: config.tokenAddress,
             txHash: log.transactionHash,
@@ -65,7 +101,11 @@ export async function processOnchainDeposits() {
             blockNumber: Number(log.blockNumber),
             amount: parsed.args.value,
             metadata: {
-                treasury_address: config.treasuryAddress
+                deposit_mode: config.depositMode,
+                source_wallet_address: fromAddress,
+                deposit_address: toAddress,
+                treasury_address: config.treasuryAddress || null,
+                address_index: (_a = assigned === null || assigned === void 0 ? void 0 : assigned.addressIndex) !== null && _a !== void 0 ? _a : null
             }
         });
         processed += record.alreadyRecorded ? 0 : 1;

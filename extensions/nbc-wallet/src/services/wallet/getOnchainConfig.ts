@@ -8,6 +8,10 @@ export type NbcOnchainConfig = {
   chainId: number;
   tokenAddress: string;
   treasuryAddress: string;
+  depositMode: 'treasury' | 'hd';
+  depositXpub: string;
+  depositMnemonic: string;
+  depositDerivationPath: string;
   startBlock: number;
   confirmations: number;
   blockBatchSize: number;
@@ -20,6 +24,9 @@ export function getOnchainConfig(): NbcOnchainConfig {
   const treasuryAddress = String(
     getConfig('nbcWallet.onchain.treasuryAddress', '')
   );
+  const depositMode = String(
+    getConfig('nbcWallet.onchain.deposit.mode', 'treasury')
+  ).toLowerCase();
 
   return {
     enabled: Number(getConfig('nbcWallet.onchain.enabled', 0)) === 1,
@@ -29,6 +36,18 @@ export function getOnchainConfig(): NbcOnchainConfig {
     treasuryAddress: treasuryAddress
       ? normalizeWalletAddress(treasuryAddress)
       : '',
+    depositMode: depositMode === 'hd' ? 'hd' : 'treasury',
+    depositXpub: String(
+      process.env.NBC_WALLET_DEPOSIT_XPUB ||
+        getConfig('nbcWallet.onchain.deposit.xpub', '')
+    ).trim(),
+    depositMnemonic: String(
+      process.env.NBC_WALLET_DEPOSIT_MNEMONIC ||
+        getConfig('nbcWallet.onchain.deposit.mnemonic', '')
+    ).trim(),
+    depositDerivationPath: String(
+      getConfig('nbcWallet.onchain.deposit.derivationPath', "m/44'/60'/0'/0")
+    ).replace(/\/+$/, ''),
     startBlock: Math.max(Number(getConfig('nbcWallet.onchain.startBlock', 0)), 0),
     confirmations: Math.max(
       Number(getConfig('nbcWallet.onchain.confirmations', 12)),
@@ -58,7 +77,19 @@ export function assertOnchainConfig(config = getOnchainConfig()) {
   if (!config.tokenAddress) {
     throw new Error('nbcWallet.onchain.tokenAddress is required');
   }
-  if (!config.treasuryAddress) {
+  if (config.depositMode === 'treasury' && !config.treasuryAddress) {
     throw new Error('nbcWallet.onchain.treasuryAddress is required');
+  }
+  if (
+    config.depositMode === 'hd' &&
+    !config.depositXpub &&
+    !config.depositMnemonic
+  ) {
+    throw new Error(
+      'nbcWallet.onchain.deposit.xpub or NBC_WALLET_DEPOSIT_MNEMONIC is required for HD deposits'
+    );
+  }
+  if (config.depositMode === 'hd' && !config.depositDerivationPath) {
+    throw new Error('nbcWallet.onchain.deposit.derivationPath is required');
   }
 }

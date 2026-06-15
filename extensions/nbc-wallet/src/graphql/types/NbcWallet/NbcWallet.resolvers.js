@@ -67,6 +67,11 @@ export default {
         blockExplorerUrl: chain.blockExplorerUrl || null,
         chainBalanceEnabled: isChainRpcConfigured(chain),
         treasuryAddress: treasuryAddress || null,
+        depositMode: String(
+          getConfig('nbcWallet.onchain.deposit.mode', 'treasury')
+        ).toLowerCase() === 'hd'
+          ? 'hd'
+          : 'treasury',
         onchainEnabled: Number(getConfig('nbcWallet.onchain.enabled', 0)) === 1
       };
     },

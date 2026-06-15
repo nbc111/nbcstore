@@ -3,6 +3,8 @@ type NbcWallet {
   uuid: String!
   customerId: Int!
   walletAddress: String!
+  depositAddress: String
+  addressIndex: Int
   chainId: Int
   balance: Float!
   frozenBalance: Float!
@@ -101,6 +103,7 @@ type NbcWalletPublicConfig {
   blockExplorerUrl: String
   chainBalanceEnabled: Boolean!
   treasuryAddress: String
+  depositMode: String!
   onchainEnabled: Boolean!
 }
 

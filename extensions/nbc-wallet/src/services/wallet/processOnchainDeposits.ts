@@ -4,6 +4,8 @@ import {
   getOnchainConfig
 } from './getOnchainConfig.js';
 import { getSyncState } from './getSyncState.js';
+import { listAssignedDepositAddresses } from './listAssignedDepositAddresses.js';
+import { normalizeWalletAddress } from './normalizeWalletAddress.js';
 import { recordOnchainDeposit } from './recordOnchainDeposit.js';
 import { setSyncState } from './setSyncState.js';
 import { settleOnchainDeposit } from './settleOnchainDeposit.js';
@@ -19,6 +21,46 @@ type DepositSyncState = {
 
 function topicAddress(address: string) {
   return zeroPadValue(address, 32);
+}
+
+async function getDepositLogs(
+  provider: JsonRpcProvider,
+  config: ReturnType<typeof getOnchainConfig>,
+  fromBlock: number,
+  toBlock: number
+) {
+  if (config.depositMode === 'treasury') {
+    return {
+      logs: await provider.getLogs({
+        address: config.tokenAddress,
+        fromBlock,
+        toBlock,
+        topics: [TRANSFER_TOPIC, null, topicAddress(config.treasuryAddress)]
+      }),
+      assignedAddresses: new Map()
+    };
+  }
+
+  const assignedAddresses = await listAssignedDepositAddresses();
+  if (assignedAddresses.size === 0) {
+    return {
+      logs: [],
+      assignedAddresses
+    };
+  }
+
+  const topics = Array.from(assignedAddresses.keys()).map(topicAddress);
+  const logs = await provider.getLogs({
+    address: config.tokenAddress,
+    fromBlock,
+    toBlock,
+    topics: [TRANSFER_TOPIC, null, topics]
+  });
+
+  return {
+    logs,
+    assignedAddresses
+  };
 }
 
 export async function processOnchainDeposits() {
@@ -40,7 +82,7 @@ export async function processOnchainDeposits() {
     };
   }
 
-  const stateKey = `onchainDeposit:${config.chainId}:${config.tokenAddress}`;
+  const stateKey = `onchainDeposit:${config.chainId}:${config.tokenAddress}:${config.depositMode}`;
   const state = await getSyncState<DepositSyncState>(stateKey, {});
   const fromBlock = Math.max(
     Number(state.lastProcessedBlock || config.startBlock - 1) + 1,
@@ -62,12 +104,12 @@ export async function processOnchainDeposits() {
     };
   }
 
-  const logs = await provider.getLogs({
-    address: config.tokenAddress,
+  const { logs, assignedAddresses } = await getDepositLogs(
+    provider,
+    config,
     fromBlock,
-    toBlock,
-    topics: [TRANSFER_TOPIC, null, topicAddress(config.treasuryAddress)]
-  });
+    toBlock
+  );
 
   let processed = 0;
   let settled = 0;
@@ -82,8 +124,17 @@ export async function processOnchainDeposits() {
       continue;
     }
 
+    const fromAddress = normalizeWalletAddress(String(parsed.args.from));
+    const toAddress = normalizeWalletAddress(String(parsed.args.to));
+    const assigned = assignedAddresses.get(toAddress);
+
+    if (config.depositMode === 'hd' && !assigned) {
+      continue;
+    }
+
     const record = await recordOnchainDeposit({
-      walletAddress: String(parsed.args.from),
+      walletId: assigned?.walletId || null,
+      walletAddress: config.depositMode === 'hd' ? toAddress : fromAddress,
       chainId: config.chainId,
       tokenAddress: config.tokenAddress,
       txHash: log.transactionHash,
@@ -91,7 +142,11 @@ export async function processOnchainDeposits() {
       blockNumber: Number(log.blockNumber),
       amount: parsed.args.value,
       metadata: {
-        treasury_address: config.treasuryAddress
+        deposit_mode: config.depositMode,
+        source_wallet_address: fromAddress,
+        deposit_address: toAddress,
+        treasury_address: config.treasuryAddress || null,
+        address_index: assigned?.addressIndex ?? null
       }
     });
     processed += record.alreadyRecorded ? 0 : 1;

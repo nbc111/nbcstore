@@ -5,6 +5,8 @@ export default async function migrate(connection) {
       "uuid" UUID NOT NULL DEFAULT gen_random_uuid(),
       "customer_id" INT NOT NULL,
       "wallet_address" varchar(128) NOT NULL,
+      "deposit_address" varchar(128) DEFAULT NULL,
+      "address_index" INT DEFAULT NULL,
       "chain_id" INT DEFAULT NULL,
       "balance" numeric(36,0) NOT NULL DEFAULT 0,
       "frozen_balance" numeric(36,0) NOT NULL DEFAULT 0,
@@ -15,6 +17,8 @@ export default async function migrate(connection) {
       CONSTRAINT "NBC_WALLET_UUID_UNIQUE" UNIQUE ("uuid"),
       CONSTRAINT "NBC_WALLET_CUSTOMER_ID_UNIQUE" UNIQUE ("customer_id"),
       CONSTRAINT "NBC_WALLET_ADDRESS_UNIQUE" UNIQUE ("wallet_address"),
+      CONSTRAINT "NBC_WALLET_DEPOSIT_ADDRESS_UNIQUE" UNIQUE ("deposit_address"),
+      CONSTRAINT "NBC_WALLET_ADDRESS_INDEX_UNIQUE" UNIQUE ("address_index"),
       CONSTRAINT "FK_NBC_WALLET_CUSTOMER" FOREIGN KEY ("customer_id")
         REFERENCES "customer" ("customer_id") ON DELETE CASCADE,
       CONSTRAINT "CHK_NBC_WALLET_BALANCE" CHECK ("balance" >= 0),
