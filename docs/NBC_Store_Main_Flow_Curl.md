@@ -892,14 +892,15 @@ POST /api/cart/mine/items
 
 ## 20. NBC 链上入金开启与闭环验证
 
-本节验证日期：2026-06-15
+本节验证日期：2026-06-16
 
 测试环境：
 
 ```bash
 BASE="http://156.251.17.96:3000"
-TMP_DIR="/tmp/nbc-onchain-curl-check-1781529160"
+TMP_DIR="/tmp/nbc-native-deposit-curl-1781575055"
 ADMIN_COOKIE="$TMP_DIR/admin.cookie"
+CUSTOMER_COOKIE="$TMP_DIR/customer.cookie"
 ```
 
 ### 20.1 当前线上链上入金配置
@@ -908,15 +909,15 @@ ADMIN_COOKIE="$TMP_DIR/admin.cookie"
 
 ```json
 {
-  "enabled": 0,
+  "enabled": 1,
   "rpcUrl": "https://rpc.nbcex.com",
   "chainId": 1281,
   "assetType": "native",
   "tokenAddress": "",
   "treasuryAddress": "",
-  "startBlock": 0,
-  "confirmations": 12,
-  "depositMode": "treasury"
+  "startBlock": 3347083,
+  "confirmations": 0,
+  "depositMode": "hd"
 }
 ```
 
@@ -944,20 +945,31 @@ curl -sS --max-time 10 \
 说明：
 
 - `0x501` 对应十进制 `1281`，与当前 `chainId` 配置一致。
-- RPC 可用，但链上入金业务配置尚未开启。
+- RPC 可用，链上入金已开启为 native + HD 模式。
 
-### 20.2 后台登录
+### 20.2 用户钱包签名登录
 
 ### Curl
 
 ```bash
 curl -sS \
-  -c "$ADMIN_COOKIE" \
-  -b "$ADMIN_COOKIE" \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@admin.com","password":"Admin123456"}' \
-  "$BASE/admin/user/login" \
-  -o "$TMP_DIR/01-admin-login.json" \
+  -d "{\"walletAddress\":\"$ADDR\"}" \
+  "$BASE/api/nbcWallet/auth/request" \
+  -o "$TMP_DIR/01-auth-request.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+```bash
+curl -sS \
+  -c "$CUSTOMER_COOKIE" \
+  -b "$CUSTOMER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d "{\"walletAddress\":\"$ADDR\",\"nonce\":\"$NONCE\",\"signature\":\"$SIG\"}" \
+  "$BASE/api/nbcWallet/auth/verify" \
+  -o "$TMP_DIR/02-auth-verify.json" \
   -w "HTTP %{http_code}\n"
 ```
 
@@ -968,140 +980,174 @@ HTTP 状态：`200`
 ```json
 {
   "data": {
-    "sid": "R67Q0vVZ5AiIFEJqOPziALxhuFpYhhFl"
-  }
-}
-```
-
-### 20.3 手动触发链上入金扫描
-
-### Curl
-
-```bash
-curl -sS \
-  -b "$ADMIN_COOKIE" \
-  -X POST \
-  "$BASE/api/admin/nbcWallet/onchain/process" \
-  -o "$TMP_DIR/02-onchain-process.json" \
-  -w "HTTP %{http_code}\n"
-```
-
-HTTP 状态：`500`
-
-### 真实返回
-
-```json
-{
-  "error": {
-    "status": 500,
-    "message": "NBC on-chain listener is disabled"
-  }
-}
-```
-
-### 20.4 当前结论
-
-NBC 已确认为 NBC Chain 原生币，不是 ERC20 token。当前代码已支持 native 入金扫描：读取区块交易并匹配 `to` 地址。本文档中的本次实测没有完成“链上真实转账 -> 扫链 -> 商城余额增加 -> 钱包流水生成”的完整闭环，原因是测试环境尚未开启链上入金配置，且尚未执行一笔真实测试转账。
-
-```json
-{
-  "nbcWallet": {
-    "onchain": {
-      "enabled": 1,
-      "assetType": "native",
-      "tokenAddress": "",
-      "treasuryAddress": "需要提供测试网收款地址",
-      "startBlock": "建议设置为测试转账前区块"
+    "sid": "已返回",
+    "customer": {
+      "customerId": 5,
+      "email": "wallet_0xcd57255bd0ec4c0ebde9441d411f9d45561bd3fd@nbc.local",
+      "fullName": "0xcd57...d3fd"
+    },
+    "wallet": {
+      "address": "0xcd57255bd0ec4c0ebde9441d411f9d45561bd3fd"
     }
   }
 }
 ```
 
-如果使用 HD/BIP44 子地址入金，则建议配置 `deposit.mode = hd`，并配置 `NBC_WALLET_DEPOSIT_XPUB`。服务会按 `m/44'/60'/0'/0/{index}` 分配用户充值地址，扫链时匹配已分配的 `deposit_address`。
+### 20.3 分配 BIP44 HD 充值地址
 
-### 20.5 配置完成后的闭环验证脚本
-
-配置 `enabled=1`、`assetType=native`、`treasuryAddress` 或 HD xpub 并重启服务后，按以下步骤验证：
+### Curl
 
 ```bash
-BASE="http://156.251.17.96:3000"
-TMP_DIR="/tmp/nbc-onchain-curl-test-$(date +%s)"
-ADMIN_COOKIE="$TMP_DIR/admin.cookie"
-CUSTOMER_COOKIE="$TMP_DIR/customer.cookie"
-mkdir -p "$TMP_DIR"
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  -X POST \
+  "$BASE/api/nbcWallet/deposit-address" \
+  -o "$TMP_DIR/03-deposit-address.json" \
+  -w "HTTP %{http_code}\n"
+```
 
-# 1. 后台登录
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "data": {
+    "mode": "hd",
+    "walletId": 5,
+    "customerId": 5,
+    "depositAddress": "0xf241e143f1dfda0f81e9ac48e271765834fe36c7",
+    "addressIndex": 0,
+    "chainId": 1281,
+    "tokenAddress": ""
+  }
+}
+```
+
+### 20.4 查询入金前钱包余额
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/balance" \
+  -o "$TMP_DIR/04-balance-before.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "walletId": 5,
+  "walletAddress": "0xcd57255bd0ec4c0ebde9441d411f9d45561bd3fd",
+  "depositAddress": "0xf241e143f1dfda0f81e9ac48e271765834fe36c7",
+  "addressIndex": 0,
+  "balance": 0,
+  "availableBalance": 0
+}
+```
+
+### 20.5 后台登录并手动触发 native 扫链
+
+### Curl
+
+```bash
 curl -sS \
   -c "$ADMIN_COOKIE" \
   -b "$ADMIN_COOKIE" \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@admin.com","password":"Admin123456"}' \
   "$BASE/admin/user/login" \
-  -o "$TMP_DIR/01-admin-login.json" \
+  -o "$TMP_DIR/05-admin-login.json" \
   -w "HTTP %{http_code}\n"
+```
 
-# 2. 用户钱包签名登录
-# ADDR/PRIV 需替换为测试钱包地址和私钥，私钥不要写入文档或提交。
-curl -sS \
-  -H "Content-Type: application/json" \
-  -d "{\"walletAddress\":\"$ADDR\"}" \
-  "$BASE/api/nbcWallet/auth/request" \
-  -o "$TMP_DIR/02-auth-request.json" \
-  -w "HTTP %{http_code}\n"
+HTTP 状态：`200`
 
-MESSAGE="$(jq -r '.data.message' "$TMP_DIR/02-auth-request.json")"
-NONCE="$(jq -r '.data.nonce' "$TMP_DIR/02-auth-request.json")"
-SIG="$(MESSAGE="$MESSAGE" PRIV="$PRIV" node --input-type=module - <<'NODE'
-import { Wallet } from 'ethers';
-const wallet = new Wallet(process.env.PRIV);
-console.log(await wallet.signMessage(process.env.MESSAGE));
-NODE
-)"
-
-curl -sS \
-  -c "$CUSTOMER_COOKIE" \
-  -b "$CUSTOMER_COOKIE" \
-  -H "Content-Type: application/json" \
-  -d "{\"walletAddress\":\"$ADDR\",\"nonce\":\"$NONCE\",\"signature\":\"$SIG\"}" \
-  "$BASE/api/nbcWallet/auth/verify" \
-  -o "$TMP_DIR/03-auth-verify.json" \
-  -w "HTTP %{http_code}\n"
-
-# 3. 查询入金前余额
-curl -sS \
-  -b "$CUSTOMER_COOKIE" \
-  "$BASE/api/nbcWallet/balance" \
-  -o "$TMP_DIR/04-balance-before.json" \
-  -w "HTTP %{http_code}\n"
-
-# 4. 从测试钱包向 treasuryAddress 转入 NBC token
-# 这里需要使用测试网钱包或区块浏览器完成真实 ERC20 transfer，并记录 TX_HASH。
-
-# 5. 手动触发扫链
+```bash
 curl -sS \
   -b "$ADMIN_COOKIE" \
   -X POST \
   "$BASE/api/admin/nbcWallet/onchain/process" \
-  -o "$TMP_DIR/05-onchain-process.json" \
+  -o "$TMP_DIR/06-onchain-process.json" \
   -w "HTTP %{http_code}\n"
+```
 
-# 6. 查询入金后余额
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "data": {
+    "enabled": true,
+    "fromBlock": 3347083,
+    "toBlock": 3347098,
+    "latestBlock": 3347098,
+    "processed": 0,
+    "settled": 0
+  }
+}
+```
+
+### 20.6 查询链上入金流水
+
+### Curl
+
+```bash
 curl -sS \
   -b "$CUSTOMER_COOKIE" \
-  "$BASE/api/nbcWallet/balance" \
-  -o "$TMP_DIR/06-balance-after.json" \
-  -w "HTTP %{http_code}\n"
-
-# 7. 查询链上入金流水
-curl -sS \
-  -b "$CUSTOMER_COOKIE" \
-  "$BASE/api/nbcWallet/transactions?transactionType=onchain_deposit&limit=10" \
+  "$BASE/api/nbcWallet/transactions?transactionType=onchain_deposit&limit=5" \
   -o "$TMP_DIR/07-onchain-transactions.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "data": {
+    "items": [],
+    "currentPage": 1,
+    "pageSize": 5,
+    "total": 0
+  }
+}
+```
+
+### 20.7 当前结论与最后一步
+
+已完成：
+
+- NBC Chain RPC 连通性验证。
+- 原生币 native 入金代码部署。
+- `enabled=1`、`assetType=native`、`deposit.mode=hd` 已在测试环境开启。
+- BIP44 HD 充值地址已通过真实 curl 分配成功，地址为 `0xf241e143f1dfda0f81e9ac48e271765834fe36c7`。
+- 手动扫链接口已通过真实 curl 返回 `200`，不再返回 disabled 或 tokenAddress 缺失错误。
+
+尚未完成真实余额增加闭环：
+
+- 当前还没有向 `0xf241e143f1dfda0f81e9ac48e271765834fe36c7` 转入原生 NBC，因此 `processed=0`、`settled=0`、链上入金流水为空。
+
+转入一笔测试 NBC 后，执行：
+
+```bash
+curl -sS \
+  -b "$ADMIN_COOKIE" \
+  -X POST \
+  "$BASE/api/admin/nbcWallet/onchain/process" \
+  -o "$TMP_DIR/08-onchain-process-after-transfer.json" \
   -w "HTTP %{http_code}\n"
 ```
 
 预期闭环结果：
 
-- `05-onchain-process.json` 返回 `processed >= 1` 且 `settled >= 1`。
-- `06-balance-after.json` 中 `balance` 大于 `04-balance-before.json`。
-- `07-onchain-transactions.json` 出现 `transactionType = onchain_deposit`，`reference` 为链上交易哈希。
+- 扫链返回 `processed >= 1` 且 `settled >= 1`。
+- `GET /api/nbcWallet/balance` 中 `balance` 增加。
+- `GET /api/nbcWallet/transactions?transactionType=onchain_deposit` 出现 `transactionType = onchain_deposit`，`reference` 为链上交易哈希。
