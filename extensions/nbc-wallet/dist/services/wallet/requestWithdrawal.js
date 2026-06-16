@@ -54,7 +54,7 @@ export async function requestWithdrawal(input) {
             throw new Error('NBC balance is insufficient for withdrawal');
         }
         const chain = getChainRpcConfig();
-        if (!chain.chainId || !chain.tokenAddress) {
+        if (!chain.chainId || (chain.assetType === 'erc20' && !chain.tokenAddress)) {
             throw new Error('On-chain withdrawal configuration is incomplete');
         }
         const nextFrozenBalance = Number(lockedWallet.frozen_balance) + amount;
@@ -67,7 +67,7 @@ export async function requestWithdrawal(input) {
             customer_id: lockedWallet.customer_id,
             wallet_address: lockedWallet.wallet_address,
             chain_id: chain.chainId,
-            token_address: chain.tokenAddress,
+            token_address: chain.assetType === 'native' ? 'native:NBC' : chain.tokenAddress,
             amount,
             status: 'requested',
             metadata: {
