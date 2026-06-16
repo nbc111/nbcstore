@@ -84,6 +84,7 @@
       "chainId": 1281,
       "chainName": "NBC Chain",
       "nativeSymbol": "NBC",
+      "assetType": "native",
       "tokenAddress": "",
       "tokenDecimals": 18,
       "blockExplorerUrl": "",

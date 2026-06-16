@@ -911,6 +911,7 @@ ADMIN_COOKIE="$TMP_DIR/admin.cookie"
   "enabled": 0,
   "rpcUrl": "https://rpc.nbcex.com",
   "chainId": 1281,
+  "assetType": "native",
   "tokenAddress": "",
   "treasuryAddress": "",
   "startBlock": 0,
@@ -1000,14 +1001,15 @@ HTTP 状态：`500`
 
 ### 20.4 当前结论
 
-本次没有完成“链上真实转账 -> 扫链 -> 商城余额增加 -> 钱包流水生成”的完整闭环，原因是测试环境缺少并未开启以下配置：
+NBC 已确认为 NBC Chain 原生币，不是 ERC20 token。当前代码已支持 native 入金扫描：读取区块交易并匹配 `to` 地址。本文档中的本次实测没有完成“链上真实转账 -> 扫链 -> 商城余额增加 -> 钱包流水生成”的完整闭环，原因是测试环境尚未开启链上入金配置，且尚未执行一笔真实测试转账。
 
 ```json
 {
   "nbcWallet": {
     "onchain": {
       "enabled": 1,
-      "tokenAddress": "需要提供 NBC ERC20 合约地址",
+      "assetType": "native",
+      "tokenAddress": "",
       "treasuryAddress": "需要提供测试网收款地址",
       "startBlock": "建议设置为测试转账前区块"
     }
@@ -1015,11 +1017,11 @@ HTTP 状态：`500`
 }
 ```
 
-当前代码扫描的是 ERC20 `Transfer(address indexed from, address indexed to, uint256 value)` 日志，因此 `tokenAddress` 必须是 NBC token 合约地址。如果 NBC 是链原生币而不是 ERC20 token，则需要新增 native transfer 入金扫描逻辑，不能仅靠当前 `tokenAddress` 配置完成。
+如果使用 HD/BIP44 子地址入金，则建议配置 `deposit.mode = hd`，并配置 `NBC_WALLET_DEPOSIT_XPUB`。服务会按 `m/44'/60'/0'/0/{index}` 分配用户充值地址，扫链时匹配已分配的 `deposit_address`。
 
 ### 20.5 配置完成后的闭环验证脚本
 
-配置 `enabled=1`、`tokenAddress`、`treasuryAddress` 并重启服务后，按以下步骤验证：
+配置 `enabled=1`、`assetType=native`、`treasuryAddress` 或 HD xpub 并重启服务后，按以下步骤验证：
 
 ```bash
 BASE="http://156.251.17.96:3000"

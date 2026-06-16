@@ -55,6 +55,7 @@ export default {
                 rpcUrl: chain.rpcUrl || null,
                 chainName: chain.chainName,
                 nativeSymbol: chain.nativeSymbol,
+                assetType: chain.assetType,
                 tokenAddress: chain.tokenAddress || null,
                 tokenDecimals: chain.tokenDecimals,
                 blockExplorerUrl: chain.blockExplorerUrl || null,

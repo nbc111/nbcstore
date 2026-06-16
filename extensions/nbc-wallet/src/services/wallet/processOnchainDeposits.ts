@@ -19,48 +19,166 @@ type DepositSyncState = {
   lastProcessedBlock?: number;
 };
 
+type DepositEvent = {
+  walletId?: number | null;
+  walletAddress: string;
+  fromAddress: string;
+  toAddress: string;
+  txHash: string;
+  logIndex: number;
+  blockNumber: number;
+  amount: bigint;
+  addressIndex?: number | null;
+};
+
 function topicAddress(address: string) {
   return zeroPadValue(address, 32);
 }
 
-async function getDepositLogs(
+function hexToNumber(value: string | number | null | undefined, fallback = 0) {
+  if (typeof value === 'number') return value;
+  if (!value) return fallback;
+  return Number(BigInt(value));
+}
+
+async function getErc20DepositEvents(
   provider: JsonRpcProvider,
   config: ReturnType<typeof getOnchainConfig>,
   fromBlock: number,
   toBlock: number
 ) {
+  let assignedAddresses = new Map();
+  let logs;
+
   if (config.depositMode === 'treasury') {
-    return {
-      logs: await provider.getLogs({
-        address: config.tokenAddress,
-        fromBlock,
-        toBlock,
-        topics: [TRANSFER_TOPIC, null, topicAddress(config.treasuryAddress)]
-      }),
-      assignedAddresses: new Map()
-    };
+    logs = await provider.getLogs({
+      address: config.tokenAddress,
+      fromBlock,
+      toBlock,
+      topics: [TRANSFER_TOPIC, null, topicAddress(config.treasuryAddress)]
+    });
+  } else {
+    assignedAddresses = await listAssignedDepositAddresses();
+    if (assignedAddresses.size === 0) {
+      return [];
+    }
+
+    const topics = Array.from(assignedAddresses.keys()).map(topicAddress);
+    logs = await provider.getLogs({
+      address: config.tokenAddress,
+      fromBlock,
+      toBlock,
+      topics: [TRANSFER_TOPIC, null, topics]
+    });
   }
 
-  const assignedAddresses = await listAssignedDepositAddresses();
-  if (assignedAddresses.size === 0) {
-    return {
-      logs: [],
-      assignedAddresses
-    };
+  const events: DepositEvent[] = [];
+
+  for (const log of logs) {
+    const parsed = transferInterface.parseLog({
+      topics: [...log.topics],
+      data: log.data
+    });
+
+    if (!parsed) {
+      continue;
+    }
+
+    const fromAddress = normalizeWalletAddress(String(parsed.args.from));
+    const toAddress = normalizeWalletAddress(String(parsed.args.to));
+    const assigned = assignedAddresses.get(toAddress);
+
+    if (config.depositMode === 'hd' && !assigned) {
+      continue;
+    }
+
+    events.push({
+      walletId: assigned?.walletId || null,
+      walletAddress: config.depositMode === 'hd' ? toAddress : fromAddress,
+      fromAddress,
+      toAddress,
+      txHash: log.transactionHash,
+      logIndex: Number(log.index),
+      blockNumber: Number(log.blockNumber),
+      amount: parsed.args.value,
+      addressIndex: assigned?.addressIndex ?? null
+    });
   }
 
-  const topics = Array.from(assignedAddresses.keys()).map(topicAddress);
-  const logs = await provider.getLogs({
-    address: config.tokenAddress,
-    fromBlock,
-    toBlock,
-    topics: [TRANSFER_TOPIC, null, topics]
-  });
+  return events;
+}
 
-  return {
-    logs,
-    assignedAddresses
-  };
+async function getNativeDepositEvents(
+  provider: JsonRpcProvider,
+  config: ReturnType<typeof getOnchainConfig>,
+  fromBlock: number,
+  toBlock: number
+) {
+  const assignedAddresses =
+    config.depositMode === 'hd'
+      ? await listAssignedDepositAddresses()
+      : new Map();
+
+  if (config.depositMode === 'hd' && assignedAddresses.size === 0) {
+    return [];
+  }
+
+  const events: DepositEvent[] = [];
+
+  for (let blockNumber = fromBlock; blockNumber <= toBlock; blockNumber += 1) {
+    const block = await provider.send('eth_getBlockByNumber', [
+      `0x${blockNumber.toString(16)}`,
+      true
+    ]);
+
+    for (const tx of block?.transactions || []) {
+      if (!tx?.to || !tx?.from || !tx?.hash) {
+        continue;
+      }
+
+      const amount = BigInt(tx.value || 0);
+      if (amount <= BigInt(0)) {
+        continue;
+      }
+
+      const fromAddress = normalizeWalletAddress(String(tx.from));
+      const toAddress = normalizeWalletAddress(String(tx.to));
+      const assigned = assignedAddresses.get(toAddress);
+
+      if (config.depositMode === 'treasury') {
+        if (toAddress !== config.treasuryAddress) {
+          continue;
+        }
+      } else if (!assigned) {
+        continue;
+      }
+
+      events.push({
+        walletId: assigned?.walletId || null,
+        walletAddress: config.depositMode === 'hd' ? toAddress : fromAddress,
+        fromAddress,
+        toAddress,
+        txHash: String(tx.hash),
+        logIndex: hexToNumber(tx.transactionIndex, events.length),
+        blockNumber,
+        amount,
+        addressIndex: assigned?.addressIndex ?? null
+      });
+    }
+  }
+
+  return events;
+}
+
+async function getDepositEvents(
+  provider: JsonRpcProvider,
+  config: ReturnType<typeof getOnchainConfig>,
+  fromBlock: number,
+  toBlock: number
+) {
+  return config.assetType === 'native'
+    ? getNativeDepositEvents(provider, config, fromBlock, toBlock)
+    : getErc20DepositEvents(provider, config, fromBlock, toBlock);
 }
 
 export async function processOnchainDeposits() {
@@ -82,7 +200,7 @@ export async function processOnchainDeposits() {
     };
   }
 
-  const stateKey = `onchainDeposit:${config.chainId}:${config.tokenAddress}:${config.depositMode}`;
+  const stateKey = `onchainDeposit:${config.chainId}:${config.assetKey}:${config.depositMode}`;
   const state = await getSyncState<DepositSyncState>(stateKey, {});
   const fromBlock = Math.max(
     Number(state.lastProcessedBlock || config.startBlock - 1) + 1,
@@ -104,7 +222,7 @@ export async function processOnchainDeposits() {
     };
   }
 
-  const { logs, assignedAddresses } = await getDepositLogs(
+  const events = await getDepositEvents(
     provider,
     config,
     fromBlock,
@@ -114,39 +232,23 @@ export async function processOnchainDeposits() {
   let processed = 0;
   let settled = 0;
 
-  for (const log of logs) {
-    const parsed = transferInterface.parseLog({
-      topics: [...log.topics],
-      data: log.data
-    });
-
-    if (!parsed) {
-      continue;
-    }
-
-    const fromAddress = normalizeWalletAddress(String(parsed.args.from));
-    const toAddress = normalizeWalletAddress(String(parsed.args.to));
-    const assigned = assignedAddresses.get(toAddress);
-
-    if (config.depositMode === 'hd' && !assigned) {
-      continue;
-    }
-
+  for (const event of events) {
     const record = await recordOnchainDeposit({
-      walletId: assigned?.walletId || null,
-      walletAddress: config.depositMode === 'hd' ? toAddress : fromAddress,
+      walletId: event.walletId || null,
+      walletAddress: event.walletAddress,
       chainId: config.chainId,
-      tokenAddress: config.tokenAddress,
-      txHash: log.transactionHash,
-      logIndex: Number(log.index),
-      blockNumber: Number(log.blockNumber),
-      amount: parsed.args.value,
+      tokenAddress: config.assetKey,
+      txHash: event.txHash,
+      logIndex: event.logIndex,
+      blockNumber: event.blockNumber,
+      amount: event.amount,
       metadata: {
         deposit_mode: config.depositMode,
-        source_wallet_address: fromAddress,
-        deposit_address: toAddress,
+        asset_type: config.assetType,
+        source_wallet_address: event.fromAddress,
+        deposit_address: event.toAddress,
         treasury_address: config.treasuryAddress || null,
-        address_index: assigned?.addressIndex ?? null
+        address_index: event.addressIndex ?? null
       }
     });
     processed += record.alreadyRecorded ? 0 : 1;

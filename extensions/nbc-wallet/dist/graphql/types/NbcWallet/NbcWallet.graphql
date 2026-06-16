@@ -98,6 +98,7 @@ type NbcWalletPublicConfig {
   rpcUrl: String
   chainName: String
   nativeSymbol: String
+  assetType: String!
   tokenAddress: String
   tokenDecimals: Int
   blockExplorerUrl: String

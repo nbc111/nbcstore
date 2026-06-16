@@ -27,9 +27,15 @@ function normalizeAmount(amount: number | string | bigint) {
   return normalized.toString();
 }
 
+function normalizeAssetAddress(tokenAddress: string) {
+  return tokenAddress.startsWith('native:')
+    ? tokenAddress
+    : normalizeWalletAddress(tokenAddress);
+}
+
 export async function recordOnchainDeposit(input: RecordOnchainDepositInput) {
   const walletAddress = normalizeWalletAddress(input.walletAddress);
-  const tokenAddress = normalizeWalletAddress(input.tokenAddress);
+  const tokenAddress = normalizeAssetAddress(input.tokenAddress);
   const amount = normalizeAmount(input.amount);
   const connection = await getConnection();
 
