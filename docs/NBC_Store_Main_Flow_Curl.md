@@ -1121,21 +1121,21 @@ HTTP 状态：`200`
 }
 ```
 
-### 20.7 当前结论与最后一步
+### 20.7 充值后再次触发扫链
 
-已完成：
+测试转账信息：
 
-- NBC Chain RPC 连通性验证。
-- 原生币 native 入金代码部署。
-- `enabled=1`、`assetType=native`、`deposit.mode=hd` 已在测试环境开启。
-- BIP44 HD 充值地址已通过真实 curl 分配成功，地址为 `0xf241e143f1dfda0f81e9ac48e271765834fe36c7`。
-- 手动扫链接口已通过真实 curl 返回 `200`，不再返回 disabled 或 tokenAddress 缺失错误。
+```json
+{
+  "blockNumber": 3347798,
+  "txHash": "0x8a1652290be20f418209e8c434402962fd81e51509701e1f0efb46445d75a805",
+  "from": "0x931f3600a299fd9b24cefb3bff79388d19804bea",
+  "to": "0xf241e143f1dfda0f81e9ac48e271765834fe36c7",
+  "value": "100.0 NBC"
+}
+```
 
-尚未完成真实余额增加闭环：
-
-- 当前还没有向 `0xf241e143f1dfda0f81e9ac48e271765834fe36c7` 转入原生 NBC，因此 `processed=0`、`settled=0`、链上入金流水为空。
-
-转入一笔测试 NBC 后，执行：
+### Curl
 
 ```bash
 curl -sS \
@@ -1146,8 +1146,101 @@ curl -sS \
   -w "HTTP %{http_code}\n"
 ```
 
-预期闭环结果：
+HTTP 状态：`200`
 
-- 扫链返回 `processed >= 1` 且 `settled >= 1`。
-- `GET /api/nbcWallet/balance` 中 `balance` 增加。
-- `GET /api/nbcWallet/transactions?transactionType=onchain_deposit` 出现 `transactionType = onchain_deposit`，`reference` 为链上交易哈希。
+### 真实返回
+
+```json
+{
+  "data": {
+    "enabled": true,
+    "fromBlock": 3347149,
+    "toBlock": 3347871,
+    "latestBlock": 3347871,
+    "processed": 1,
+    "settled": 1
+  }
+}
+```
+
+### 20.8 查询入金后余额
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/balance" \
+  -o "$TMP_DIR/09-balance-after-transfer.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "walletId": 5,
+  "walletAddress": "0xcd57255bd0ec4c0ebde9441d411f9d45561bd3fd",
+  "depositAddress": "0xf241e143f1dfda0f81e9ac48e271765834fe36c7",
+  "addressIndex": 0,
+  "balance": 100,
+  "availableBalance": 100
+}
+```
+
+### 20.9 查询入金流水
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/transactions?transactionType=onchain_deposit&limit=10" \
+  -o "$TMP_DIR/10-onchain-transactions-after-transfer.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "walletTxId": 6,
+  "uuid": "2059916a-c3a5-4410-907d-44e9544ba674",
+  "walletId": 5,
+  "orderId": null,
+  "orderUuid": null,
+  "orderNumber": null,
+  "transactionType": "onchain_deposit",
+  "amount": 100,
+  "balanceBefore": 0,
+  "balanceAfter": 100,
+  "exchangeRate": null,
+  "cnyAmount": null,
+  "reference": "0x8a1652290be20f418209e8c434402962fd81e51509701e1f0efb46445d75a805",
+  "status": "completed",
+  "metadata": {
+    "source": "onchain_deposit",
+    "chain_id": 1281,
+    "log_index": 0,
+    "block_number": 3347798,
+    "token_address": "native:NBC"
+  },
+  "createdAt": "2026-06-16T03:28:01.535Z"
+}
+```
+
+### 20.10 当前结论
+
+已完成完整闭环：
+
+- NBC Chain RPC 连通性验证。
+- 原生币 native 入金代码部署。
+- `enabled=1`、`assetType=native`、`deposit.mode=hd` 已在测试环境开启。
+- BIP44 HD 充值地址已通过真实 curl 分配成功，地址为 `0xf241e143f1dfda0f81e9ac48e271765834fe36c7`。
+- 向充值地址转入 `100 NBC` 后，手动扫链返回 `processed=1`、`settled=1`。
+- 商城钱包余额从 `0` 增加到 `100`。
+- `onchain_deposit` 流水生成，`reference` 为链上交易哈希。
