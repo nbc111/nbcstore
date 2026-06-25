@@ -18,6 +18,8 @@ export type NbcOnchainConfig = {
   startBlock: number;
   confirmations: number;
   blockBatchSize: number;
+  maxBatchesPerRun: number;
+  nativeScanConcurrency: number;
   pollSchedule: string;
   reconcileSchedule: string;
 };
@@ -88,6 +90,20 @@ export function getOnchainConfig(): NbcOnchainConfig {
       Number(
         process.env.NBC_WALLET_ONCHAIN_BLOCK_BATCH_SIZE ||
           getConfig('nbcWallet.onchain.blockBatchSize', 500)
+      ),
+      1
+    ),
+    maxBatchesPerRun: Math.max(
+      Number(
+        process.env.NBC_WALLET_ONCHAIN_MAX_BATCHES_PER_RUN ||
+          getConfig('nbcWallet.onchain.maxBatchesPerRun', 20)
+      ),
+      1
+    ),
+    nativeScanConcurrency: Math.max(
+      Number(
+        process.env.NBC_WALLET_ONCHAIN_NATIVE_SCAN_CONCURRENCY ||
+          getConfig('nbcWallet.onchain.nativeScanConcurrency', 25)
       ),
       1
     ),

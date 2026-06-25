@@ -63,7 +63,8 @@ export default {
                 chainBalanceEnabled: isChainRpcConfigured(chain),
                 treasuryAddress: onchain.treasuryAddress || null,
                 depositMode: onchain.depositMode,
-                onchainEnabled: onchain.enabled
+                onchainEnabled: onchain.enabled,
+                onchainEnabledRaw: onchain.enabled ? 1 : 0
             };
         },
         nbcWallet: async (_, args, { customer }) => {
