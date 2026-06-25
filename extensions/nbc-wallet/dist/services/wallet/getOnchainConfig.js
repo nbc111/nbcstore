@@ -21,6 +21,8 @@ export function getOnchainConfig() {
         startBlock: Math.max(Number(process.env.NBC_WALLET_ONCHAIN_START_BLOCK || getConfig('nbcWallet.onchain.startBlock', 0)), 0),
         confirmations: Math.max(Number(process.env.NBC_WALLET_ONCHAIN_CONFIRMATIONS || getConfig('nbcWallet.onchain.confirmations', 12)), 0),
         blockBatchSize: Math.max(Number(process.env.NBC_WALLET_ONCHAIN_BLOCK_BATCH_SIZE || getConfig('nbcWallet.onchain.blockBatchSize', 500)), 1),
+        maxBatchesPerRun: Math.max(Number(process.env.NBC_WALLET_ONCHAIN_MAX_BATCHES_PER_RUN || getConfig('nbcWallet.onchain.maxBatchesPerRun', 20)), 1),
+        nativeScanConcurrency: Math.max(Number(process.env.NBC_WALLET_ONCHAIN_NATIVE_SCAN_CONCURRENCY || getConfig('nbcWallet.onchain.nativeScanConcurrency', 25)), 1),
         pollSchedule: String(process.env.NBC_WALLET_ONCHAIN_POLL_SCHEDULE || getConfig('nbcWallet.onchain.pollSchedule', '*/5 * * * *')),
         reconcileSchedule: String(getConfig('nbcWallet.reconcile.schedule', '*/10 * * * *'))
     };

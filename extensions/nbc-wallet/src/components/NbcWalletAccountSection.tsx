@@ -13,8 +13,10 @@ import { useNbcWallet, NbcWalletApis, NbcWalletPublicConfig } from '../hooks/use
 import { formatFiatAmount, formatNbcExchangeRate } from '../lib/formatFiat.js';
 import { formatNbcAmount, shortenAddress } from '../lib/formatWallet.js';
 import {
+  fetchWalletDepositAddress,
   fetchWalletTransactions,
   fetchWalletWithdrawals,
+  WalletDepositAddress,
   requestWalletWithdrawal
 } from '../lib/nbcWalletApi.js';
 
@@ -39,6 +41,7 @@ interface WalletWithdrawalRow {
 
 interface NbcWalletAccountSectionProps {
   apis: NbcWalletApis & {
+    depositAddressApi?: string;
     transactionsApi: string;
     withdrawalsApi: string;
     withdrawApi: string;
@@ -104,6 +107,9 @@ export function NbcWalletAccountSection({
 
   const [transactions, setTransactions] = useState<WalletTransactionRow[]>([]);
   const [loadingTx, setLoadingTx] = useState(false);
+  const [depositAddress, setDepositAddress] =
+    useState<WalletDepositAddress | null>(null);
+  const [loadingDepositAddress, setLoadingDepositAddress] = useState(false);
   const [withdrawals, setWithdrawals] = useState<WalletWithdrawalRow[]>([]);
   const [loadingWithdrawals, setLoadingWithdrawals] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState('');
@@ -140,6 +146,43 @@ export function NbcWalletAccountSection({
       setLoadingWithdrawals(false);
     }
   }, [apis.withdrawalsApi, isConnected]);
+
+  const loadDepositAddress = useCallback(async () => {
+    if (!isConnected || !publicConfig.onchainEnabled) {
+      setDepositAddress(null);
+      return;
+    }
+
+    if (!apis.depositAddressApi) {
+      setDepositAddress(
+        publicConfig.treasuryAddress
+          ? {
+              mode: 'treasury',
+              depositAddress: publicConfig.treasuryAddress,
+              addressIndex: null,
+              chainId: publicConfig.chainId || 0,
+              tokenAddress: null
+            }
+          : null
+      );
+      return;
+    }
+
+    setLoadingDepositAddress(true);
+    try {
+      setDepositAddress(await fetchWalletDepositAddress(apis.depositAddressApi));
+    } catch {
+      setDepositAddress(null);
+    } finally {
+      setLoadingDepositAddress(false);
+    }
+  }, [
+    apis.depositAddressApi,
+    isConnected,
+    publicConfig.chainId,
+    publicConfig.onchainEnabled,
+    publicConfig.treasuryAddress
+  ]);
 
   const submitWithdrawal = useCallback(async () => {
     const amount = Number(String(withdrawAmount || '').trim());
@@ -182,10 +225,18 @@ export function NbcWalletAccountSection({
 
   useEffect(() => {
     if (isConnected) {
+      loadDepositAddress();
       loadTransactions();
       loadWithdrawals();
     }
-  }, [isConnected, loadTransactions, loadWithdrawals, wallet?.balance, wallet?.frozenBalance]);
+  }, [
+    isConnected,
+    loadDepositAddress,
+    loadTransactions,
+    loadWithdrawals,
+    wallet?.balance,
+    wallet?.frozenBalance
+  ]);
 
   return (
     <Card className="mb-7 w-full">
@@ -250,13 +301,20 @@ export function NbcWalletAccountSection({
               </div>
             </div>
 
-            {publicConfig.onchainEnabled && publicConfig.treasuryAddress && (
+            {publicConfig.onchainEnabled && (
               <div className="rounded-md bg-muted/50 p-3 text-xs">
                 <p className="font-medium mb-1">{_('Top up (on-chain deposit)')}</p>
                 <p className="text-muted-foreground mb-1">
-                  {_('Send NBC tokens to the treasury address below. Balance updates after confirmations.')}
+                  {_('Send NBC tokens to the deposit address below. Balance updates after confirmations.')}
                 </p>
-                <p className="font-mono break-all">{publicConfig.treasuryAddress}</p>
+                <p className="font-mono break-all">
+                  {loadingDepositAddress
+                    ? '...'
+                    : depositAddress?.depositAddress ||
+                      wallet?.depositAddress ||
+                      publicConfig.treasuryAddress ||
+                      _('Deposit address unavailable')}
+                </p>
               </div>
             )}
 

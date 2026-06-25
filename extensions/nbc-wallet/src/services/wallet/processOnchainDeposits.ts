@@ -41,6 +41,26 @@ function hexToNumber(value: string | number | null | undefined, fallback = 0) {
   return Number(BigInt(value));
 }
 
+function range(fromBlock: number, toBlock: number) {
+  return Array.from(
+    { length: toBlock - fromBlock + 1 },
+    (_, index) => fromBlock + index
+  );
+}
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  concurrency: number,
+  mapper: (item: T) => Promise<R>
+) {
+  const results: R[] = [];
+  for (let index = 0; index < items.length; index += concurrency) {
+    const chunk = items.slice(index, index + concurrency);
+    results.push(...(await Promise.all(chunk.map(mapper))));
+  }
+  return results;
+}
+
 async function getErc20DepositEvents(
   provider: JsonRpcProvider,
   config: ReturnType<typeof getOnchainConfig>,
@@ -73,11 +93,13 @@ async function getErc20DepositEvents(
   }
 
   const events: DepositEvent[] = [];
+
   for (const log of logs) {
     const parsed = transferInterface.parseLog({
       topics: [...log.topics],
       data: log.data
     });
+
     if (!parsed) {
       continue;
     }
@@ -113,7 +135,9 @@ async function getNativeDepositEvents(
   toBlock: number
 ) {
   const assignedAddresses =
-    config.depositMode === 'hd' ? await listAssignedDepositAddresses() : new Map();
+    config.depositMode === 'hd'
+      ? await listAssignedDepositAddresses()
+      : new Map();
 
   if (config.depositMode === 'hd' && assignedAddresses.size === 0) {
     return [];
@@ -121,11 +145,18 @@ async function getNativeDepositEvents(
 
   const events: DepositEvent[] = [];
 
-  for (let blockNumber = fromBlock; blockNumber <= toBlock; blockNumber += 1) {
-    const block = await provider.send('eth_getBlockByNumber', [
-      `0x${blockNumber.toString(16)}`,
-      true
-    ]);
+  const blocks = await mapWithConcurrency(
+    range(fromBlock, toBlock),
+    config.nativeScanConcurrency,
+    async (blockNumber) =>
+      provider.send('eth_getBlockByNumber', [
+        `0x${blockNumber.toString(16)}`,
+        true
+      ])
+  );
+
+  for (const block of blocks) {
+    const blockNumber = hexToNumber(block?.number, 0);
 
     for (const tx of block?.transactions || []) {
       if (!tx?.to || !tx?.from || !tx?.hash) {
@@ -206,67 +237,78 @@ export async function processOnchainDeposits() {
   const checkpointBlock = hasCheckpoint
     ? Number(state.lastProcessedBlock)
     : defaultStartBlock - 1;
-  const fromBlock = Math.max(checkpointBlock + 1, defaultStartBlock);
-  const toBlock = Math.min(
-    fromBlock + config.blockBatchSize - 1,
-    safeLatestBlock
-  );
+  let fromBlock = Math.max(checkpointBlock + 1, defaultStartBlock);
 
-  if (fromBlock > toBlock) {
+  if (fromBlock > safeLatestBlock) {
     return {
       enabled: true,
       fromBlock,
-      toBlock,
+      toBlock: safeLatestBlock,
       latestBlock,
+      batches: 0,
       processed: 0,
       settled: 0
     };
   }
 
-  const events = await getDepositEvents(provider, config, fromBlock, toBlock);
+  const firstBlock = fromBlock;
+  let lastProcessedBlock = fromBlock - 1;
+  let batches = 0;
   let processed = 0;
   let settled = 0;
 
-  for (const event of events) {
-    const record = await recordOnchainDeposit({
-      walletId: event.walletId || null,
-      walletAddress: event.walletAddress,
-      chainId: config.chainId,
-      tokenAddress: config.assetKey,
-      txHash: event.txHash,
-      logIndex: event.logIndex,
-      blockNumber: event.blockNumber,
-      amount: event.amount,
-      metadata: {
-        deposit_mode: config.depositMode,
-        asset_type: config.assetType,
-        source_wallet_address: event.fromAddress,
-        deposit_address: event.toAddress,
-        treasury_address: config.treasuryAddress || null,
-        address_index: event.addressIndex ?? null
-      }
-    });
-    processed += record.alreadyRecorded ? 0 : 1;
+  while (fromBlock <= safeLatestBlock && batches < config.maxBatchesPerRun) {
+    const toBlock = Math.min(
+      fromBlock + config.blockBatchSize - 1,
+      safeLatestBlock
+    );
+    const events = await getDepositEvents(provider, config, fromBlock, toBlock);
 
-    if (record.depositId) {
-      const settlement = await settleOnchainDeposit(Number(record.depositId));
-      if (!settlement.alreadySettled && settlement.status === 'completed') {
-        settled += 1;
+    for (const event of events) {
+      const record = await recordOnchainDeposit({
+        walletId: event.walletId || null,
+        walletAddress: event.walletAddress,
+        chainId: config.chainId,
+        tokenAddress: config.assetKey,
+        txHash: event.txHash,
+        logIndex: event.logIndex,
+        blockNumber: event.blockNumber,
+        amount: event.amount,
+        metadata: {
+          deposit_mode: config.depositMode,
+          asset_type: config.assetType,
+          source_wallet_address: event.fromAddress,
+          deposit_address: event.toAddress,
+          treasury_address: config.treasuryAddress || null,
+          address_index: event.addressIndex ?? null
+        }
+      });
+      processed += record.alreadyRecorded ? 0 : 1;
+
+      if (record.depositId) {
+        const settlement = await settleOnchainDeposit(Number(record.depositId));
+        if (!settlement.alreadySettled && settlement.status === 'completed') {
+          settled += 1;
+        }
       }
     }
-  }
 
-  await setSyncState(stateKey, {
-    lastProcessedBlock: toBlock,
-    latestBlock,
-    updatedAt: new Date().toISOString()
-  });
+    lastProcessedBlock = toBlock;
+    batches += 1;
+    await setSyncState(stateKey, {
+      lastProcessedBlock,
+      latestBlock,
+      updatedAt: new Date().toISOString()
+    });
+    fromBlock = toBlock + 1;
+  }
 
   return {
     enabled: true,
-    fromBlock,
-    toBlock,
+    fromBlock: firstBlock,
+    toBlock: lastProcessedBlock,
     latestBlock,
+    batches,
     processed,
     settled
   };

@@ -3,6 +3,7 @@ import { pool } from '@evershop/evershop/lib/postgres';
 import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 import { getChainRpcConfig, isChainRpcConfigured } from '../../../services/wallet/getChainRpcConfig.js';
 import { getExchangeRate } from '../../../services/wallet/getExchangeRate.js';
+import { getOnchainConfig } from '../../../services/wallet/getOnchainConfig.js';
 import { getWalletSummary } from '../../../services/wallet/getWalletSummary.js';
 import { listWithdrawals } from '../../../services/wallet/listWithdrawals.js';
 import { listWalletTransactions } from '../../../services/wallet/listWalletTransactions.js';
@@ -51,10 +52,7 @@ export default {
   Query: {
     nbcWalletPublicConfig: async () => {
       const chain = getChainRpcConfig();
-      const treasuryAddress = String(
-        getConfig('nbcWallet.onchain.treasuryAddress', '')
-      );
-      const onchainEnabledRaw = Number(getConfig('nbcWallet.onchain.enabled', 1));
+      const onchain = getOnchainConfig();
       return {
         exchangeRate: await getExchangeRate(),
         shopCurrency: String(getConfig('shop.currency', 'USD')).toUpperCase(),
@@ -68,17 +66,10 @@ export default {
         tokenDecimals: chain.tokenDecimals,
         blockExplorerUrl: chain.blockExplorerUrl || null,
         chainBalanceEnabled: isChainRpcConfigured(chain),
-        treasuryAddress: treasuryAddress || null,
-        depositMode: String(
-          getConfig(
-            'nbcWallet.onchain.deposit.mode',
-            getConfig('nbcWallet.onchain.depositMode', 'treasury')
-          )
-        ).toLowerCase() === 'hd'
-          ? 'hd'
-          : 'treasury',
-        onchainEnabled: onchainEnabledRaw === 1,
-        onchainEnabledRaw
+        treasuryAddress: onchain.treasuryAddress || null,
+        depositMode: onchain.depositMode,
+        onchainEnabled: onchain.enabled,
+        onchainEnabledRaw: onchain.enabled ? 1 : 0
       };
     },
     nbcWallet: async (_, args, { customer }) => {

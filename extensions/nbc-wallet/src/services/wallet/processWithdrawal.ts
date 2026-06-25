@@ -223,11 +223,13 @@ export async function processWithdrawal(
     try {
       await startTransaction(conn3);
 
+      const restoredFrozen = Math.max(frozenBefore - amount, 0);
+
       await conn3.query(
         `UPDATE nbc_wallet
             SET balance = $1, frozen_balance = $2, updated_at = NOW()
           WHERE wallet_id = $3`,
-        [balanceBefore, frozenBefore, walletId]
+        [balanceBefore, restoredFrozen, walletId]
       );
 
       await conn3.query(

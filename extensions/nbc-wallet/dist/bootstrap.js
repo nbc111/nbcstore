@@ -4,6 +4,7 @@ import config from 'config';
 import { registerPaymentMethod } from '@evershop/evershop/checkout/services';
 import { registerJob } from '@evershop/evershop/lib/cronjob';
 import { getConfig } from '@evershop/evershop/lib/util/getConfig';
+import { getOnchainConfig } from './services/wallet/getOnchainConfig.js';
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 export default function bootstrap() {
     config.util.setModuleDefaults('oms', {
@@ -61,12 +62,12 @@ export default function bootstrap() {
             return status === 1;
         }
     });
-    const onchainEnabled = Number(getConfig('nbcWallet.onchain.enabled', 1)) === 1;
+    const onchainConfig = getOnchainConfig();
     registerJob({
         name: 'nbcWalletOnchainDepositPoller',
-        schedule: String(getConfig('nbcWallet.onchain.pollSchedule', '*/5 * * * *')),
+        schedule: onchainConfig.pollSchedule,
         resolve: path.resolve(currentDir, 'crons', 'processOnchainDeposits.js'),
-        enabled: onchainEnabled
+        enabled: onchainConfig.enabled
     });
     registerJob({
         name: 'nbcWalletReconcileLedger',

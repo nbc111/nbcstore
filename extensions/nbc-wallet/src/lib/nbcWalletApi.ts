@@ -1,5 +1,8 @@
 export interface WalletSummary {
   walletAddress: string;
+  depositAddress?: string | null;
+  addressIndex?: number | null;
+  chainId?: number | null;
   balance: number;
   frozenBalance: number;
   availableBalance: number;
@@ -63,6 +66,25 @@ export async function fetchWalletBalance(
     await fetch(balanceApi, { ...fetchOpts, method: 'GET' })
   );
   return (data?.wallet as WalletSummary) || null;
+}
+
+export interface WalletDepositAddress {
+  mode: 'treasury' | 'hd';
+  walletId?: number;
+  customerId?: number;
+  depositAddress: string | null;
+  addressIndex: number | null;
+  chainId: number;
+  tokenAddress: string | null;
+}
+
+export async function fetchWalletDepositAddress(
+  depositAddressApi: string
+): Promise<WalletDepositAddress> {
+  const data = await parseJson(
+    await fetch(depositAddressApi, { ...fetchOpts, method: 'GET' })
+  );
+  return data as WalletDepositAddress;
 }
 
 export async function fetchWalletTransactions(
