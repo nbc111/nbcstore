@@ -100,9 +100,9 @@
         "derivationPath": "m/44'/60'/0'/0"
       },
       "startBlock": 0,
-      "confirmations": 12,
+      "confirmations": 1,
       "blockBatchSize": 500,
-      "pollSchedule": "*/5 * * * *"
+      "pollSchedule": "* * * * *"
     },
     "reconcile": {
       "enabled": 1,

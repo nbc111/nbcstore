@@ -38,27 +38,35 @@ export default function CustomerInfo({ order: { orderNumber, customerFullName, c
     })))), /*#__PURE__*/ React.createElement("div", {
         className: "customer-info mt-7 mb-5"
     }, /*#__PURE__*/ React.createElement("div", {
-        className: "grid grid-cols-2 gap-7"
-    }, /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", {
+        className: "grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-7"
+    }, /*#__PURE__*/ React.createElement("div", {
+        className: "min-w-0"
+    }, /*#__PURE__*/ React.createElement("div", {
         className: "mb-2"
     }, /*#__PURE__*/ React.createElement("h3", null, _('Contact information'))), /*#__PURE__*/ React.createElement("div", {
-        className: "text-textSubdued"
+        className: "text-textSubdued break-words"
     }, customerFullName || billingAddress?.fullName), /*#__PURE__*/ React.createElement("div", {
-        className: "text-textSubdued"
-    }, customerEmail)), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", {
+        className: "text-textSubdued break-all"
+    }, customerEmail)), /*#__PURE__*/ React.createElement("div", {
+        className: "min-w-0"
+    }, /*#__PURE__*/ React.createElement("div", {
         className: "mb-2"
     }, /*#__PURE__*/ React.createElement("h3", null, _('Shipping Address'))), /*#__PURE__*/ React.createElement("div", {
-        className: "text-textSubdued"
+        className: "text-textSubdued break-words"
     }, noShippingRequired ? _('No shipping required') : /*#__PURE__*/ React.createElement(AddressSummary, {
         address: shippingAddress
-    }))), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", {
+    }))), /*#__PURE__*/ React.createElement("div", {
+        className: "min-w-0"
+    }, /*#__PURE__*/ React.createElement("div", {
         className: "mb-2"
     }, /*#__PURE__*/ React.createElement("h3", null, _('Payment Method'))), /*#__PURE__*/ React.createElement("div", {
-        className: "text-textSubdued"
-    }, paymentMethodName)), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("div", {
+        className: "text-textSubdued break-words"
+    }, paymentMethodName)), /*#__PURE__*/ React.createElement("div", {
+        className: "min-w-0"
+    }, /*#__PURE__*/ React.createElement("div", {
         className: "mb-2"
     }, /*#__PURE__*/ React.createElement("h3", null, _('Billing Address'))), /*#__PURE__*/ React.createElement("div", {
-        className: "text-textSubdued"
+        className: "text-textSubdued break-words"
     }, /*#__PURE__*/ React.createElement(AddressSummary, {
         address: billingAddress
     }))))), /*#__PURE__*/ React.createElement(Button, {

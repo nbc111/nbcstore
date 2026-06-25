@@ -57,41 +57,49 @@ export default function HeadTags({
     });
   }, []);
 
-  return (
-    <>
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      {metas.map((meta, index) => (
-        <meta key={index} {...meta} />
-      ))}
-      {links.map((link, index) => (
-        <link key={index} {...link} />
-      ))}
-      {scripts.map((script, index) => (
-        <script key={index} {...script} />
-      ))}
-      {favicon && <link rel="icon" href={favicon} />}
-      {keywords && keywords.length > 0 && (
-        <meta name="keywords" content={keywords.join(', ')} />
-      )}
-      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
-      {base && <base {...base} />}
-      <Og
-        type={ogInfo.type}
-        title={title}
-        description={description}
-        url={ogInfo.url}
-        siteName={ogInfo.siteName}
-        image={ogInfo.image}
-        locale={ogInfo.locale}
-        twitterCard={ogInfo.twitterCard}
-        twitterSite={ogInfo.twitterSite}
-        twitterCreator={ogInfo.twitterCreator}
-        twitterImage={ogInfo.twitterImage}
-      />
-    </>
+  const nodes: React.ReactNode[] = [
+    <title key="title">{title}</title>,
+    <meta key="description" name="description" content={description} />,
+    <meta
+      key="viewport"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+  ];
+  metas.forEach((meta, index) => {
+    nodes.push(<meta key={`meta-${index}`} {...meta} />);
+  });
+  links.forEach((link, index) => {
+    nodes.push(<link key={`link-${index}`} {...link} />);
+  });
+  scripts.forEach((script, index) => {
+    nodes.push(<script key={`script-${index}`} {...script} />);
+  });
+  if (favicon) nodes.push(<link key="favicon" rel="icon" href={favicon} />);
+  if (keywords?.length) {
+    nodes.push(<meta key="keywords" name="keywords" content={keywords.join(', ')} />);
+  }
+  if (canonicalUrl) {
+    nodes.push(<link key="canonical" rel="canonical" href={canonicalUrl} />);
+  }
+  if (base) nodes.push(<base key="base" {...base} />);
+  nodes.push(
+    <Og
+      key="og"
+      type={ogInfo.type}
+      title={title}
+      description={description}
+      url={ogInfo.url}
+      siteName={ogInfo.siteName}
+      image={ogInfo.image}
+      locale={ogInfo.locale}
+      twitterCard={ogInfo.twitterCard}
+      twitterSite={ogInfo.twitterSite}
+      twitterCreator={ogInfo.twitterCreator}
+      twitterImage={ogInfo.twitterImage}
+    />
   );
+  return <>{nodes}</>;
 }
 
 export const layout = {

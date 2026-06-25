@@ -146,7 +146,10 @@ export async function processOnchainDeposits() {
     }
     const stateKey = `onchainDeposit:${config.chainId}:${config.assetKey}:${config.depositMode}`;
     const state = await getSyncState(stateKey, {});
-    const fromBlock = Math.max(Number(state.lastProcessedBlock || config.startBlock - 1) + 1, config.startBlock);
+    const hasCheckpoint = Number.isFinite(Number(state.lastProcessedBlock));
+    const defaultStartBlock = config.startBlock > 0 ? config.startBlock : Math.max(safeLatestBlock - config.blockBatchSize + 1, 0);
+    const checkpointBlock = hasCheckpoint ? Number(state.lastProcessedBlock) : defaultStartBlock - 1;
+    const fromBlock = Math.max(checkpointBlock + 1, defaultStartBlock);
     const toBlock = Math.min(fromBlock + config.blockBatchSize - 1, safeLatestBlock);
     if (fromBlock > toBlock) {
         return {
