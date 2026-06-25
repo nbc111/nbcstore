@@ -8,28 +8,26 @@ export async function listWithdrawals(customerId, limit = 20) {
        FROM nbc_withdrawal
       WHERE customer_id = $1
       ORDER BY created_at DESC, withdrawal_id DESC
-      LIMIT $2`, [
-        customerId,
-        pageSize
-    ]);
-    return result.rows.map((row)=>({
-            withdrawalId: row.withdrawal_id,
-            uuid: row.uuid,
-            walletId: row.wallet_id,
-            customerId: row.customer_id,
-            walletAddress: row.wallet_address,
-            chainId: row.chain_id,
-            tokenAddress: row.token_address,
-            amount: Number(row.amount),
-            txHash: row.tx_hash,
-            walletTxId: row.wallet_tx_id,
-            status: row.status,
-            requestedAt: row.requested_at,
-            processedAt: row.processed_at,
-            failedAt: row.failed_at,
-            errorMessage: row.error_message,
-            metadata: row.metadata,
-            createdAt: row.created_at,
-            updatedAt: row.updated_at
-        }));
+      LIMIT $2`, [customerId, pageSize]);
+    return result.rows.map((row) => ({
+        withdrawalId: row.withdrawal_id,
+        uuid: row.uuid,
+        walletId: row.wallet_id,
+        customerId: row.customer_id,
+        walletAddress: row.wallet_address,
+        chainId: row.chain_id,
+        tokenAddress: row.token_address,
+        amount: Number(row.amount),
+        txHash: row.tx_hash,
+        walletTxId: row.wallet_tx_id,
+        status: row.status,
+        requestedAt: row.requested_at,
+        processedAt: row.processed_at,
+        failedAt: row.failed_at,
+        errorMessage: row.error_message,
+        metadata: row.metadata,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at
+    }));
 }
+//# sourceMappingURL=listWithdrawals.js.map

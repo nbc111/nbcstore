@@ -9,7 +9,8 @@ export function getTreasurySigner() {
     const chain = getChainRpcConfig();
     const onchain = getOnchainConfig();
     // Prefer env var over config file to keep private keys out of source control
-    const privateKey = (process.env.NBC_WALLET_TREASURY_PRIVATE_KEY || String(getConfig('nbcWallet.onchain.treasuryPrivateKey', ''))).trim();
+    const privateKey = (process.env.NBC_WALLET_TREASURY_PRIVATE_KEY ||
+        String(getConfig('nbcWallet.onchain.treasuryPrivateKey', ''))).trim();
     if (!onchain.enabled) {
         throw new Error('NBC on-chain transfer is disabled');
     }
@@ -27,10 +28,13 @@ export function getTreasurySigner() {
     }
     const provider = new JsonRpcProvider(chain.rpcUrl, chain.chainId);
     const signer = new Wallet(privateKey, provider);
-    const token = chain.assetType === 'erc20' ? new Contract(chain.tokenAddress, ERC20_ABI, signer) : null;
+    const token = chain.assetType === 'erc20'
+        ? new Contract(chain.tokenAddress, ERC20_ABI, signer)
+        : null;
     return {
         signer,
         token,
         chain
     };
 }
+//# sourceMappingURL=getTreasurySigner.js.map

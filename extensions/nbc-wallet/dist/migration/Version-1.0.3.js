@@ -27,3 +27,4 @@ export default async function migrate(connection) {
     await execute(connection, `CREATE INDEX IF NOT EXISTS "IDX_NBC_ORDER_USAGE_WALLET_TX_ID"
        ON "nbc_order_usage" ("wallet_tx_id")`);
 }
+//# sourceMappingURL=Version-1.0.3.js.map

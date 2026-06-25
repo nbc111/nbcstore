@@ -31,3 +31,4 @@ export default async function migrate(connection) {
     await execute(connection, `CREATE INDEX "IDX_NBC_WITHDRAWAL_CUSTOMER_ID" ON "nbc_withdrawal" ("customer_id")`);
     await execute(connection, `CREATE INDEX "IDX_NBC_WITHDRAWAL_STATUS" ON "nbc_withdrawal" ("status")`);
 }
+//# sourceMappingURL=Version-1.0.1.js.map

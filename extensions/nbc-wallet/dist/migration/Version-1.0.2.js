@@ -20,3 +20,4 @@ export default async function migrate(connection) {
     await execute(connection, `CREATE INDEX IF NOT EXISTS "IDX_NBC_AUDIT_ENTITY"
        ON "nbc_wallet_audit_log" ("entity_type", "entity_id")`);
 }
+//# sourceMappingURL=Version-1.0.2.js.map

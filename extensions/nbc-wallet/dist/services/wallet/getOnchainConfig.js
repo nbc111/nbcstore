@@ -7,9 +7,9 @@ export function getOnchainConfig() {
     const treasuryAddress = String(process.env.NBC_WALLET_TREASURY_ADDRESS ||
         getConfig('nbcWallet.onchain.treasuryAddress', ''));
     const depositMode = String(process.env.NBC_WALLET_DEPOSIT_MODE ||
-        getConfig('nbcWallet.onchain.deposit.mode', 'treasury')).toLowerCase();
+        getConfig('nbcWallet.onchain.deposit.mode', getConfig('nbcWallet.onchain.depositMode', 'treasury'))).toLowerCase();
     return {
-        enabled: Number((_a = process.env.NBC_WALLET_ONCHAIN_ENABLED) !== null && _a !== void 0 ? _a : getConfig('nbcWallet.onchain.enabled', 0)) === 1,
+        enabled: Number((_a = process.env.NBC_WALLET_ONCHAIN_ENABLED) !== null && _a !== void 0 ? _a : getConfig('nbcWallet.onchain.enabled', 1)) === 1,
         rpcUrl: chain.rpcUrl,
         chainId: chain.chainId,
         assetType: chain.assetType,
@@ -19,6 +19,8 @@ export function getOnchainConfig() {
             ? normalizeWalletAddress(treasuryAddress)
             : '',
         depositMode: depositMode === 'hd' ? 'hd' : 'treasury',
+        hdPathPrefix: String(process.env.NBC_WALLET_HD_PATH_PREFIX ||
+            getConfig('nbcWallet.onchain.hdPathPrefix', getConfig('nbcWallet.onchain.deposit.derivationPath', "m/44'/60'/0'/0"))).replace(/\/+$/, ''),
         depositXpub: String(process.env.NBC_WALLET_DEPOSIT_XPUB ||
             getConfig('nbcWallet.onchain.deposit.xpub', '')).trim(),
         depositMnemonic: String(process.env.NBC_WALLET_DEPOSIT_MNEMONIC ||
@@ -51,7 +53,7 @@ export function assertOnchainConfig(config = getOnchainConfig()) {
         throw new Error('nbcWallet.onchain.chainId is required');
     }
     if (config.assetType === 'erc20' && !config.tokenAddress) {
-        throw new Error('nbcWallet.onchain.tokenAddress is required');
+        throw new Error('nbcWallet.onchain.tokenAddress is required for erc20 mode');
     }
     if (config.depositMode === 'treasury' && !config.treasuryAddress) {
         throw new Error('nbcWallet.onchain.treasuryAddress is required');

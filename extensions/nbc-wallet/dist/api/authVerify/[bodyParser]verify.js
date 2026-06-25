@@ -6,10 +6,11 @@ import { isValidWalletAddress } from '../../services/wallet/isValidWalletAddress
 import { upsertWalletCustomer } from '../../services/wallet/upsertWalletCustomer.js';
 import { useWalletAuthNonce } from '../../services/wallet/useWalletAuthNonce.js';
 export default async function verifyWalletAuth(request, response) {
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     try {
-        const walletAddress = request.body?.walletAddress;
-        const signature = request.body?.signature;
-        const nonce = request.body?.nonce;
+        const walletAddress = (_a = request.body) === null || _a === void 0 ? void 0 : _a.walletAddress;
+        const signature = (_b = request.body) === null || _b === void 0 ? void 0 : _b.signature;
+        const nonce = (_c = request.body) === null || _c === void 0 ? void 0 : _c.nonce;
         if (!walletAddress || !signature || !nonce) {
             response.status(INVALID_PAYLOAD).json({
                 error: {
@@ -64,19 +65,19 @@ export default async function verifyWalletAuth(request, response) {
         await establishCustomerSession(request, {
             customer_id: customer.customer_id,
             group_id: customer.group_id,
-            uuid: customer.customer_uuid ?? customer.uuid,
+            uuid: (_d = customer.customer_uuid) !== null && _d !== void 0 ? _d : customer.uuid,
             email: customer.email,
             full_name: customer.full_name,
-            status: customer.customer_status ?? customer.status,
-            created_at: customer.customer_created_at ?? customer.created_at,
-            updated_at: customer.customer_updated_at ?? customer.updated_at
+            status: (_e = customer.customer_status) !== null && _e !== void 0 ? _e : customer.status,
+            created_at: (_f = customer.customer_created_at) !== null && _f !== void 0 ? _f : customer.created_at,
+            updated_at: (_g = customer.customer_updated_at) !== null && _g !== void 0 ? _g : customer.updated_at
         });
         response.status(OK).json({
             data: {
                 sid: request.sessionID,
                 customer: {
                     customerId: customer.customer_id,
-                    uuid: customer.customer_uuid ?? customer.uuid,
+                    uuid: (_h = customer.customer_uuid) !== null && _h !== void 0 ? _h : customer.uuid,
                     email: customer.email,
                     fullName: customer.full_name
                 },
@@ -85,7 +86,8 @@ export default async function verifyWalletAuth(request, response) {
                 }
             }
         });
-    } catch (error) {
+    }
+    catch (error) {
         response.status(INTERNAL_SERVER_ERROR).json({
             error: {
                 status: INTERNAL_SERVER_ERROR,
@@ -94,3 +96,4 @@ export default async function verifyWalletAuth(request, response) {
         });
     }
 }
+//# sourceMappingURL=%5BbodyParser%5Dverify.js.map

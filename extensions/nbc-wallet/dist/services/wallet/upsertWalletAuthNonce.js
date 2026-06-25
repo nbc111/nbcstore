@@ -18,11 +18,7 @@ export async function upsertWalletAuthNonce(walletAddress) {
        expires_at = EXCLUDED.expires_at,
        used_at = NULL,
        updated_at = NOW()
-     RETURNING wallet_address, nonce, message, expires_at`, [
-        normalizedAddress,
-        nonce,
-        message,
-        nonceTtlSeconds.toString()
-    ]);
+     RETURNING wallet_address, nonce, message, expires_at`, [normalizedAddress, nonce, message, nonceTtlSeconds.toString()]);
     return result.rows[0];
 }
+//# sourceMappingURL=upsertWalletAuthNonce.js.map

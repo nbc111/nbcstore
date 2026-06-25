@@ -14,6 +14,7 @@ const frontStoreSessionMiddleware = session({
     saveUninitialized: getConfig('system.session.saveUninitialized', true),
     name: getConfig('system.session.cookieName', 'sid')
 });
-export default ((request, response, next)=>{
+export default (request, response, next) => {
     frontStoreSessionMiddleware(request, response, next);
-});
+};
+//# sourceMappingURL=%5Bcontext%5Dsession%5BbodyParser%5D.js.map
