@@ -8,6 +8,9 @@ export default async (
   next
 ) => {
   try {
+    if (response.headersSent || response.writableEnded) {
+      return;
+    }
     /** If a rejected middleware called next(error) without throwing an error */
     if (isErrorHandlerTriggered(response)) {
       return;
@@ -15,7 +18,7 @@ export default async (
       response.json(response.$body || {});
     }
   } catch (error) {
-    if (!isErrorHandlerTriggered(response)) {
+    if (!isErrorHandlerTriggered(response) && !response.headersSent) {
       next(error);
     } else {
       // Do nothing here since the next(error) is already called

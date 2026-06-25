@@ -102,6 +102,7 @@ type NbcWalletPublicConfig {
   chainBalanceEnabled: Boolean!
   treasuryAddress: String
   onchainEnabled: Boolean!
+  onchainEnabledRaw: Int!
 }
 
 extend type Query {

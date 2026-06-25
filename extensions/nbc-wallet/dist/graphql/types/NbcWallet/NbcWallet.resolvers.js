@@ -38,15 +38,18 @@ async function loadOrderUsage(orderId) {
        LEFT JOIN "order" o ON o.order_id = u.order_id
       WHERE u.order_id = $1
       ORDER BY t.wallet_tx_id DESC NULLS LAST
-      LIMIT 1`, [orderId]);
+      LIMIT 1`, [
+        orderId
+    ]);
     return result.rows[0] || null;
 }
 export default {
     JSON: GraphQLJSON,
     Query: {
-        nbcWalletPublicConfig: async () => {
+        nbcWalletPublicConfig: async ()=>{
             const chain = getChainRpcConfig();
             const treasuryAddress = String(getConfig('nbcWallet.onchain.treasuryAddress', ''));
+            const onchainEnabledRaw = Number(getConfig('nbcWallet.onchain.enabled', 1));
             return {
                 exchangeRate: await getExchangeRate(),
                 shopCurrency: String(getConfig('shop.currency', 'USD')).toUpperCase(),
@@ -60,16 +63,17 @@ export default {
                 blockExplorerUrl: chain.blockExplorerUrl || null,
                 chainBalanceEnabled: isChainRpcConfigured(chain),
                 treasuryAddress: treasuryAddress || null,
-                onchainEnabled: Number(getConfig('nbcWallet.onchain.enabled', 0)) === 1
+                onchainEnabled: onchainEnabledRaw === 1,
+                onchainEnabledRaw
             };
         },
-        nbcWallet: async (_, args, { customer }) => {
+        nbcWallet: async (_, args, { customer })=>{
             if (!customer) {
                 return null;
             }
             return getWalletSummary(customer.customer_id);
         },
-        nbcWalletTransactions: async (_, args, { customer }) => {
+        nbcWalletTransactions: async (_, args, { customer })=>{
             if (!customer) {
                 return {
                     items: [],
@@ -80,7 +84,7 @@ export default {
             }
             return listWalletTransactions(customer.customer_id, args);
         },
-        nbcWalletWithdrawals: async (_, args, { customer }) => {
+        nbcWalletWithdrawals: async (_, args, { customer })=>{
             if (!customer) {
                 return [];
             }
@@ -88,12 +92,12 @@ export default {
         }
     },
     Customer: {
-        nbcWallet: ({ customerId }) => getWalletSummary(customerId),
-        nbcWalletTransactions: ({ customerId }, args) => listWalletTransactions(customerId, args),
-        nbcWalletWithdrawals: ({ customerId }, args) => listWithdrawals(customerId, args.limit)
+        nbcWallet: ({ customerId })=>getWalletSummary(customerId),
+        nbcWalletTransactions: ({ customerId }, args)=>listWalletTransactions(customerId, args),
+        nbcWalletWithdrawals: ({ customerId }, args)=>listWithdrawals(customerId, args.limit)
     },
     Order: {
-        nbcUsage: async ({ orderId }, args, { customer }) => {
+        nbcUsage: async ({ orderId }, args, { customer })=>{
             const usage = await loadOrderUsage(orderId);
             if (!usage) {
                 return null;
@@ -102,9 +106,7 @@ export default {
                 return null;
             }
             return {
-                walletTxId: usage.transaction_wallet_tx_id
-                    ? Number(usage.transaction_wallet_tx_id)
-                    : null,
+                walletTxId: usage.transaction_wallet_tx_id ? Number(usage.transaction_wallet_tx_id) : null,
                 transactionUuid: usage.transaction_uuid || null,
                 nbcAmount: Number(usage.nbc_amount),
                 exchangeRate: Number(usage.exchange_rate),
@@ -113,33 +115,31 @@ export default {
                 balanceAfter: usage.balance_after === null ? null : Number(usage.balance_after),
                 transactionStatus: usage.transaction_status || null,
                 paidAt: usage.transaction_created_at || null,
-                transaction: usage.transaction_uuid
-                    ? {
-                        walletTxId: Number(usage.transaction_wallet_tx_id),
-                        uuid: usage.transaction_uuid,
-                        walletId: Number(usage.wallet_id),
-                        orderId,
-                        orderUuid: usage.order_uuid || null,
-                        orderNumber: usage.order_number || null,
-                        transactionType: usage.transaction_type,
-                        amount: Number(usage.transaction_amount),
-                        balanceBefore: Number(usage.balance_before),
-                        balanceAfter: Number(usage.balance_after),
-                        exchangeRate: Number(usage.exchange_rate),
-                        cnyAmount: Number(usage.cny_amount),
-                        reference: usage.reference || null,
-                        status: usage.transaction_status,
-                        metadata: usage.transaction_metadata,
-                        createdAt: usage.transaction_created_at
-                    }
-                    : null,
-                wallet: () => getWalletSummary(usage.customer_id)
+                transaction: usage.transaction_uuid ? {
+                    walletTxId: Number(usage.transaction_wallet_tx_id),
+                    uuid: usage.transaction_uuid,
+                    walletId: Number(usage.wallet_id),
+                    orderId,
+                    orderUuid: usage.order_uuid || null,
+                    orderNumber: usage.order_number || null,
+                    transactionType: usage.transaction_type,
+                    amount: Number(usage.transaction_amount),
+                    balanceBefore: Number(usage.balance_before),
+                    balanceAfter: Number(usage.balance_after),
+                    exchangeRate: Number(usage.exchange_rate),
+                    cnyAmount: Number(usage.cny_amount),
+                    reference: usage.reference || null,
+                    status: usage.transaction_status,
+                    metadata: usage.transaction_metadata,
+                    createdAt: usage.transaction_created_at
+                } : null,
+                wallet: ()=>getWalletSummary(usage.customer_id)
             };
         }
     },
     NbcOrderUsage: {
-        transaction: (usage) => usage.transaction || null,
-        wallet: (usage) => {
+        transaction: (usage)=>usage.transaction || null,
+        wallet: (usage)=>{
             if (typeof usage.wallet === 'function') {
                 return usage.wallet();
             }
@@ -147,4 +147,3 @@ export default {
         }
     }
 };
-//# sourceMappingURL=NbcWallet.resolvers.js.map

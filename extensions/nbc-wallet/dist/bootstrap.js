@@ -52,16 +52,16 @@ export default function bootstrap() {
         }
     });
     registerPaymentMethod({
-        init: async () => ({
-            code: 'nbc_wallet',
-            name: String(getConfig('nbcWallet.displayName', 'NBC Wallet'))
-        }),
-        validator: async () => {
+        init: async ()=>({
+                code: 'nbc_wallet',
+                name: String(getConfig('nbcWallet.displayName', 'NBC Wallet'))
+            }),
+        validator: async ()=>{
             const status = Number(getConfig('nbcWallet.status', 1));
             return status === 1;
         }
     });
-    const onchainEnabled = Number(getConfig('nbcWallet.onchain.enabled', 0)) === 1;
+    const onchainEnabled = Number(getConfig('nbcWallet.onchain.enabled', 1)) === 1;
     registerJob({
         name: 'nbcWalletOnchainDepositPoller',
         schedule: String(getConfig('nbcWallet.onchain.pollSchedule', '*/5 * * * *')),
@@ -75,4 +75,3 @@ export default function bootstrap() {
         enabled: Number(getConfig('nbcWallet.reconcile.enabled', 1)) === 1
     });
 }
-//# sourceMappingURL=bootstrap.js.map

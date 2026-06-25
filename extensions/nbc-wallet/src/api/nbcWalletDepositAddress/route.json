@@ -1,0 +1,5 @@
+{
+  "methods": ["POST"],
+  "path": "/nbcWallet/deposit-address",
+  "access": "public"
+}

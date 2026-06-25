@@ -54,6 +54,7 @@ export default {
       const treasuryAddress = String(
         getConfig('nbcWallet.onchain.treasuryAddress', '')
       );
+      const onchainEnabledRaw = Number(getConfig('nbcWallet.onchain.enabled', 1));
       return {
         exchangeRate: await getExchangeRate(),
         shopCurrency: String(getConfig('shop.currency', 'USD')).toUpperCase(),
@@ -67,7 +68,8 @@ export default {
         blockExplorerUrl: chain.blockExplorerUrl || null,
         chainBalanceEnabled: isChainRpcConfigured(chain),
         treasuryAddress: treasuryAddress || null,
-        onchainEnabled: Number(getConfig('nbcWallet.onchain.enabled', 0)) === 1
+        onchainEnabled: onchainEnabledRaw === 1,
+        onchainEnabledRaw
       };
     },
     nbcWallet: async (_, args, { customer }) => {

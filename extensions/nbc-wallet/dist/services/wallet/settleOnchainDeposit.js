@@ -3,8 +3,7 @@ import { getConnection } from '@evershop/evershop/lib/postgres';
 import { emit } from '@evershop/evershop/lib/event';
 import { getChainRpcConfig } from './getChainRpcConfig.js';
 function normalizeDepositAmount(rawAmount, tokenDecimals) {
-    if (tokenDecimals <= 0)
-        return rawAmount;
+    if (tokenDecimals <= 0) return rawAmount;
     const divisor = BigInt(10) ** BigInt(tokenDecimals);
     return rawAmount / divisor;
 }
@@ -15,7 +14,9 @@ export async function settleOnchainDeposit(depositId) {
         const depositResult = await connection.query(`SELECT *
          FROM nbc_onchain_deposit
         WHERE deposit_id = $1
-        FOR UPDATE`, [depositId]);
+        FOR UPDATE`, [
+            depositId
+        ]);
         const deposit = depositResult.rows[0];
         if (!deposit) {
             throw new Error('NBC on-chain deposit not found');
@@ -32,14 +33,18 @@ export async function settleOnchainDeposit(depositId) {
         const walletResult = await connection.query(`SELECT *
          FROM nbc_wallet
         WHERE wallet_address = $1
-        FOR UPDATE`, [deposit.wallet_address]);
+        FOR UPDATE`, [
+            deposit.wallet_address
+        ]);
         const wallet = walletResult.rows[0];
         if (!wallet) {
             await connection.query(`UPDATE nbc_onchain_deposit
             SET status = 'unmatched',
                 error_message = 'NBC wallet not found',
                 updated_at = NOW()
-          WHERE deposit_id = $1`, [depositId]);
+          WHERE deposit_id = $1`, [
+                depositId
+            ]);
             await commit(connection);
             return {
                 depositId,
@@ -55,18 +60,26 @@ export async function settleOnchainDeposit(depositId) {
             SET status = 'failed',
                 error_message = 'Normalized amount is zero (check tokenDecimals config)',
                 updated_at = NOW()
-          WHERE deposit_id = $1`, [depositId]);
+          WHERE deposit_id = $1`, [
+                depositId
+            ]);
             await commit(connection);
-            return { depositId, status: 'failed', alreadySettled: false };
+            return {
+                depositId,
+                status: 'failed',
+                alreadySettled: false
+            };
         }
         const balanceBefore = BigInt(wallet.balance);
         const balanceAfter = balanceBefore + amount;
         await connection.query(`UPDATE nbc_wallet
           SET balance = $1,
               updated_at = NOW()
-        WHERE wallet_id = $2`, [balanceAfter.toString(), wallet.wallet_id]);
-        const tx = await insert('nbc_wallet_transaction')
-            .given({
+        WHERE wallet_id = $2`, [
+            balanceAfter.toString(),
+            wallet.wallet_id
+        ]);
+        const tx = await insert('nbc_wallet_transaction').given({
             wallet_id: wallet.wallet_id,
             order_id: null,
             transaction_type: 'onchain_deposit',
@@ -84,8 +97,7 @@ export async function settleOnchainDeposit(depositId) {
                 log_index: deposit.log_index,
                 block_number: deposit.block_number
             }
-        })
-            .execute(connection);
+        }).execute(connection);
         const walletTxId = tx.insertId || tx.wallet_tx_id;
         await connection.query(`UPDATE nbc_onchain_deposit
           SET wallet_id = $1,
@@ -94,7 +106,11 @@ export async function settleOnchainDeposit(depositId) {
               error_message = NULL,
               processed_at = NOW(),
               updated_at = NOW()
-        WHERE deposit_id = $3`, [wallet.wallet_id, walletTxId, depositId]);
+        WHERE deposit_id = $3`, [
+            wallet.wallet_id,
+            walletTxId,
+            depositId
+        ]);
         await commit(connection);
         const result = {
             depositId,
@@ -109,12 +125,10 @@ export async function settleOnchainDeposit(depositId) {
             balanceAfter: balanceAfter.toString(),
             alreadySettled: false
         };
-        await emit('nbc_wallet_deposit_completed', result).catch(() => { });
+        await emit('nbc_wallet_deposit_completed', result).catch(()=>{});
         return result;
-    }
-    catch (error) {
+    } catch (error) {
         await rollback(connection);
         throw error;
     }
 }
-//# sourceMappingURL=settleOnchainDeposit.js.map

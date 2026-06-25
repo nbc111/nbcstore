@@ -65,7 +65,7 @@ export default function bootstrap() {
     }
   });
 
-  const onchainEnabled = Number(getConfig('nbcWallet.onchain.enabled', 0)) === 1;
+  const onchainEnabled = Number(getConfig('nbcWallet.onchain.enabled', 1)) === 1;
 
   registerJob({
     name: 'nbcWalletOnchainDepositPoller',

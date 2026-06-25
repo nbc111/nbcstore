@@ -5,4 +5,3 @@ export function calculateNbcAmount(cnyAmount, rate) {
     }
     return Math.ceil(amount / rate);
 }
-//# sourceMappingURL=calculateNbcAmount.js.map

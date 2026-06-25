@@ -7,6 +7,9 @@ export type NbcOnchainConfig = {
   rpcUrl: string;
   chainId: number;
   tokenAddress: string;
+  assetType: 'native' | 'erc20';
+  depositMode: 'treasury' | 'hd';
+  hdPathPrefix: string;
   treasuryAddress: string;
   startBlock: number;
   confirmations: number;
@@ -20,12 +23,31 @@ export function getOnchainConfig(): NbcOnchainConfig {
   const treasuryAddress = String(
     getConfig('nbcWallet.onchain.treasuryAddress', '')
   );
+  const configuredAssetType = String(
+    getConfig('nbcWallet.onchain.assetType', '')
+  ).toLowerCase();
+  const configuredDepositMode = String(
+    getConfig('nbcWallet.onchain.depositMode', '')
+  ).toLowerCase();
+  const assetType =
+    configuredAssetType === 'native' || configuredAssetType === 'erc20'
+      ? (configuredAssetType as 'native' | 'erc20')
+      : chain.tokenAddress
+        ? 'erc20'
+        : 'native';
+  const depositMode =
+    configuredDepositMode === 'hd' ? 'hd' : 'treasury';
 
   return {
-    enabled: Number(getConfig('nbcWallet.onchain.enabled', 0)) === 1,
+    enabled: Number(getConfig('nbcWallet.onchain.enabled', 1)) === 1,
     rpcUrl: chain.rpcUrl,
     chainId: chain.chainId,
     tokenAddress: chain.tokenAddress,
+    assetType,
+    depositMode,
+    hdPathPrefix: String(
+      getConfig('nbcWallet.onchain.hdPathPrefix', "m/44'/60'/0'/0")
+    ),
     treasuryAddress: treasuryAddress
       ? normalizeWalletAddress(treasuryAddress)
       : '',
@@ -55,10 +77,10 @@ export function assertOnchainConfig(config = getOnchainConfig()) {
   if (!config.chainId) {
     throw new Error('nbcWallet.onchain.chainId is required');
   }
-  if (!config.tokenAddress) {
-    throw new Error('nbcWallet.onchain.tokenAddress is required');
+  if (config.assetType === 'erc20' && !config.tokenAddress) {
+    throw new Error('nbcWallet.onchain.tokenAddress is required for erc20 mode');
   }
-  if (!config.treasuryAddress) {
+  if (config.depositMode === 'treasury' && !config.treasuryAddress) {
     throw new Error('nbcWallet.onchain.treasuryAddress is required');
   }
 }

@@ -5039,6 +5039,49 @@ Please enter a name,请输入名称
 Add Menu Item,添加菜单项
 Is Main Menu?,是否主菜单？
 Custom CSS classes for the menu,菜单的自定义 CSS 类
+Deposit,充值
+Withdraw,提现
+Deposit and Withdraw,充值与提现
+Select coin,选择币种
+Wallet balance,钱包余额
+Game balance,商城余额
+Store balance,商城余额
+Transferable balance,可转账余额
+Withdrawable balance,可提现余额
+Deposit amount,存款金额
+Withdraw amount,提现金额
+Highest,最高
+Add funds,添加资金
+Deposit address copied,充值地址已复制
+Failed to copy deposit address,复制充值地址失败
+Failed to load deposit data,加载充值数据失败
+On-chain deposit is currently disabled,链上充值当前未开启
+Loading deposit data,正在加载充值数据
+Deposit address,充值地址
+Treasury,资金池
+Copy,复制
+Refresh,刷新
+Latest deposit,最近一笔充值
+Status,状态
+View on explorer,在区块浏览器查看
+On-chain deposit is not configured yet. Please contact support.,链上充值暂未完成配置，请联系客服
+Wallet account is not ready. Please try reconnecting your wallet.,钱包账户尚未就绪，请重新连接钱包后重试
+Failed to get deposit address,获取充值地址失败
+Deposit amount must be greater than 0,充值金额必须大于 0
+Invalid deposit amount,充值金额格式不正确
+Deposit transaction submitted: ${txHash},充值交易已提交：${txHash}
+Transaction was rejected by wallet,钱包已拒绝该交易
+Failed to submit deposit transaction,提交充值交易失败
+Processing...,处理中...
+Requesting wallet confirmation...,正在请求钱包确认...
+Wallet did not respond. Please check wallet popup or extension site access.,钱包未响应，请检查钱包弹窗或扩展站点权限
+Wallet network switch timed out. Please switch network in wallet manually.,钱包切换网络超时，请在钱包中手动切换网络
+Wallet transaction request timed out. Please check wallet popup.,钱包交易请求超时，请检查钱包弹窗
+Debug logs,调试日志
+Please connect wallet and sign in first.,请先连接钱包并登录
+Wallet sign-in request timed out. Please try again.,钱包登录请求超时，请重试
+Wallet signature timed out. Please check wallet popup.,钱包签名超时，请检查钱包弹窗
+Wallet sign-in verify timed out. Please try again.,钱包登录校验超时，请重试
 Use MetaMask to login,使用 MetaMask 登录
 Use OKX Wallet to login,使用 OKX Wallet 登录
 ${walletName} is not installed or unavailable.,${walletName} 未安装或不可用。
