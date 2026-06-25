@@ -73,13 +73,11 @@ async function getErc20DepositEvents(
   }
 
   const events: DepositEvent[] = [];
-
   for (const log of logs) {
     const parsed = transferInterface.parseLog({
       topics: [...log.topics],
       data: log.data
     });
-
     if (!parsed) {
       continue;
     }
@@ -115,9 +113,7 @@ async function getNativeDepositEvents(
   toBlock: number
 ) {
   const assignedAddresses =
-    config.depositMode === 'hd'
-      ? await listAssignedDepositAddresses()
-      : new Map();
+    config.depositMode === 'hd' ? await listAssignedDepositAddresses() : new Map();
 
   if (config.depositMode === 'hd' && assignedAddresses.size === 0) {
     return [];
@@ -222,13 +218,7 @@ export async function processOnchainDeposits() {
     };
   }
 
-  const events = await getDepositEvents(
-    provider,
-    config,
-    fromBlock,
-    toBlock
-  );
-
+  const events = await getDepositEvents(provider, config, fromBlock, toBlock);
   let processed = 0;
   let settled = 0;
 

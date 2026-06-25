@@ -106,6 +106,7 @@ type NbcWalletPublicConfig {
   treasuryAddress: String
   depositMode: String!
   onchainEnabled: Boolean!
+  onchainEnabledRaw: Int!
 }
 
 extend type Query {

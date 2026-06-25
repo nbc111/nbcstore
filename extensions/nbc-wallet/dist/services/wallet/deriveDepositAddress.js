@@ -15,4 +15,3 @@ export function deriveDepositAddress(index) {
     }
     throw new Error('NBC deposit xpub or mnemonic is required');
 }
-//# sourceMappingURL=deriveDepositAddress.js.map

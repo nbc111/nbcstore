@@ -11,6 +11,7 @@ export type NbcOnchainConfig = {
   assetKey: string;
   treasuryAddress: string;
   depositMode: 'treasury' | 'hd';
+  hdPathPrefix: string;
   depositXpub: string;
   depositMnemonic: string;
   depositDerivationPath: string;
@@ -29,14 +30,17 @@ export function getOnchainConfig(): NbcOnchainConfig {
   );
   const depositMode = String(
     process.env.NBC_WALLET_DEPOSIT_MODE ||
-      getConfig('nbcWallet.onchain.deposit.mode', 'treasury')
+      getConfig(
+        'nbcWallet.onchain.deposit.mode',
+        getConfig('nbcWallet.onchain.depositMode', 'treasury')
+      )
   ).toLowerCase();
 
   return {
     enabled:
       Number(
         process.env.NBC_WALLET_ONCHAIN_ENABLED ??
-          getConfig('nbcWallet.onchain.enabled', 0)
+          getConfig('nbcWallet.onchain.enabled', 1)
       ) === 1,
     rpcUrl: chain.rpcUrl,
     chainId: chain.chainId,
@@ -47,6 +51,13 @@ export function getOnchainConfig(): NbcOnchainConfig {
       ? normalizeWalletAddress(treasuryAddress)
       : '',
     depositMode: depositMode === 'hd' ? 'hd' : 'treasury',
+    hdPathPrefix: String(
+      process.env.NBC_WALLET_HD_PATH_PREFIX ||
+        getConfig(
+          'nbcWallet.onchain.hdPathPrefix',
+          getConfig('nbcWallet.onchain.deposit.derivationPath', "m/44'/60'/0'/0")
+        )
+    ).replace(/\/+$/, ''),
     depositXpub: String(
       process.env.NBC_WALLET_DEPOSIT_XPUB ||
         getConfig('nbcWallet.onchain.deposit.xpub', '')
@@ -101,7 +112,7 @@ export function assertOnchainConfig(config = getOnchainConfig()) {
     throw new Error('nbcWallet.onchain.chainId is required');
   }
   if (config.assetType === 'erc20' && !config.tokenAddress) {
-    throw new Error('nbcWallet.onchain.tokenAddress is required');
+    throw new Error('nbcWallet.onchain.tokenAddress is required for erc20 mode');
   }
   if (config.depositMode === 'treasury' && !config.treasuryAddress) {
     throw new Error('nbcWallet.onchain.treasuryAddress is required');

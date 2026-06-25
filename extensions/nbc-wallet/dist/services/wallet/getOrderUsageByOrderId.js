@@ -16,7 +16,8 @@ export async function getOrderUsageByOrderId(orderId) {
          )
       WHERE u.order_id = $1
       ORDER BY t.wallet_tx_id DESC NULLS LAST
-      LIMIT 1`, [orderId]);
+      LIMIT 1`, [
+        orderId
+    ]);
     return result.rows[0] || null;
 }
-//# sourceMappingURL=getOrderUsageByOrderId.js.map
