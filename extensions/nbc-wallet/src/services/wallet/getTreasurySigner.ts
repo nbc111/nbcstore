@@ -26,7 +26,7 @@ export function getTreasurySigner() {
   if (!chain.chainId) {
     throw new Error('nbcWallet.onchain.chainId is required');
   }
-  if (!chain.tokenAddress) {
+  if (chain.assetType === 'erc20' && !chain.tokenAddress) {
     throw new Error('nbcWallet.onchain.tokenAddress is required');
   }
   if (!privateKey) {
@@ -35,7 +35,9 @@ export function getTreasurySigner() {
 
   const provider = new JsonRpcProvider(chain.rpcUrl, chain.chainId);
   const signer = new Wallet(privateKey, provider);
-  const token = new Contract(chain.tokenAddress, ERC20_ABI, signer);
+  const token = chain.assetType === 'erc20'
+    ? new Contract(chain.tokenAddress, ERC20_ABI, signer)
+    : null;
 
   return {
     signer,

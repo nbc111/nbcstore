@@ -90,7 +90,7 @@ export async function requestWithdrawal(input: RequestWithdrawalInput) {
     }
 
     const chain = getChainRpcConfig();
-    if (!chain.chainId || !chain.tokenAddress) {
+    if (!chain.chainId || (chain.assetType === 'erc20' && !chain.tokenAddress)) {
       throw new Error('On-chain withdrawal configuration is incomplete');
     }
 
@@ -109,7 +109,7 @@ export async function requestWithdrawal(input: RequestWithdrawalInput) {
         customer_id: lockedWallet.customer_id,
         wallet_address: lockedWallet.wallet_address,
         chain_id: chain.chainId,
-        token_address: chain.tokenAddress,
+        token_address: chain.assetType === 'native' ? 'native:NBC' : chain.tokenAddress,
         amount,
         status: 'requested',
         metadata: {

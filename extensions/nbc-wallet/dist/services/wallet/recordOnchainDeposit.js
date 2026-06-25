@@ -8,9 +8,12 @@ function normalizeAmount(amount) {
     }
     return normalized.toString();
 }
+function normalizeAssetAddress(tokenAddress) {
+    return tokenAddress.startsWith('native:') ? tokenAddress : normalizeWalletAddress(tokenAddress);
+}
 export async function recordOnchainDeposit(input) {
     const walletAddress = normalizeWalletAddress(input.walletAddress);
-    const tokenAddress = normalizeWalletAddress(input.tokenAddress);
+    const tokenAddress = normalizeAssetAddress(input.tokenAddress);
     const amount = normalizeAmount(input.amount);
     const connection = await getConnection();
     try {
@@ -33,10 +36,18 @@ export async function recordOnchainDeposit(input) {
                 alreadyRecorded: true
             };
         }
-        const walletResult = await connection.query(`SELECT *
-         FROM nbc_wallet
-        WHERE wallet_address = $1
-        FOR UPDATE`, [
+        const walletResult = input.walletId ? await connection.query(`SELECT *
+             FROM nbc_wallet
+            WHERE wallet_id = $1
+            FOR UPDATE`, [
+            input.walletId
+        ]) : await connection.query(`SELECT *
+             FROM nbc_wallet
+            WHERE deposit_address = $1
+               OR wallet_address = $1
+            ORDER BY CASE WHEN deposit_address = $1 THEN 0 ELSE 1 END
+            LIMIT 1
+            FOR UPDATE`, [
             walletAddress
         ]);
         const wallet = walletResult.rows[0];

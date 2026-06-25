@@ -1,9 +1,6 @@
 import { execute } from '@evershop/postgres-query-builder';
-
 export default async function migrate(connection) {
-  await execute(
-    connection,
-    `CREATE TABLE IF NOT EXISTS "nbc_wallet_deposit_address" (
+    await execute(connection, `CREATE TABLE IF NOT EXISTS "nbc_wallet_deposit_address" (
       "deposit_address_id" INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
       "uuid" UUID NOT NULL DEFAULT gen_random_uuid(),
       "wallet_id" INT NOT NULL,
@@ -24,38 +21,17 @@ export default async function migrate(connection) {
         REFERENCES "nbc_wallet" ("wallet_id") ON DELETE CASCADE,
       CONSTRAINT "FK_NBC_WALLET_DEPOSIT_ADDRESS_CUSTOMER" FOREIGN KEY ("customer_id")
         REFERENCES "customer" ("customer_id") ON DELETE CASCADE
-    )`
-  );
-
-  await execute(
-    connection,
-    `CREATE INDEX IF NOT EXISTS "IDX_NBC_WALLET_DEPOSIT_ADDRESS_CUSTOMER_ID"
-      ON "nbc_wallet_deposit_address" ("customer_id")`
-  );
-
-  await execute(
-    connection,
-    `ALTER TABLE nbc_wallet
-       ADD COLUMN IF NOT EXISTS "deposit_address" varchar(128) DEFAULT NULL`
-  );
-
-  await execute(
-    connection,
-    `ALTER TABLE nbc_wallet
-       ADD COLUMN IF NOT EXISTS "address_index" INT DEFAULT NULL`
-  );
-
-  await execute(
-    connection,
-    `CREATE UNIQUE INDEX IF NOT EXISTS "IDX_NBC_WALLET_DEPOSIT_ADDRESS_UNIQUE"
+    )`);
+    await execute(connection, `CREATE INDEX IF NOT EXISTS "IDX_NBC_WALLET_DEPOSIT_ADDRESS_CUSTOMER_ID"
+      ON "nbc_wallet_deposit_address" ("customer_id")`);
+    await execute(connection, `ALTER TABLE nbc_wallet
+       ADD COLUMN IF NOT EXISTS "deposit_address" varchar(128) DEFAULT NULL`);
+    await execute(connection, `ALTER TABLE nbc_wallet
+       ADD COLUMN IF NOT EXISTS "address_index" INT DEFAULT NULL`);
+    await execute(connection, `CREATE UNIQUE INDEX IF NOT EXISTS "IDX_NBC_WALLET_DEPOSIT_ADDRESS_UNIQUE"
        ON "nbc_wallet" ("deposit_address")
-       WHERE "deposit_address" IS NOT NULL`
-  );
-
-  await execute(
-    connection,
-    `CREATE UNIQUE INDEX IF NOT EXISTS "IDX_NBC_WALLET_ADDRESS_INDEX_UNIQUE"
+       WHERE "deposit_address" IS NOT NULL`);
+    await execute(connection, `CREATE UNIQUE INDEX IF NOT EXISTS "IDX_NBC_WALLET_ADDRESS_INDEX_UNIQUE"
        ON "nbc_wallet" ("address_index")
-       WHERE "address_index" IS NOT NULL`
-  );
+       WHERE "address_index" IS NOT NULL`);
 }

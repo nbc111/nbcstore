@@ -93,6 +93,12 @@
       "blockExplorerUrl": "",
       "treasuryAddress": "0xd54482180fbb5fe3735a508f5abcff4f5390a3d5",
       "treasuryPrivateKey": "",
+      "deposit": {
+        "mode": "treasury",
+        "xpub": "",
+        "mnemonic": "",
+        "derivationPath": "m/44'/60'/0'/0"
+      },
       "startBlock": 0,
       "confirmations": 12,
       "blockBatchSize": 500,

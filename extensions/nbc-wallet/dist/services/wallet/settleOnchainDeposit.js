@@ -30,10 +30,18 @@ export async function settleOnchainDeposit(depositId) {
                 alreadySettled: true
             };
         }
-        const walletResult = await connection.query(`SELECT *
-         FROM nbc_wallet
-        WHERE wallet_address = $1
-        FOR UPDATE`, [
+        const walletResult = deposit.wallet_id ? await connection.query(`SELECT *
+             FROM nbc_wallet
+            WHERE wallet_id = $1
+            FOR UPDATE`, [
+            deposit.wallet_id
+        ]) : await connection.query(`SELECT *
+             FROM nbc_wallet
+            WHERE deposit_address = $1
+               OR wallet_address = $1
+            ORDER BY CASE WHEN deposit_address = $1 THEN 0 ELSE 1 END
+            LIMIT 1
+            FOR UPDATE`, [
             deposit.wallet_address
         ]);
         const wallet = walletResult.rows[0];

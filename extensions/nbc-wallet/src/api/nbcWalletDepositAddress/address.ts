@@ -4,7 +4,7 @@ import {
   OK,
   UNAUTHORIZED
 } from '@evershop/evershop/lib/util/httpStatus';
-import { assignDepositAddress } from '../../services/wallet/assignDepositAddress.js';
+import { ensureWalletDepositAddress } from '../../services/wallet/ensureWalletDepositAddress.js';
 
 function mapDepositAddressError(error: unknown): {
   status: number;
@@ -53,9 +53,10 @@ export default async function getNbcWalletDepositAddress(
       return;
     }
 
-    const result = await assignDepositAddress(Number(customer.customer_id));
+    const address = await ensureWalletDepositAddress(customer.customer_id);
+
     response.status(OK).json({
-      data: result
+      data: address
     });
   } catch (error) {
     const mapped = mapDepositAddressError(error);

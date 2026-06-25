@@ -36,8 +36,8 @@ import { writeAuditLog } from './writeAuditLog.js';
  * `processing`. A reconcile job must detect and finalise it — do NOT re-run
  * the chain transfer.
  */ export async function processWithdrawal(withdrawalUuid, performedBy = 'system') {
-    const { token } = getTreasurySigner();
-    const { tokenDecimals } = getChainRpcConfig();
+    const { signer, token } = getTreasurySigner();
+    const { assetType, tokenDecimals } = getChainRpcConfig();
     // ── Phase 1: validate + mark processing (committed DB txn) ───────────────
     let withdrawalId;
     let walletId;
@@ -120,7 +120,10 @@ import { writeAuditLog } from './writeAuditLog.js';
     let onchainError;
     try {
         const onchainAmount = BigInt(amount) * BigInt(10) ** BigInt(tokenDecimals);
-        const tx = await token.transfer(walletAddress, onchainAmount);
+        const tx = assetType === 'native' ? await signer.sendTransaction({
+            to: walletAddress,
+            value: onchainAmount
+        }) : await token.transfer(walletAddress, onchainAmount);
         const receipt = await tx.wait();
         txHash = receipt?.hash || tx.hash;
     } catch (err) {
@@ -142,6 +145,7 @@ import { writeAuditLog } from './writeAuditLog.js';
                 status: 'completed',
                 metadata: {
                     source: 'onchain_withdrawal',
+                    asset_type: assetType,
                     tx_hash: txHash,
                     performed_by: performedBy
                 }

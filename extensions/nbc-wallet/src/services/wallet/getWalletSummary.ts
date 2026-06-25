@@ -3,7 +3,8 @@ import { getExchangeRate } from './getExchangeRate.js';
 
 export async function getWalletSummary(customerId: number) {
   const result = await pool.query(
-    `SELECT wallet_id, uuid, customer_id, wallet_address, chain_id, balance,
+    `SELECT wallet_id, uuid, customer_id, wallet_address, deposit_address,
+            address_index, chain_id, balance,
             frozen_balance, status, last_login_at, created_at, updated_at
        FROM nbc_wallet
       WHERE customer_id = $1`,
@@ -24,6 +25,9 @@ export async function getWalletSummary(customerId: number) {
     uuid: wallet.uuid,
     customerId: wallet.customer_id,
     walletAddress: wallet.wallet_address,
+    depositAddress: wallet.deposit_address || null,
+    addressIndex:
+      wallet.address_index === null ? null : Number(wallet.address_index),
     chainId: wallet.chain_id,
     balance,
     frozenBalance,

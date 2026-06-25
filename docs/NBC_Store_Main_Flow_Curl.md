@@ -889,3 +889,701 @@ POST /api/cart/mine/items
 - `POST /api/orders`
 - `POST /api/nbcWallet/orders/capture`
 - `GET /api/nbcWallet/transactions`
+
+## 20. NBC 链上入金开启与闭环验证
+
+本节验证日期：2026-06-16
+
+测试环境：
+
+```bash
+BASE="http://156.251.17.96:3000"
+TMP_DIR="/tmp/nbc-native-deposit-curl-1781575055"
+ADMIN_COOKIE="$TMP_DIR/admin.cookie"
+CUSTOMER_COOKIE="$TMP_DIR/customer.cookie"
+```
+
+### 20.1 当前线上链上入金配置
+
+服务器当前配置读取结果：
+
+```json
+{
+  "enabled": 1,
+  "rpcUrl": "https://rpc.nbcex.com",
+  "chainId": 1281,
+  "assetType": "native",
+  "tokenAddress": "",
+  "treasuryAddress": "",
+  "startBlock": 3347083,
+  "confirmations": 0,
+  "depositMode": "hd"
+}
+```
+
+NBC RPC 节点连通性验证：
+
+```bash
+curl -sS --max-time 10 \
+  -H "content-type: application/json" \
+  --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' \
+  https://rpc.nbcex.com
+
+curl -sS --max-time 10 \
+  -H "content-type: application/json" \
+  --data '{"jsonrpc":"2.0","id":2,"method":"eth_blockNumber","params":[]}' \
+  https://rpc.nbcex.com
+```
+
+真实返回：
+
+```json
+{"jsonrpc":"2.0","id":1,"result":"0x501"}
+{"jsonrpc":"2.0","id":2,"result":"0x32e1c1"}
+```
+
+说明：
+
+- `0x501` 对应十进制 `1281`，与当前 `chainId` 配置一致。
+- RPC 可用，链上入金已开启为 native + HD 模式。
+
+### 20.2 用户钱包签名登录
+
+### Curl
+
+```bash
+curl -sS \
+  -H "Content-Type: application/json" \
+  -d "{\"walletAddress\":\"$ADDR\"}" \
+  "$BASE/api/nbcWallet/auth/request" \
+  -o "$TMP_DIR/01-auth-request.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+```bash
+curl -sS \
+  -c "$CUSTOMER_COOKIE" \
+  -b "$CUSTOMER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d "{\"walletAddress\":\"$ADDR\",\"nonce\":\"$NONCE\",\"signature\":\"$SIG\"}" \
+  "$BASE/api/nbcWallet/auth/verify" \
+  -o "$TMP_DIR/02-auth-verify.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "data": {
+    "sid": "已返回",
+    "customer": {
+      "customerId": 5,
+      "email": "wallet_0xcd57255bd0ec4c0ebde9441d411f9d45561bd3fd@nbc.local",
+      "fullName": "0xcd57...d3fd"
+    },
+    "wallet": {
+      "address": "0xcd57255bd0ec4c0ebde9441d411f9d45561bd3fd"
+    }
+  }
+}
+```
+
+### 20.3 分配 BIP44 HD 充值地址
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  -X POST \
+  "$BASE/api/nbcWallet/deposit-address" \
+  -o "$TMP_DIR/03-deposit-address.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "data": {
+    "mode": "hd",
+    "walletId": 5,
+    "customerId": 5,
+    "depositAddress": "0xf241e143f1dfda0f81e9ac48e271765834fe36c7",
+    "addressIndex": 0,
+    "chainId": 1281,
+    "tokenAddress": ""
+  }
+}
+```
+
+### 20.4 查询入金前钱包余额
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/balance" \
+  -o "$TMP_DIR/04-balance-before.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "walletId": 5,
+  "walletAddress": "0xcd57255bd0ec4c0ebde9441d411f9d45561bd3fd",
+  "depositAddress": "0xf241e143f1dfda0f81e9ac48e271765834fe36c7",
+  "addressIndex": 0,
+  "balance": 0,
+  "availableBalance": 0
+}
+```
+
+### 20.5 后台登录并手动触发 native 扫链
+
+### Curl
+
+```bash
+curl -sS \
+  -c "$ADMIN_COOKIE" \
+  -b "$ADMIN_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@admin.com","password":"Admin123456"}' \
+  "$BASE/admin/user/login" \
+  -o "$TMP_DIR/05-admin-login.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+```bash
+curl -sS \
+  -b "$ADMIN_COOKIE" \
+  -X POST \
+  "$BASE/api/admin/nbcWallet/onchain/process" \
+  -o "$TMP_DIR/06-onchain-process.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "data": {
+    "enabled": true,
+    "fromBlock": 3347083,
+    "toBlock": 3347098,
+    "latestBlock": 3347098,
+    "processed": 0,
+    "settled": 0
+  }
+}
+```
+
+### 20.6 查询链上入金流水
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/transactions?transactionType=onchain_deposit&limit=5" \
+  -o "$TMP_DIR/07-onchain-transactions.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "data": {
+    "items": [],
+    "currentPage": 1,
+    "pageSize": 5,
+    "total": 0
+  }
+}
+```
+
+### 20.7 充值后再次触发扫链
+
+测试转账信息：
+
+```json
+{
+  "blockNumber": 3347798,
+  "txHash": "0x8a1652290be20f418209e8c434402962fd81e51509701e1f0efb46445d75a805",
+  "from": "0x931f3600a299fd9b24cefb3bff79388d19804bea",
+  "to": "0xf241e143f1dfda0f81e9ac48e271765834fe36c7",
+  "value": "100.0 NBC"
+}
+```
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$ADMIN_COOKIE" \
+  -X POST \
+  "$BASE/api/admin/nbcWallet/onchain/process" \
+  -o "$TMP_DIR/08-onchain-process-after-transfer.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "data": {
+    "enabled": true,
+    "fromBlock": 3347149,
+    "toBlock": 3347871,
+    "latestBlock": 3347871,
+    "processed": 1,
+    "settled": 1
+  }
+}
+```
+
+### 20.8 查询入金后余额
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/balance" \
+  -o "$TMP_DIR/09-balance-after-transfer.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "walletId": 5,
+  "walletAddress": "0xcd57255bd0ec4c0ebde9441d411f9d45561bd3fd",
+  "depositAddress": "0xf241e143f1dfda0f81e9ac48e271765834fe36c7",
+  "addressIndex": 0,
+  "balance": 100,
+  "availableBalance": 100
+}
+```
+
+### 20.9 查询入金流水
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/transactions?transactionType=onchain_deposit&limit=10" \
+  -o "$TMP_DIR/10-onchain-transactions-after-transfer.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "walletTxId": 6,
+  "uuid": "2059916a-c3a5-4410-907d-44e9544ba674",
+  "walletId": 5,
+  "orderId": null,
+  "orderUuid": null,
+  "orderNumber": null,
+  "transactionType": "onchain_deposit",
+  "amount": 100,
+  "balanceBefore": 0,
+  "balanceAfter": 100,
+  "exchangeRate": null,
+  "cnyAmount": null,
+  "reference": "0x8a1652290be20f418209e8c434402962fd81e51509701e1f0efb46445d75a805",
+  "status": "completed",
+  "metadata": {
+    "source": "onchain_deposit",
+    "chain_id": 1281,
+    "log_index": 0,
+    "block_number": 3347798,
+    "token_address": "native:NBC"
+  },
+  "createdAt": "2026-06-16T03:28:01.535Z"
+}
+```
+
+### 20.10 当前结论
+
+已完成完整闭环：
+
+- NBC Chain RPC 连通性验证。
+- 原生币 native 入金代码部署。
+- `enabled=1`、`assetType=native`、`deposit.mode=hd` 已在测试环境开启。
+- BIP44 HD 充值地址已通过真实 curl 分配成功，地址为 `0xf241e143f1dfda0f81e9ac48e271765834fe36c7`。
+- 向充值地址转入 `100 NBC` 后，手动扫链返回 `processed=1`、`settled=1`。
+- 商城钱包余额从 `0` 增加到 `100`。
+- `onchain_deposit` 流水生成，`reference` 为链上交易哈希。
+
+## 21. NBC 原生币出金闭环验证
+
+本节验证日期：2026-06-16
+
+测试环境：
+
+```bash
+BASE="http://156.251.17.96:3000"
+TMP_DIR="/tmp/nbc-native-withdrawal-curl-1781613795"
+CUSTOMER_COOKIE="$TMP_DIR/customer.cookie"
+ADMIN_COOKIE="$TMP_DIR/admin.cookie"
+ADDR="0x7ee9c236ffdb4057c90d448a21b52b2e253ce611"
+```
+
+出金测试 treasury：
+
+```json
+{
+  "treasuryAddress": "0xd54482180fbb5fe3735a508f5abcff4f5390a3d5",
+  "fundedTx": "0x111e055be8d010fb1084a8c84b396961f0d73942742bb6c03934134d6a433f4f",
+  "fundedAmount": "20 NBC"
+}
+```
+
+说明：本次测试使用单独生成的出金 treasury 钱包，并配置 `NBC_WALLET_TREASURY_PRIVATE_KEY`；NBC 为 native 原生币，出金链上转账使用 `signer.sendTransaction({ to, value })`。
+
+### 21.1 用户钱包签名登录
+
+### Curl
+
+```bash
+curl -sS \
+  -H "Content-Type: application/json" \
+  -d "{\"walletAddress\":\"$ADDR\"}" \
+  "$BASE/api/nbcWallet/auth/request" \
+  -o "$TMP_DIR/01-auth-request.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+```bash
+curl -sS \
+  -c "$CUSTOMER_COOKIE" \
+  -b "$CUSTOMER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d "{\"walletAddress\":\"$ADDR\",\"nonce\":\"$NONCE\",\"signature\":\"$SIG\"}" \
+  "$BASE/api/nbcWallet/auth/verify" \
+  -o "$TMP_DIR/02-auth-verify.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 21.2 后台给测试钱包加内部余额
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$ADMIN_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d "{\"walletAddress\":\"$ADDR\",\"type\":\"credit\",\"amount\":50,\"reason\":\"native withdrawal curl test\",\"reference\":\"withdraw-curl-1781613796\"}" \
+  "$BASE/api/admin/nbcWallet/adjust" \
+  -o "$TMP_DIR/04-admin-credit.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "data": {
+    "walletId": 6,
+    "customerId": 6,
+    "walletAddress": "0x7ee9c236ffdb4057c90d448a21b52b2e253ce611",
+    "transactionId": 7,
+    "transactionType": "admin_credit",
+    "amount": 50,
+    "balanceBefore": 0,
+    "balanceAfter": 50,
+    "reason": "native withdrawal curl test",
+    "reference": "withdraw-curl-1781613796"
+  }
+}
+```
+
+### 21.3 查询出金前内部余额和链上余额
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/balance" \
+  -o "$TMP_DIR/05-balance-before.json" \
+  -w "HTTP %{http_code}\n"
+
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/onchain/balance?walletAddress=$ADDR" \
+  -o "$TMP_DIR/06-onchain-before.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "walletBalance": {
+    "balance": 50,
+    "frozenBalance": 0,
+    "availableBalance": 50
+  },
+  "onchainBalance": {
+    "balance": 0,
+    "balanceRaw": "0",
+    "source": "native",
+    "chainId": 1281,
+    "tokenAddress": null
+  }
+}
+```
+
+### 21.4 用户申请出金
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"amount":5}' \
+  "$BASE/api/nbcWallet/withdraw" \
+  -o "$TMP_DIR/07-withdraw-request.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "data": {
+    "withdrawalId": 1,
+    "amount": 5,
+    "walletAddress": "0x7ee9c236ffdb4057c90d448a21b52b2e253ce611",
+    "frozenBalance": 5
+  }
+}
+```
+
+随后查询出金列表取得 `withdrawal_uuid`：
+
+```bash
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/withdrawals?limit=1" \
+  -o "$TMP_DIR/08-withdrawals-after-request.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+取得：
+
+```bash
+WITHDRAW_UUID="214dc8c5-388f-4acc-adb9-557aef42ed40"
+```
+
+### 21.5 后台审批出金
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$ADMIN_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d "{\"withdrawal_uuid\":\"$WITHDRAW_UUID\"}" \
+  "$BASE/api/admin/nbcWallet/withdrawals/approve" \
+  -o "$TMP_DIR/09-withdraw-approve.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "data": {
+    "withdrawalUuid": "214dc8c5-388f-4acc-adb9-557aef42ed40",
+    "withdrawalId": 1,
+    "walletId": 6,
+    "customerId": 6,
+    "amount": 5,
+    "walletAddress": "0x7ee9c236ffdb4057c90d448a21b52b2e253ce611",
+    "status": "approved",
+    "approvedBy": "admin:62d4756c-82bf-440c-8caf-57d28897b069",
+    "alreadyApproved": false
+  }
+}
+```
+
+### 21.6 后台处理链上出金
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$ADMIN_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d "{\"withdrawal_uuid\":\"$WITHDRAW_UUID\"}" \
+  "$BASE/api/admin/nbcWallet/withdrawals/process" \
+  -o "$TMP_DIR/10-withdraw-process.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "data": {
+    "withdrawalUuid": "214dc8c5-388f-4acc-adb9-557aef42ed40",
+    "status": "completed",
+    "txHash": "0x18e9da7e3c2d7df8cbb1c8d5f08012bbb3a359cb5444c07641e0702508a87134",
+    "balanceAfter": 45,
+    "frozenBalance": 0
+  }
+}
+```
+
+### 21.7 查询出金后余额
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/balance" \
+  -o "$TMP_DIR/11-balance-after.json" \
+  -w "HTTP %{http_code}\n"
+
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/onchain/balance?walletAddress=$ADDR" \
+  -o "$TMP_DIR/12-onchain-after.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "walletBalance": {
+    "balance": 45,
+    "frozenBalance": 0,
+    "availableBalance": 45
+  },
+  "onchainBalance": {
+    "balance": 5,
+    "balanceRaw": "5000000000000000000",
+    "source": "native",
+    "chainId": 1281,
+    "tokenAddress": null
+  }
+}
+```
+
+### 21.8 查询出金记录与钱包流水
+
+### Curl
+
+```bash
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/withdrawals?limit=5" \
+  -o "$TMP_DIR/13-withdrawals-final.json" \
+  -w "HTTP %{http_code}\n"
+
+curl -sS \
+  -b "$CUSTOMER_COOKIE" \
+  "$BASE/api/nbcWallet/transactions?limit=10" \
+  -o "$TMP_DIR/14-transactions-final.json" \
+  -w "HTTP %{http_code}\n"
+```
+
+HTTP 状态：`200`
+
+### 真实返回
+
+```json
+{
+  "withdrawal": {
+    "withdrawalId": 1,
+    "uuid": "214dc8c5-388f-4acc-adb9-557aef42ed40",
+    "walletId": 6,
+    "customerId": 6,
+    "walletAddress": "0x7ee9c236ffdb4057c90d448a21b52b2e253ce611",
+    "chainId": 1281,
+    "tokenAddress": "native:NBC",
+    "amount": 5,
+    "txHash": "0x18e9da7e3c2d7df8cbb1c8d5f08012bbb3a359cb5444c07641e0702508a87134",
+    "walletTxId": 8,
+    "status": "completed"
+  },
+  "transaction": {
+    "walletTxId": 8,
+    "transactionType": "withdrawal",
+    "amount": -5,
+    "balanceBefore": 50,
+    "balanceAfter": 45,
+    "reference": "214dc8c5-388f-4acc-adb9-557aef42ed40",
+    "status": "completed",
+    "metadata": {
+      "source": "onchain_withdrawal",
+      "tx_hash": "0x18e9da7e3c2d7df8cbb1c8d5f08012bbb3a359cb5444c07641e0702508a87134",
+      "asset_type": "native",
+      "performed_by": "admin:62d4756c-82bf-440c-8caf-57d28897b069"
+    }
+  }
+}
+```
+
+### 21.9 当前结论
+
+已完成 NBC 原生币出金完整闭环：
+
+- 用户内部余额加款：`50 NBC`。
+- 用户申请出金：`5 NBC`，冻结余额变为 `5`。
+- 后台审批成功：`requested -> approved`。
+- 后台链上处理成功：`approved -> completed`。
+- 内部余额从 `50` 扣减到 `45`，冻结余额回到 `0`。
+- 用户链上原生 NBC 余额从 `0` 增加到 `5`。
+- 出金记录和钱包流水均生成，链上交易哈希为 `0x18e9da7e3c2d7df8cbb1c8d5f08012bbb3a359cb5444c07641e0702508a87134`。

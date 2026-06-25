@@ -43,8 +43,8 @@ export async function processWithdrawal(
   withdrawalUuid: string,
   performedBy = 'system'
 ) {
-  const { token } = getTreasurySigner();
-  const { tokenDecimals } = getChainRpcConfig();
+  const { signer, token } = getTreasurySigner();
+  const { assetType, tokenDecimals } = getChainRpcConfig();
 
   // ── Phase 1: validate + mark processing (committed DB txn) ───────────────
   let withdrawalId: number;
@@ -138,7 +138,12 @@ export async function processWithdrawal(
 
   try {
     const onchainAmount = BigInt(amount) * BigInt(10) ** BigInt(tokenDecimals);
-    const tx = await token.transfer(walletAddress, onchainAmount);
+    const tx = assetType === 'native'
+      ? await signer.sendTransaction({
+          to: walletAddress,
+          value: onchainAmount
+        })
+      : await token!.transfer(walletAddress, onchainAmount);
     const receipt = await tx.wait();
     txHash = receipt?.hash || tx.hash;
   } catch (err) {
@@ -163,6 +168,7 @@ export async function processWithdrawal(
           status: 'completed',
           metadata: {
             source: 'onchain_withdrawal',
+            asset_type: assetType,
             tx_hash: txHash,
             performed_by: performedBy
           }

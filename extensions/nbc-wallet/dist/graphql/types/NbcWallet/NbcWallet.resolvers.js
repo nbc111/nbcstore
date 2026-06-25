@@ -58,11 +58,13 @@ export default {
                 rpcUrl: chain.rpcUrl || null,
                 chainName: chain.chainName,
                 nativeSymbol: chain.nativeSymbol,
+                assetType: chain.assetType,
                 tokenAddress: chain.tokenAddress || null,
                 tokenDecimals: chain.tokenDecimals,
                 blockExplorerUrl: chain.blockExplorerUrl || null,
                 chainBalanceEnabled: isChainRpcConfigured(chain),
                 treasuryAddress: treasuryAddress || null,
+                depositMode: String(getConfig('nbcWallet.onchain.deposit.mode', getConfig('nbcWallet.onchain.depositMode', 'treasury'))).toLowerCase() === 'hd' ? 'hd' : 'treasury',
                 onchainEnabled: onchainEnabledRaw === 1,
                 onchainEnabledRaw
             };

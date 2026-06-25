@@ -9,6 +9,7 @@ import { normalizeWalletAddress } from './normalizeWalletAddress.js';
 
 type RecordOnchainDepositInput = {
   walletAddress: string;
+  walletId?: number | null;
   chainId: number;
   tokenAddress: string;
   txHash: string;
@@ -26,9 +27,15 @@ function normalizeAmount(amount: number | string | bigint) {
   return normalized.toString();
 }
 
+function normalizeAssetAddress(tokenAddress: string) {
+  return tokenAddress.startsWith('native:')
+    ? tokenAddress
+    : normalizeWalletAddress(tokenAddress);
+}
+
 export async function recordOnchainDeposit(input: RecordOnchainDepositInput) {
   const walletAddress = normalizeWalletAddress(input.walletAddress);
-  const tokenAddress = normalizeWalletAddress(input.tokenAddress);
+  const tokenAddress = normalizeAssetAddress(input.tokenAddress);
   const amount = normalizeAmount(input.amount);
   const connection = await getConnection();
 
@@ -54,13 +61,24 @@ export async function recordOnchainDeposit(input: RecordOnchainDepositInput) {
       };
     }
 
-    const walletResult = await connection.query(
-      `SELECT *
-         FROM nbc_wallet
-        WHERE wallet_address = $1
-        FOR UPDATE`,
-      [walletAddress]
-    );
+    const walletResult = input.walletId
+      ? await connection.query(
+          `SELECT *
+             FROM nbc_wallet
+            WHERE wallet_id = $1
+            FOR UPDATE`,
+          [input.walletId]
+        )
+      : await connection.query(
+          `SELECT *
+             FROM nbc_wallet
+            WHERE deposit_address = $1
+               OR wallet_address = $1
+            ORDER BY CASE WHEN deposit_address = $1 THEN 0 ELSE 1 END
+            LIMIT 1
+            FOR UPDATE`,
+          [walletAddress]
+        );
     const wallet = walletResult.rows[0];
 
     const deposit = await insert('nbc_onchain_deposit')
