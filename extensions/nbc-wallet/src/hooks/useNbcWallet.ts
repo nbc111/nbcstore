@@ -40,6 +40,7 @@ export interface NbcWalletPublicConfig {
   blockExplorerUrl?: string | null;
   chainBalanceEnabled?: boolean;
   treasuryAddress?: string | null;
+  depositMode?: 'treasury' | 'hd' | string;
   onchainEnabled?: boolean;
 }
 

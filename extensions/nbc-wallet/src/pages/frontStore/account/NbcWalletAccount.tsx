@@ -5,6 +5,7 @@ interface NbcWalletAccountProps {
   authRequestApi: string;
   authVerifyApi: string;
   balanceApi: string;
+  depositAddressApi: string;
   transactionsApi: string;
   withdrawalsApi: string;
   withdrawApi: string;
@@ -14,6 +15,7 @@ interface NbcWalletAccountProps {
     displayName: string;
     chainId?: number | null;
     treasuryAddress?: string | null;
+    depositMode?: string;
     onchainEnabled: boolean;
   };
 }
@@ -22,6 +24,7 @@ export default function NbcWalletAccount({
   authRequestApi,
   authVerifyApi,
   balanceApi,
+  depositAddressApi,
   transactionsApi,
   withdrawalsApi,
   withdrawApi,
@@ -33,6 +36,7 @@ export default function NbcWalletAccount({
         authRequestApi,
         authVerifyApi,
         balanceApi,
+        depositAddressApi,
         transactionsApi,
         withdrawalsApi,
         withdrawApi
@@ -43,6 +47,7 @@ export default function NbcWalletAccount({
         displayName: nbcWalletPublicConfig.displayName,
         chainId: nbcWalletPublicConfig.chainId,
         treasuryAddress: nbcWalletPublicConfig.treasuryAddress,
+        depositMode: nbcWalletPublicConfig.depositMode,
         onchainEnabled: nbcWalletPublicConfig.onchainEnabled
       }}
     />
@@ -59,6 +64,7 @@ export const query = `
     authRequestApi: url(routeId: "authRequest")
     authVerifyApi: url(routeId: "authVerify")
     balanceApi: url(routeId: "nbcWalletBalance")
+    depositAddressApi: url(routeId: "nbcWalletDepositAddress")
     transactionsApi: url(routeId: "nbcWalletTransactions")
     withdrawalsApi: url(routeId: "nbcWalletWithdrawals")
     withdrawApi: url(routeId: "nbcWalletWithdraw")
@@ -68,6 +74,7 @@ export const query = `
       displayName
       chainId
       treasuryAddress
+      depositMode
       onchainEnabled
     }
   }
