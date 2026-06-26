@@ -44,7 +44,7 @@ export default function ShipButton({
           variant="default"
           onClick={() => {
             openAlert({
-              heading: 'Ship Items',
+              heading: _('Ship Items'),
               content: (
                 <div>
                   <Form
@@ -115,7 +115,7 @@ export default function ShipButton({
             });
           }}
         >
-          Ship items
+          {_('Ship Items')}
         </Button>
       </RenderIfTrue>
     );

@@ -26,9 +26,8 @@ export default function AdminUser({ adminUser, logoutUrl, loginPage }) {
         className: "admin-user flex grow justify-end items-center"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "flex justify-items-start gap-2 justify-center"
-    }, /*#__PURE__*/ React.createElement(DropdownMenu, null, /*#__PURE__*/ React.createElement(DropdownMenuTrigger, null, /*#__PURE__*/ React.createElement("button", {
-        className: "w-[2.188rem] h-[2.188rem] flex items-center justify-center rounded-full bg-primary/45 font-semibold border-2 border-primary cursor-pointer hover:bg-primary/60 transition-colors",
-        onClick: (e)=>e.preventDefault()
+    }, /*#__PURE__*/ React.createElement(DropdownMenu, null, /*#__PURE__*/ React.createElement(DropdownMenuTrigger, null, /*#__PURE__*/ React.createElement("span", {
+        className: "w-[2.188rem] h-[2.188rem] flex items-center justify-center rounded-full bg-primary/45 font-semibold border-2 border-primary cursor-pointer hover:bg-primary/60 transition-colors"
     }, fullName[0])), /*#__PURE__*/ React.createElement(DropdownMenuContent, {
         align: "end",
         className: "w-45"

@@ -5103,3 +5103,14 @@ Recent withdrawals,最近提现
 No withdrawals yet,暂无提现记录
 Requested,已申请
 Approved,已审核
+Guest Checkout,游客结账
+No notes from customer,客户暂无备注
+Mark Delivered,标记为已送达
+Tracking number is required,请填写物流单号
+Carrier is required,请选择承运商
+Activities,操作记录
+Customer was notified,已通知客户
+Order has been shipped,订单已发货
+Order has been created,订单已创建
+NBC Wallet payment captured: ${amount} NBC,NBC 钱包支付已扣款：${amount} NBC
+Refund NBC Payment,退款 NBC 支付

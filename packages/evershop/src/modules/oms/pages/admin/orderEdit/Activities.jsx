@@ -1,8 +1,24 @@
 import { DateTime } from 'luxon';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 export default function Activities({ order: { activities = [] } }) {
+  const mapActivityComment = (comment) => {
+    if (!comment) return comment;
+
+    const nbcCapturedMatch = /^NBC Wallet payment captured:\s*(.+)\s+NBC$/i.exec(
+      comment
+    );
+    if (nbcCapturedMatch) {
+      return _('NBC Wallet payment captured: ${amount} NBC', {
+        amount: nbcCapturedMatch[1]
+      });
+    }
+
+    return _(comment);
+  };
+
   const dailyActivities = [];
   activities.forEach((element) => {
     const current = dailyActivities[dailyActivities.length - 1];
@@ -44,7 +60,7 @@ export default function Activities({ order: { activities = [] } }) {
   return (
     <div className="mt-5">
       <h3 className="text-base font-semibold pb-5 border-b border-divider">
-        Activities
+        {_('Activities')}
       </h3>
       <ul className="relative py-5 mt-5 before:absolute before:content-[''] before:block before:h-full before:w-0.5 before:top-0 before:left-[0.563rem] before:bg-divider">
         {dailyActivities.map((group, i) => (
@@ -57,10 +73,10 @@ export default function Activities({ order: { activities = [] } }) {
                 <li key={k} className="flex items-center gap-0">
                   <span className="block w-[0.813rem] h-[0.813rem] bg-border rounded-full z-10 border-2 border-background shrink-0" />
                   <div className="flex-1 px-6">
-                    <span className="block text-sm">{a.comment}</span>
+                    <span className="block text-sm">{mapActivityComment(a.comment)}</span>
                     {parseInt(a.customerNotified, 10) === 1 && (
                       <span className="block text-muted-foreground italic text-sm mt-1">
-                        Customer was notified
+                        {_('Customer was notified')}
                       </span>
                     )}
                   </div>

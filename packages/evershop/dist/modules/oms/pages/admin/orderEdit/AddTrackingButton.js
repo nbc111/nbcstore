@@ -15,13 +15,15 @@ export default function AddTrackingButton({ order: { noShippingRequired, shipmen
         return /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement(Dialog, {
             open: dialogOpen,
             onOpenChange: setDialogOpen
-        }, /*#__PURE__*/ React.createElement(DialogTrigger, null, /*#__PURE__*/ React.createElement(Button, {
-            title: "Edit Tracking Info",
-            variant: "outline",
-            onClick: ()=>{
-                setDialogOpen(true);
-            }
-        }, "Edit Tracking Info")), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Edit Tracking Info'))), /*#__PURE__*/ React.createElement(Form, {
+        }, /*#__PURE__*/ React.createElement(DialogTrigger, {
+            render: /*#__PURE__*/ React.createElement(Button, {
+                title: _('Edit Tracking Info'),
+                variant: "outline",
+                onClick: ()=>{
+                    setDialogOpen(true);
+                }
+            })
+        }, _('Edit Tracking Info')), /*#__PURE__*/ React.createElement(DialogContent, null, /*#__PURE__*/ React.createElement(DialogHeader, null, /*#__PURE__*/ React.createElement(DialogTitle, null, _('Edit Tracking Info'))), /*#__PURE__*/ React.createElement(Form, {
             form: form,
             id: "editTrackingInfo",
             method: "PATCH",
@@ -40,7 +42,7 @@ export default function AddTrackingButton({ order: { noShippingRequired, shipmen
             defaultValue: shipment.trackingNumber || '',
             required: true,
             validation: {
-                required: 'Tracking number is required'
+                required: _('Tracking number is required')
             }
         })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(SelectField, {
             name: "carrier",
@@ -49,20 +51,22 @@ export default function AddTrackingButton({ order: { noShippingRequired, shipmen
             required: true,
             options: carriers,
             validation: {
-                required: 'Carrier is required'
+                required: _('Carrier is required')
             }
         }))), /*#__PURE__*/ React.createElement("div", {
             className: "flex justify-end"
         }, /*#__PURE__*/ React.createElement("div", {
             className: "grid grid-cols-2 gap-2"
-        }))), /*#__PURE__*/ React.createElement(DialogFooter, null, /*#__PURE__*/ React.createElement(DialogClose, null, /*#__PURE__*/ React.createElement(Button, {
-            title: "Cancel",
-            variant: "outline",
-            onClick: ()=>{
-                setDialogOpen(false);
-            }
-        }, "Cancel")), /*#__PURE__*/ React.createElement(Button, {
-            title: "Save",
+        }))), /*#__PURE__*/ React.createElement(DialogFooter, null, /*#__PURE__*/ React.createElement(DialogClose, {
+            render: /*#__PURE__*/ React.createElement(Button, {
+                title: _('Cancel'),
+                variant: "outline",
+                onClick: ()=>{
+                    setDialogOpen(false);
+                }
+            })
+        }, _('Cancel')), /*#__PURE__*/ React.createElement(Button, {
+            title: _('Save'),
             variant: "default",
             isLoading: form.formState.isSubmitting,
             onClick: async ()=>{
@@ -71,7 +75,7 @@ export default function AddTrackingButton({ order: { noShippingRequired, shipmen
                     bubbles: true
                 }));
             }
-        }, "Save")))));
+        }, _('Save'))))));
     }
 }
 export const layout = {

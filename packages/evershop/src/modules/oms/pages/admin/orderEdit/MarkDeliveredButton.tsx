@@ -1,4 +1,5 @@
 import { Button } from '@components/common/ui/Button.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 import { toast } from 'react-toastify';
 
@@ -51,7 +52,7 @@ export default function MarkDeliveredButton({
           }
         }}
       >
-        Mark Delivered
+        {_('Mark Delivered')}
       </Button>
     );
   }
