@@ -28,6 +28,16 @@ type WalletSummary = {
   walletAddress: string;
 };
 
+type OnchainBalance = {
+  walletAddress: string;
+  balance: number;
+  balanceRaw: string;
+  decimals: number;
+  source: 'native' | 'erc20';
+  chainId: number;
+  tokenAddress: string | null;
+};
+
 type DepositTx = {
   uuid: string;
   amount: number;
@@ -52,6 +62,7 @@ interface DepositButtonProps {
   authVerifyApi: string;
   depositAddressApi: string;
   balanceApi: string;
+  onchainBalanceApi: string;
   transactionsApi: string;
   withdrawApi: string;
   nbcWalletPublicConfig: {
@@ -150,6 +161,19 @@ async function fetchWalletBalance(balanceApi: string): Promise<WalletSummary | n
   return data?.wallet || null;
 }
 
+async function fetchOnchainBalance(
+  onchainBalanceApi: string,
+  walletAddress: string
+): Promise<OnchainBalance | null> {
+  if (!walletAddress) {
+    return null;
+  }
+  const url = new URL(onchainBalanceApi, window.location.origin);
+  url.searchParams.set('walletAddress', walletAddress);
+  const data = await parseJson(await fetch(url.toString(), { ...fetchOpts, method: 'GET' }));
+  return data || null;
+}
+
 async function fetchOnchainDepositTransactions(
   transactionsApi: string
 ): Promise<DepositTx[]> {
@@ -228,6 +252,32 @@ function shouldSkipDepositAutoRefresh(errorMessage: string) {
   );
 }
 
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  if (typeof error === 'object' && error !== null) {
+    const dataMessage = (error as any)?.data?.message || (error as any)?.data?.originalError?.message;
+    const directMessage = (error as any)?.message;
+    if (typeof dataMessage === 'string' && dataMessage && dataMessage !== '[object Object]') {
+      return dataMessage;
+    }
+    if (typeof directMessage === 'string' && directMessage && directMessage !== '[object Object]') {
+      return directMessage;
+    }
+  }
+  return '';
+}
+
+function mapDepositTransactionError(error: unknown) {
+  const message = getErrorMessage(error);
+  const normalized = message.toLowerCase();
+  if (normalized.includes('insufficient funds')) {
+    return _('Wallet balance is not enough for the deposit amount plus gas.');
+  }
+  return message || _('Failed to submit deposit transaction');
+}
+
 function WalletActionPanel({
   isDeposit,
   wallet,
@@ -240,7 +290,8 @@ function WalletActionPanel({
   primaryLabel,
   primaryDisabled,
   primaryLoading,
-  balanceLabel
+  balanceLabel,
+  maxBalance
 }: {
   isDeposit: boolean;
   wallet: WalletSummary | null;
@@ -254,9 +305,12 @@ function WalletActionPanel({
   primaryDisabled?: boolean;
   primaryLoading?: boolean;
   balanceLabel?: string;
+  maxBalance?: number | null;
 }) {
   const availableBalance = wallet?.availableBalance || 0;
   const totalBalance = wallet?.balance || 0;
+  const actionBalance = maxBalance ?? (isDeposit ? totalBalance : availableBalance);
+  const coinBalance = isDeposit ? actionBalance : totalBalance;
 
   return (
     <div className="space-y-4">
@@ -269,7 +323,9 @@ function WalletActionPanel({
           <div className="flex items-center gap-2">
             <CircleDollarSign className="h-4 w-4 text-primary" />
             <span className="font-medium">NBC</span>
-            <span className="text-xs text-muted-foreground">0.00</span>
+            <span className="text-xs text-muted-foreground">
+              {loading ? '...' : coinBalance.toLocaleString()}
+            </span>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
@@ -283,7 +339,7 @@ function WalletActionPanel({
             {balanceLabel || (isDeposit ? _('Wallet balance') : _('Store balance (for payment)'))}
           </p>
           <p className="font-semibold">
-            {loading ? '...' : `${totalBalance.toLocaleString()} NBC`}
+            {loading ? '...' : `${(isDeposit ? actionBalance : totalBalance).toLocaleString()} NBC`}
           </p>
         </div>
         {!isDeposit && (
@@ -324,7 +380,7 @@ function WalletActionPanel({
           onChange={(e) => {
             const nextRatio = Number(e.target.value);
             setRatio(nextRatio);
-            const baseAmount = isDeposit ? totalBalance : availableBalance;
+            const baseAmount = isDeposit ? actionBalance : availableBalance;
             const nextAmount = (baseAmount * nextRatio) / 100;
             setAmount(nextAmount <= 0 ? '' : String(Math.floor(nextAmount)));
           }}
@@ -364,6 +420,7 @@ export default function DepositButton({
   authVerifyApi,
   depositAddressApi,
   balanceApi,
+  onchainBalanceApi,
   transactionsApi,
   withdrawApi,
   nbcWalletPublicConfig
@@ -374,6 +431,7 @@ export default function DepositButton({
     null
   );
   const [wallet, setWallet] = React.useState<WalletSummary | null>(null);
+  const [onchainBalance, setOnchainBalance] = React.useState<OnchainBalance | null>(null);
   const [depositTxs, setDepositTxs] = React.useState<DepositTx[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -391,8 +449,14 @@ export default function DepositButton({
   const hasCustomerSession = Boolean(wallet?.walletAddress);
   const canSubmitDeposit = React.useMemo(() => {
     const amount = Number(String(depositAmount || '').trim());
-    return Number.isFinite(amount) && amount > 0;
-  }, [depositAmount]);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return false;
+    }
+    if (onchainBalance && amount > onchainBalance.balance) {
+      return false;
+    }
+    return true;
+  }, [depositAmount, onchainBalance]);
 
   React.useEffect(() => {
     sessionReadyRef.current = hasCustomerSession;
@@ -416,10 +480,14 @@ export default function DepositButton({
         fetchWalletBalance(balanceApi),
         fetchOnchainDepositTransactions(transactionsApi)
       ]);
+      const chainBalance = walletData?.walletAddress
+        ? await fetchOnchainBalance(onchainBalanceApi, walletData.walletAddress)
+        : null;
       console.log('[nbc-wallet] deposit-address response', addressData);
       setPauseDepositPolling(false);
       setDepositAddress(addressData);
       setWallet(walletData);
+      setOnchainBalance(chainBalance);
       setDepositTxs(txData);
     } catch (error) {
       console.error('[nbc-wallet] deposit-address error', error);
@@ -429,11 +497,12 @@ export default function DepositButton({
       setPauseDepositPolling(shouldSkipDepositAutoRefresh(message));
       setError(message);
       setDepositAddress(null);
+      setOnchainBalance(null);
       setDepositTxs([]);
     } finally {
       setLoading(false);
     }
-  }, [balanceApi, depositAddressApi, transactionsApi]);
+  }, [balanceApi, depositAddressApi, onchainBalanceApi, transactionsApi]);
 
   const loadWalletData = React.useCallback(async () => {
     try {
@@ -625,6 +694,16 @@ export default function DepositButton({
       toast.error(message);
       return;
     }
+    if (onchainBalance && Number(amountText) > onchainBalance.balance) {
+      const message = _('Wallet balance is not enough for the deposit amount plus gas.');
+      pushDebugLog('Validation failed: insufficient on-chain balance', {
+        amount: amountText,
+        walletBalance: onchainBalance.balance
+      });
+      setError(message);
+      toast.error(message);
+      return;
+    }
 
     const ethereum = (window as any).ethereum || (window as any).okxwallet?.ethereum;
     if (!ethereum?.request) {
@@ -725,7 +804,7 @@ export default function DepositButton({
       const code = (error as any)?.code;
       pushDebugLog('Deposit flow error', {
         code: code ?? null,
-        message: error instanceof Error ? error.message : String(error)
+        message: getErrorMessage(error) || String(error)
       });
       if (code === 4001) {
         const message = _('Transaction was rejected by wallet');
@@ -733,7 +812,7 @@ export default function DepositButton({
         toast.error(message);
         return;
       }
-      const message = error instanceof Error ? error.message : _('Failed to submit deposit transaction');
+      const message = mapDepositTransactionError(error);
       setError(message);
       toast.error(message);
     } finally {
@@ -743,6 +822,7 @@ export default function DepositButton({
   }, [
     depositAddress?.depositAddress,
     depositAmount,
+    onchainBalance,
     ensureCustomerSession,
     loadDepositData,
     depositAddressApi,
@@ -839,7 +919,8 @@ export default function DepositButton({
                 primaryLabel={_('Add funds')}
                 primaryDisabled={submittingDeposit || !canSubmitDeposit}
                 primaryLoading={submittingDeposit}
-                balanceLabel={_('Store balance (for payment)')}
+                balanceLabel={_('Wallet balance')}
+                maxBalance={onchainBalance?.balance ?? null}
               />
               {debugLogs.length > 0 && (
                 <div className="rounded-lg border border-border bg-muted/20 p-3 text-xs">
@@ -949,6 +1030,7 @@ export const query = `
     authVerifyApi: url(routeId: "authVerify")
     depositAddressApi: url(routeId: "nbcWalletDepositAddress")
     balanceApi: url(routeId: "nbcWalletBalance")
+    onchainBalanceApi: url(routeId: "nbcWalletOnchainBalance")
     transactionsApi: url(routeId: "nbcWalletTransactions")
     withdrawApi: url(routeId: "nbcWalletWithdraw")
     nbcWalletPublicConfig {

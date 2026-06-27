@@ -1,5 +1,6 @@
 {
   "shop": {
+    "homeUrl": "https://nbcstore.nbcoin.top",
     "currency": "USD",
     "currencyLocale": "en-US"
   }

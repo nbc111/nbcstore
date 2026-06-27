@@ -1,6 +1,7 @@
 {
   "shop": {
     "language": "zh",
+    "homeUrl": "https://nbcstore.nbcoin.top",
     "currency": "USD",
     "currencyLocale": "en-US",
     "timezone": "Asia/Shanghai"
