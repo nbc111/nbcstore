@@ -127,6 +127,14 @@ export default function OrderGrid({
   paymentStatusList,
   shipmentStatusList
 }) {
+  const hiddenPaymentFilterStatusCodes = new Set([
+    'paypal_authorized',
+    'paypal_captured'
+  ]);
+  const visiblePaymentStatusList = paymentStatusList.filter(
+    (status) => !hiddenPaymentFilterStatusCodes.has(status.code)
+  );
+
   const page = currentFilters.find((filter) => filter.key === 'page')
     ? parseInt(currentFilters.find((filter) => filter.key === 'page').value, 10)
     : 1;
@@ -202,7 +210,7 @@ export default function OrderGrid({
                           <SelectContent>
                             <SelectGroup>
                               <SelectLabel>{_('Payment Status')}</SelectLabel>
-                              {paymentStatusList.map((status, index) => (
+                              {visiblePaymentStatusList.map((status, index) => (
                                 <SelectItem key={index} value={status.code}>
                                   {_(status.name)}
                                 </SelectItem>

@@ -28,19 +28,10 @@ type WalletSummary = {
   walletAddress: string;
 };
 
-type OnchainBalance = {
-  walletAddress: string;
-  balance: number;
-  balanceRaw: string;
-  decimals: number;
-  source: 'native' | 'erc20';
-  chainId: number;
-  tokenAddress: string | null;
-};
-
 type DepositTx = {
   uuid: string;
   amount: number;
+  displayAmount?: number;
   transactionType: string;
   createdAt?: string;
   reference?: string;
@@ -57,12 +48,30 @@ type DepositAddressData = {
   tokenAddress: string;
 };
 
+const DISPLAY_DECIMALS = 8;
+
+function formatNbcAmount(value: number, maximumFractionDigits = DISPLAY_DECIMALS) {
+  return value.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits
+  });
+}
+
+function toInputAmount(value: number, maximumFractionDigits = DISPLAY_DECIMALS) {
+  if (!Number.isFinite(value) || value <= 0) return '';
+  const fixed = value.toFixed(maximumFractionDigits);
+  return fixed.replace(/\.?0+$/, '');
+}
+
 interface DepositButtonProps {
+  customer?: {
+    uuid: string;
+  } | null;
+  loginUrl: string;
   authRequestApi: string;
   authVerifyApi: string;
   depositAddressApi: string;
   balanceApi: string;
-  onchainBalanceApi: string;
   transactionsApi: string;
   withdrawApi: string;
   nbcWalletPublicConfig: {
@@ -161,19 +170,6 @@ async function fetchWalletBalance(balanceApi: string): Promise<WalletSummary | n
   return data?.wallet || null;
 }
 
-async function fetchOnchainBalance(
-  onchainBalanceApi: string,
-  walletAddress: string
-): Promise<OnchainBalance | null> {
-  if (!walletAddress) {
-    return null;
-  }
-  const url = new URL(onchainBalanceApi, window.location.origin);
-  url.searchParams.set('walletAddress', walletAddress);
-  const data = await parseJson(await fetch(url.toString(), { ...fetchOpts, method: 'GET' }));
-  return data || null;
-}
-
 async function fetchOnchainDepositTransactions(
   transactionsApi: string
 ): Promise<DepositTx[]> {
@@ -252,30 +248,30 @@ function shouldSkipDepositAutoRefresh(errorMessage: string) {
   );
 }
 
-function getErrorMessage(error: unknown) {
-  if (error instanceof Error && error.message) {
-    return error.message;
+function mapWithdrawalErrorMessage(message: string) {
+  const normalized = String(message || '').toLowerCase();
+  if (
+    normalized.includes('withdraw amount must be greater than 0') ||
+    normalized.includes('amount must be greater than 0')
+  ) {
+    return _('Withdraw amount must be greater than 0');
   }
-  if (typeof error === 'object' && error !== null) {
-    const dataMessage = (error as any)?.data?.message || (error as any)?.data?.originalError?.message;
-    const directMessage = (error as any)?.message;
-    if (typeof dataMessage === 'string' && dataMessage && dataMessage !== '[object Object]') {
-      return dataMessage;
-    }
-    if (typeof directMessage === 'string' && directMessage && directMessage !== '[object Object]') {
-      return directMessage;
-    }
+  if (normalized.includes('withdrawal amount must be at least')) {
+    return _('Withdrawal amount must be at least 1 NBC');
   }
-  return '';
-}
-
-function mapDepositTransactionError(error: unknown) {
-  const message = getErrorMessage(error);
-  const normalized = message.toLowerCase();
-  if (normalized.includes('insufficient funds')) {
-    return _('Wallet balance is not enough for the deposit amount plus gas.');
+  if (
+    normalized.includes('withdrawal amount exceeds available balance') ||
+    normalized.includes('balance is insufficient for withdrawal')
+  ) {
+    return _('Withdrawal amount exceeds available balance');
   }
-  return message || _('Failed to submit deposit transaction');
+  if (normalized.includes('customer login is required')) {
+    return _('Please connect wallet and sign in first.');
+  }
+  if (normalized.includes('daily withdrawal limit')) {
+    return _('Daily withdrawal limit exceeded');
+  }
+  return message;
 }
 
 function WalletActionPanel({
@@ -290,8 +286,7 @@ function WalletActionPanel({
   primaryLabel,
   primaryDisabled,
   primaryLoading,
-  balanceLabel,
-  maxBalance
+  balanceLabel
 }: {
   isDeposit: boolean;
   wallet: WalletSummary | null;
@@ -305,12 +300,10 @@ function WalletActionPanel({
   primaryDisabled?: boolean;
   primaryLoading?: boolean;
   balanceLabel?: string;
-  maxBalance?: number | null;
 }) {
   const availableBalance = wallet?.availableBalance || 0;
   const totalBalance = wallet?.balance || 0;
-  const actionBalance = maxBalance ?? (isDeposit ? totalBalance : availableBalance);
-  const coinBalance = isDeposit ? actionBalance : totalBalance;
+  const selectedCoinBalance = isDeposit ? totalBalance : availableBalance;
 
   return (
     <div className="space-y-4">
@@ -324,7 +317,7 @@ function WalletActionPanel({
             <CircleDollarSign className="h-4 w-4 text-primary" />
             <span className="font-medium">NBC</span>
             <span className="text-xs text-muted-foreground">
-              {loading ? '...' : coinBalance.toLocaleString()}
+              {loading ? '...' : formatNbcAmount(selectedCoinBalance)}
             </span>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -339,14 +332,14 @@ function WalletActionPanel({
             {balanceLabel || (isDeposit ? _('Wallet balance') : _('Store balance (for payment)'))}
           </p>
           <p className="font-semibold">
-            {loading ? '...' : `${(isDeposit ? actionBalance : totalBalance).toLocaleString()} NBC`}
+            {loading ? '...' : `${formatNbcAmount(totalBalance)} NBC`}
           </p>
         </div>
         {!isDeposit && (
           <div className="rounded-lg border border-border bg-muted/30 p-3">
             <p className="text-muted-foreground mb-1">{_('Withdrawable balance')}</p>
             <p className="font-semibold">
-              {loading ? '...' : `${availableBalance.toLocaleString()} NBC`}
+              {loading ? '...' : `${formatNbcAmount(availableBalance)} NBC`}
             </p>
           </div>
         )}
@@ -380,9 +373,9 @@ function WalletActionPanel({
           onChange={(e) => {
             const nextRatio = Number(e.target.value);
             setRatio(nextRatio);
-            const baseAmount = isDeposit ? actionBalance : availableBalance;
+            const baseAmount = isDeposit ? totalBalance : availableBalance;
             const nextAmount = (baseAmount * nextRatio) / 100;
-            setAmount(nextAmount <= 0 ? '' : String(Math.floor(nextAmount)));
+            setAmount(toInputAmount(nextAmount));
           }}
           className="w-full accent-primary"
         />
@@ -416,11 +409,12 @@ function WalletActionPanel({
 }
 
 export default function DepositButton({
+  customer,
+  loginUrl,
   authRequestApi,
   authVerifyApi,
   depositAddressApi,
   balanceApi,
-  onchainBalanceApi,
   transactionsApi,
   withdrawApi,
   nbcWalletPublicConfig
@@ -431,7 +425,6 @@ export default function DepositButton({
     null
   );
   const [wallet, setWallet] = React.useState<WalletSummary | null>(null);
-  const [onchainBalance, setOnchainBalance] = React.useState<OnchainBalance | null>(null);
   const [depositTxs, setDepositTxs] = React.useState<DepositTx[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -443,20 +436,15 @@ export default function DepositButton({
   const [submittingDeposit, setSubmittingDeposit] = React.useState(false);
   const [autoSigningIn, setAutoSigningIn] = React.useState(false);
   const [pauseDepositPolling, setPauseDepositPolling] = React.useState(false);
+  const [openRefreshing, setOpenRefreshing] = React.useState(false);
   const [debugLogs, setDebugLogs] = React.useState<string[]>([]);
   const autoSignInAttemptedRef = React.useRef<string | null>(null);
   const sessionReadyRef = React.useRef(false);
   const hasCustomerSession = Boolean(wallet?.walletAddress);
   const canSubmitDeposit = React.useMemo(() => {
     const amount = Number(String(depositAmount || '').trim());
-    if (!Number.isFinite(amount) || amount <= 0) {
-      return false;
-    }
-    if (onchainBalance && amount > onchainBalance.balance) {
-      return false;
-    }
-    return true;
-  }, [depositAmount, onchainBalance]);
+    return Number.isFinite(amount) && amount > 0;
+  }, [depositAmount]);
 
   React.useEffect(() => {
     sessionReadyRef.current = hasCustomerSession;
@@ -472,6 +460,7 @@ export default function DepositButton({
   );
 
   const loadDepositData = React.useCallback(async () => {
+    pushDebugLog('Loading deposit data started');
     setLoading(true);
     setError('');
     try {
@@ -480,15 +469,16 @@ export default function DepositButton({
         fetchWalletBalance(balanceApi),
         fetchOnchainDepositTransactions(transactionsApi)
       ]);
-      const chainBalance = walletData?.walletAddress
-        ? await fetchOnchainBalance(onchainBalanceApi, walletData.walletAddress)
-        : null;
       console.log('[nbc-wallet] deposit-address response', addressData);
       setPauseDepositPolling(false);
       setDepositAddress(addressData);
       setWallet(walletData);
-      setOnchainBalance(chainBalance);
       setDepositTxs(txData);
+      pushDebugLog('Loading deposit data succeeded', {
+        hasAddress: Boolean(addressData?.depositAddress),
+        hasWallet: Boolean(walletData?.walletAddress),
+        txCount: Array.isArray(txData) ? txData.length : 0
+      });
     } catch (error) {
       console.error('[nbc-wallet] deposit-address error', error);
       const message = mapDepositErrorMessage(
@@ -497,21 +487,38 @@ export default function DepositButton({
       setPauseDepositPolling(shouldSkipDepositAutoRefresh(message));
       setError(message);
       setDepositAddress(null);
-      setOnchainBalance(null);
       setDepositTxs([]);
+      pushDebugLog('Loading deposit data failed', { message });
     } finally {
       setLoading(false);
+      setOpenRefreshing(false);
     }
-  }, [balanceApi, depositAddressApi, onchainBalanceApi, transactionsApi]);
+  }, [balanceApi, depositAddressApi, pushDebugLog, transactionsApi]);
 
   const loadWalletData = React.useCallback(async () => {
     try {
       const walletData = await fetchWalletBalance(balanceApi);
       setWallet(walletData);
+      sessionReadyRef.current = Boolean(walletData?.walletAddress);
     } catch {
       setWallet(null);
+      sessionReadyRef.current = false;
+    } finally {
+      setOpenRefreshing(false);
     }
   }, [balanceApi]);
+
+  React.useEffect(() => {
+    if (!open) {
+      setOpenRefreshing(false);
+      return;
+    }
+    // Clear displayed payload on each open to avoid showing stale values.
+    setOpenRefreshing(true);
+    setError('');
+    setDepositAddress(null);
+    setDepositTxs([]);
+  }, [open]);
 
   const ensureCustomerSession = React.useCallback(
     async (ethereum: any, walletAddress: string) => {
@@ -544,7 +551,7 @@ export default function DepositButton({
   );
 
   React.useEffect(() => {
-    if (!open || activeTab !== 'deposit' || wallet || autoSigningIn) {
+    if (!open || activeTab !== 'deposit' || wallet || autoSigningIn || customer?.uuid) {
       return;
     }
     const ethereum = (window as any).ethereum || (window as any).okxwallet?.ethereum;
@@ -568,6 +575,7 @@ export default function DepositButton({
         autoSignInAttemptedRef.current = connected;
         setAutoSigningIn(true);
         await ensureCustomerSession(ethereum, connected);
+        sessionReadyRef.current = true;
         if (!cancelled) {
           await loadDepositData();
           await loadWalletData();
@@ -578,6 +586,7 @@ export default function DepositButton({
             error instanceof Error
               ? error.message
               : _('Please connect wallet and sign in first.');
+          sessionReadyRef.current = false;
           setError(message);
           pushDebugLog('Auto sign-in failed', { message });
         }
@@ -594,6 +603,7 @@ export default function DepositButton({
   }, [
     activeTab,
     autoSigningIn,
+    customer?.uuid,
     ensureCustomerSession,
     loadDepositData,
     loadWalletData,
@@ -615,9 +625,10 @@ export default function DepositButton({
     }
     // If wallet is connected but customer session is not ready,
     // skip polling until sign-in flow finishes and session is established.
-    if (activeTab === 'deposit' && !hasCustomerSession) {
+    if (activeTab === 'deposit' && !hasCustomerSession && !customer?.uuid) {
       const ethereum = (window as any).ethereum || (window as any).okxwallet?.ethereum;
       if (ethereum?.request) {
+        pushDebugLog('Skipping deposit load while waiting sign-in');
         return;
       }
     }
@@ -628,7 +639,7 @@ export default function DepositButton({
     }
     const timer = window.setInterval(
       () => {
-        if (activeTab === 'deposit' && !hasCustomerSession) {
+        if (activeTab === 'deposit' && !hasCustomerSession && !customer?.uuid) {
           const ethereum = (window as any).ethereum || (window as any).okxwallet?.ethereum;
           if (ethereum?.request) {
             return;
@@ -652,8 +663,10 @@ export default function DepositButton({
     nbcWalletPublicConfig.onchainEnabled,
     nbcWalletPublicConfig.onchainEnabledRaw,
     autoSigningIn,
+    customer?.uuid,
     hasCustomerSession,
     pauseDepositPolling,
+    pushDebugLog,
     open
   ]);
 
@@ -694,16 +707,6 @@ export default function DepositButton({
       toast.error(message);
       return;
     }
-    if (onchainBalance && Number(amountText) > onchainBalance.balance) {
-      const message = _('Wallet balance is not enough for the deposit amount plus gas.');
-      pushDebugLog('Validation failed: insufficient on-chain balance', {
-        amount: amountText,
-        walletBalance: onchainBalance.balance
-      });
-      setError(message);
-      toast.error(message);
-      return;
-    }
 
     const ethereum = (window as any).ethereum || (window as any).okxwallet?.ethereum;
     if (!ethereum?.request) {
@@ -736,11 +739,13 @@ export default function DepositButton({
         await loadWalletData();
         sessionReady = sessionReadyRef.current || hasCustomerSession;
       }
-      if (!sessionReady) {
+      if (!sessionReady && !customer?.uuid) {
         pushDebugLog('Customer session missing, starting wallet sign-in');
         await ensureCustomerSession(ethereum, from);
         await loadDepositData();
         sessionReadyRef.current = true;
+      } else if (!sessionReady && customer?.uuid) {
+        pushDebugLog('Customer session already exists, skip wallet sign-in');
       }
 
       if (nbcWalletPublicConfig.chainId && nbcWalletPublicConfig.chainId > 0) {
@@ -804,7 +809,7 @@ export default function DepositButton({
       const code = (error as any)?.code;
       pushDebugLog('Deposit flow error', {
         code: code ?? null,
-        message: getErrorMessage(error) || String(error)
+        message: error instanceof Error ? error.message : String(error)
       });
       if (code === 4001) {
         const message = _('Transaction was rejected by wallet');
@@ -812,7 +817,7 @@ export default function DepositButton({
         toast.error(message);
         return;
       }
-      const message = mapDepositTransactionError(error);
+      const message = error instanceof Error ? error.message : _('Failed to submit deposit transaction');
       setError(message);
       toast.error(message);
     } finally {
@@ -822,10 +827,10 @@ export default function DepositButton({
   }, [
     depositAddress?.depositAddress,
     depositAmount,
-    onchainBalance,
     ensureCustomerSession,
     loadDepositData,
     depositAddressApi,
+    customer?.uuid,
     nbcWalletPublicConfig.chainId,
     nbcWalletPublicConfig.tokenAddress,
     nbcWalletPublicConfig.tokenDecimals,
@@ -835,9 +840,13 @@ export default function DepositButton({
   ]);
 
   const handleWithdrawAction = React.useCallback(async () => {
-    const amount = Math.floor(Number(withdrawAmount || 0));
-    if (!amount || amount <= 0) {
+    const amount = Number(String(withdrawAmount || '').trim());
+    if (!Number.isFinite(amount) || amount <= 0) {
       toast.error(_('Withdraw amount must be greater than 0'));
+      return;
+    }
+    if (amount < 1) {
+      toast.error(_('Withdrawal amount must be at least 1 NBC'));
       return;
     }
     if (amount > (wallet?.availableBalance || 0)) {
@@ -852,9 +861,10 @@ export default function DepositButton({
       setWithdrawRatio(0);
       await loadWalletData();
     } catch (error) {
-      toast.error(
+      const message = mapWithdrawalErrorMessage(
         error instanceof Error ? error.message : _('Failed to request withdrawal')
       );
+      toast.error(message);
     } finally {
       setSubmittingWithdrawal(false);
     }
@@ -866,8 +876,19 @@ export default function DepositButton({
       ? `${String(nbcWalletPublicConfig.blockExplorerUrl).replace(/\/$/, '')}/tx/${latestDeposit.reference}`
       : '';
 
+  const handleOpenChange = React.useCallback(
+    (nextOpen: boolean) => {
+      if (nextOpen && !customer?.uuid) {
+        window.location.href = loginUrl || '/account/login';
+        return;
+      }
+      setOpen(nextOpen);
+    },
+    [customer?.uuid, loginUrl]
+  );
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <button
@@ -910,7 +931,7 @@ export default function DepositButton({
               <WalletActionPanel
                 isDeposit
                 wallet={wallet}
-                loading={loading}
+                loading={loading || openRefreshing}
                 amount={depositAmount}
                 setAmount={setDepositAmount}
                 ratio={depositRatio}
@@ -919,20 +940,19 @@ export default function DepositButton({
                 primaryLabel={_('Add funds')}
                 primaryDisabled={submittingDeposit || !canSubmitDeposit}
                 primaryLoading={submittingDeposit}
-                balanceLabel={_('Wallet balance')}
-                maxBalance={onchainBalance?.balance ?? null}
+                balanceLabel={_('Store balance (for payment)')}
               />
               {debugLogs.length > 0 && (
                 <div className="rounded-lg border border-border bg-muted/20 p-3 text-xs">
                   <p className="mb-1 font-medium">{_('Debug logs')}</p>
                   <div className="space-y-1 font-mono text-muted-foreground">
-                    {debugLogs.map((line) => (
-                      <div key={line}>{line}</div>
+                    {debugLogs.map((line, index) => (
+                      <div key={`${line}-${index}`}>{line}</div>
                     ))}
                   </div>
                 </div>
               )}
-              {loading && (
+              {(loading || openRefreshing) && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   {_('Loading deposit data')}
@@ -943,7 +963,7 @@ export default function DepositButton({
                   {error}
                 </div>
               )}
-              {depositAddress && (
+              {!openRefreshing && depositAddress && (
                 <div className="rounded-lg border border-border bg-muted/25 p-3 space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-xs text-muted-foreground">
@@ -975,7 +995,8 @@ export default function DepositButton({
                   {latestDeposit && (
                     <div className="rounded-md border border-border bg-background p-2 text-xs">
                       <p>
-                        {_('Latest deposit')}: +{latestDeposit.amount} NBC
+                        {_('Latest deposit')}: +
+                        {latestDeposit.displayAmount ?? latestDeposit.amount} NBC
                       </p>
                       <p className="text-muted-foreground">
                         {_('Status')}: {latestDeposit.status || 'completed'}
@@ -1001,7 +1022,7 @@ export default function DepositButton({
             <WalletActionPanel
               isDeposit={false}
               wallet={wallet}
-              loading={loading}
+              loading={loading || openRefreshing}
               amount={withdrawAmount}
               setAmount={setWithdrawAmount}
               ratio={withdrawRatio}
@@ -1026,11 +1047,14 @@ export const layout = {
 
 export const query = `
   query Query {
+    customer: currentCustomer {
+      uuid
+    }
+    loginUrl: url(routeId: "login")
     authRequestApi: url(routeId: "authRequest")
     authVerifyApi: url(routeId: "authVerify")
     depositAddressApi: url(routeId: "nbcWalletDepositAddress")
     balanceApi: url(routeId: "nbcWalletBalance")
-    onchainBalanceApi: url(routeId: "nbcWalletOnchainBalance")
     transactionsApi: url(routeId: "nbcWalletTransactions")
     withdrawApi: url(routeId: "nbcWalletWithdraw")
     nbcWalletPublicConfig {

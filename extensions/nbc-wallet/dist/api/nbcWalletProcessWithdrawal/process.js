@@ -1,10 +1,9 @@
 import { FORBIDDEN, INTERNAL_SERVER_ERROR, INVALID_PAYLOAD, OK } from '@evershop/evershop/lib/util/httpStatus';
 import { processWithdrawal } from '../../services/wallet/processWithdrawal.js';
 export default async function processNbcWalletWithdrawal(request, response) {
-    var _a, _b;
     try {
-        const adminUser = (_a = request.getCurrentUser) === null || _a === void 0 ? void 0 : _a.call(request);
-        if (!(adminUser === null || adminUser === void 0 ? void 0 : adminUser.uuid)) {
+        const adminUser = request.getCurrentUser?.();
+        if (!adminUser?.uuid) {
             response.status(FORBIDDEN).json({
                 error: {
                     status: FORBIDDEN,
@@ -13,7 +12,7 @@ export default async function processNbcWalletWithdrawal(request, response) {
             });
             return;
         }
-        const withdrawalUuid = String(((_b = request.body) === null || _b === void 0 ? void 0 : _b.withdrawal_uuid) || '').trim();
+        const withdrawalUuid = String(request.body?.withdrawal_uuid || '').trim();
         if (!withdrawalUuid) {
             response.status(INVALID_PAYLOAD).json({
                 error: {
@@ -27,8 +26,7 @@ export default async function processNbcWalletWithdrawal(request, response) {
         response.status(OK).json({
             data: result
         });
-    }
-    catch (error) {
+    } catch (error) {
         response.status(INTERNAL_SERVER_ERROR).json({
             error: {
                 status: INTERNAL_SERVER_ERROR,
@@ -37,4 +35,3 @@ export default async function processNbcWalletWithdrawal(request, response) {
         });
     }
 }
-//# sourceMappingURL=process.js.map

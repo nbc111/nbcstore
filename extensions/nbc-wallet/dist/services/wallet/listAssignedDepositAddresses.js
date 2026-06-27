@@ -5,7 +5,7 @@ export async function listAssignedDepositAddresses() {
        FROM nbc_wallet
       WHERE deposit_address IS NOT NULL`);
     const addresses = new Map();
-    for (const row of result.rows) {
+    for (const row of result.rows){
         const depositAddress = normalizeWalletAddress(row.deposit_address);
         addresses.set(depositAddress, {
             walletId: Number(row.wallet_id),
@@ -16,4 +16,3 @@ export async function listAssignedDepositAddresses() {
     }
     return addresses;
 }
-//# sourceMappingURL=listAssignedDepositAddresses.js.map

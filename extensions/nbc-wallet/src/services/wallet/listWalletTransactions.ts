@@ -1,4 +1,5 @@
 import { pool } from '@evershop/evershop/lib/postgres';
+import { formatUnits } from 'ethers';
 
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
@@ -36,10 +37,12 @@ export async function listWalletTransactions(
             o.uuid AS order_uuid, o.order_number,
             t.transaction_type, t.amount, t.balance_before, t.balance_after,
             t.exchange_rate, t.cny_amount, t.reference, t.status, t.metadata,
+            d.amount AS onchain_raw_amount,
             t.created_at
        FROM nbc_wallet_transaction t
        INNER JOIN nbc_wallet w ON w.wallet_id = t.wallet_id
        LEFT JOIN "order" o ON o.order_id = t.order_id
+       LEFT JOIN nbc_onchain_deposit d ON d.wallet_tx_id = t.wallet_tx_id
       WHERE ${whereClause}
       ORDER BY t.created_at DESC, t.wallet_tx_id DESC
       LIMIT $${params.length - 1} OFFSET $${params.length}`,
@@ -56,6 +59,10 @@ export async function listWalletTransactions(
       orderNumber: row.order_number,
       transactionType: row.transaction_type,
       amount: Number(row.amount),
+      displayAmount:
+        row.transaction_type === 'onchain_deposit' && row.onchain_raw_amount
+          ? Number(formatUnits(BigInt(row.onchain_raw_amount), 18))
+          : Number(row.amount),
       balanceBefore: Number(row.balance_before),
       balanceAfter: Number(row.balance_after),
       exchangeRate:

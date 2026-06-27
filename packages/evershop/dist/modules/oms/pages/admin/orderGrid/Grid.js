@@ -78,6 +78,11 @@ Actions.propTypes = {
     })).isRequired
 };
 export default function OrderGrid({ orders: { items: orders, total, currentFilters = [] }, paymentStatusList, shipmentStatusList }) {
+    const hiddenPaymentFilterStatusCodes = new Set([
+        'paypal_authorized',
+        'paypal_captured'
+    ]);
+    const visiblePaymentStatusList = paymentStatusList.filter((status)=>!hiddenPaymentFilterStatusCodes.has(status.code));
     const page = currentFilters.find((filter)=>filter.key === 'page') ? parseInt(currentFilters.find((filter)=>filter.key === 'page').value, 10) : 1;
     const limit = currentFilters.find((filter)=>filter.key === 'limit') ? parseInt(currentFilters.find((filter)=>filter.key === 'limit').value, 10) : 20;
     const [selectedRows, setSelectedRows] = useState([]);
@@ -124,7 +129,7 @@ export default function OrderGrid({ orders: { items: orders, total, currentFilte
                                 url.searchParams.set('payment_status', value);
                                 window.location.href = url;
                             }
-                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, _('Payment Status'))), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, _('Payment Status')), paymentStatusList.map((status, index)=>/*#__PURE__*/ React.createElement(SelectItem, {
+                        }, /*#__PURE__*/ React.createElement(SelectTrigger, null, /*#__PURE__*/ React.createElement(SelectValue, null, _('Payment Status'))), /*#__PURE__*/ React.createElement(SelectContent, null, /*#__PURE__*/ React.createElement(SelectGroup, null, /*#__PURE__*/ React.createElement(SelectLabel, null, _('Payment Status')), visiblePaymentStatusList.map((status, index)=>/*#__PURE__*/ React.createElement(SelectItem, {
                                 key: index,
                                 value: status.code
                             }, _(status.name)))))))
@@ -408,3 +413,4 @@ export const variables = `
 {
   filters: getContextValue('filtersFromUrl')
 }`;
+

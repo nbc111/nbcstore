@@ -3,8 +3,7 @@ import { ensureWalletDepositAddress } from '../../services/wallet/ensureWalletDe
 function mapDepositAddressError(error) {
     const message = error instanceof Error ? String(error.message || '') : String(error || '');
     const normalized = message.toLowerCase();
-    if (normalized.includes('hdmastermnemonic is required') ||
-        normalized.includes('treasuryaddress is required')) {
+    if (normalized.includes('hdmastermnemonic is required') || normalized.includes('treasuryaddress is required')) {
         return {
             status: INVALID_PAYLOAD,
             message: 'On-chain deposit is not configured yet. Please contact support.'
@@ -37,8 +36,7 @@ export default async function getNbcWalletDepositAddress(request, response) {
         response.status(OK).json({
             data: address
         });
-    }
-    catch (error) {
+    } catch (error) {
         const mapped = mapDepositAddressError(error);
         response.status(mapped.status).json({
             error: {
@@ -48,4 +46,3 @@ export default async function getNbcWalletDepositAddress(request, response) {
         });
     }
 }
-//# sourceMappingURL=address.js.map

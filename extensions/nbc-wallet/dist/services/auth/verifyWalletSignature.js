@@ -4,4 +4,3 @@ export function verifyWalletSignature(walletAddress, message, signature) {
     const recoveredAddress = ethers.verifyMessage(message, signature);
     return normalizeWalletAddress(recoveredAddress) === normalizeWalletAddress(walletAddress);
 }
-//# sourceMappingURL=verifyWalletSignature.js.map

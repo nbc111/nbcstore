@@ -42,16 +42,18 @@ export default function AddTrackingButton({
     return (
       <>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger>
-            <Button
-              title="Edit Tracking Info"
-              variant="outline"
-              onClick={() => {
-                setDialogOpen(true);
-              }}
-            >
-              Edit Tracking Info
-            </Button>
+          <DialogTrigger
+            render={
+              <Button
+                title={_('Edit Tracking Info')}
+                variant="outline"
+                onClick={() => {
+                  setDialogOpen(true);
+                }}
+              />
+            }
+          >
+            {_('Edit Tracking Info')}
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -77,7 +79,7 @@ export default function AddTrackingButton({
                     defaultValue={shipment.trackingNumber || ''}
                     required
                     validation={{
-                      required: 'Tracking number is required'
+                      required: _('Tracking number is required')
                     }}
                   />
                 </div>
@@ -89,7 +91,7 @@ export default function AddTrackingButton({
                     required
                     options={carriers}
                     validation={{
-                      required: 'Carrier is required'
+                      required: _('Carrier is required')
                     }}
                   />
                 </div>
@@ -99,19 +101,21 @@ export default function AddTrackingButton({
               </div>
             </Form>
             <DialogFooter>
-              <DialogClose>
-                <Button
-                  title="Cancel"
-                  variant="outline"
-                  onClick={() => {
-                    setDialogOpen(false);
-                  }}
-                >
-                  Cancel
-                </Button>
+              <DialogClose
+                render={
+                  <Button
+                    title={_('Cancel')}
+                    variant="outline"
+                    onClick={() => {
+                      setDialogOpen(false);
+                    }}
+                  />
+                }
+              >
+                {_('Cancel')}
               </DialogClose>
               <Button
-                title="Save"
+                title={_('Save')}
                 variant="default"
                 isLoading={form.formState.isSubmitting}
                 onClick={async () => {
@@ -124,7 +128,7 @@ export default function AddTrackingButton({
                   );
                 }}
               >
-                Save
+                {_('Save')}
               </Button>
             </DialogFooter>
           </DialogContent>

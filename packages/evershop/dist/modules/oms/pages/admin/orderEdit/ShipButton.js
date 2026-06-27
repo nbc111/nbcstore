@@ -24,7 +24,7 @@ export default function ShipButton({ order: { noShippingRequired, shipment, crea
             variant: "default",
             onClick: ()=>{
                 openAlert({
-                    heading: 'Ship Items',
+                    heading: _('Ship Items'),
                     content: /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(Form, {
                         id: "ship-items",
                         method: "POST",
@@ -94,7 +94,7 @@ export default function ShipButton({ order: { noShippingRequired, shipment, crea
                     }
                 });
             }
-        }, "Ship items"));
+        }, _('Ship Items')));
     }
 }
 export const layout = {

@@ -26,10 +26,14 @@ Group.propTypes = {
 };
 function Email({ email }) {
     return /*#__PURE__*/ React.createElement(CardContent, {
-        className: "pt-3 border-t border-border"
+        className: "pt-3 border-t border-border min-w-0"
     }, /*#__PURE__*/ React.createElement(CardTitle, {
         className: "mb-2"
-    }, _('Email')), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement("span", null, email)));
+    }, _('Email')), /*#__PURE__*/ React.createElement("div", {
+        className: "min-w-0"
+    }, /*#__PURE__*/ React.createElement("span", {
+        className: "block break-all"
+    }, email)));
 }
 Email.propTypes = {
     email: PropTypes.string.isRequired
@@ -111,3 +115,4 @@ export const query = `
     }
   }
 `;
+

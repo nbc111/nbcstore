@@ -12,7 +12,7 @@ export default function CustomerNotes({ order: { shippingNote } }) {
                 component: {
                     default: ()=>/*#__PURE__*/ React.createElement("div", null, shippingNote || /*#__PURE__*/ React.createElement("span", {
                             className: "text-muted-foreground"
-                        }, "No notes from customer"))
+                        }, _('No notes from customer')))
                 },
                 props: {},
                 sortOrder: 10,

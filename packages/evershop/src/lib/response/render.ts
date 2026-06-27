@@ -86,17 +86,9 @@ function renderDevelopment(
   });
   const langCode = request.currentRoute?.isAdmin ? 'en' : language;
   const scriptPath = route.isAdmin ? '/backend/admin-main.js' : '/main.js';
-  response.send(`
-            <!doctype html><html lang="${langCode}">
-                <head>
-                  <script>var eContext = ${safeContextValue}</script>
-                </head>
-                <body class="${classes}">
-                <div id="app"></div>
-                 <script defer src="${scriptPath}"></script>
-                </body >
-            </html >
-  `);
+  response.send(
+    `<!doctype html><html lang="${langCode}"><head><script>var eContext = ${safeContextValue}</script></head><body class="${classes}"><div id="app"></div><script defer src="${scriptPath}"></script></body></html>`
+  );
 }
 
 function renderProduction(request, response) {

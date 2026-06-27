@@ -89,21 +89,21 @@ export default function CustomerInfo({
       </h3>
 
       <div className="customer-info mt-7 mb-5">
-        <div className="grid grid-cols-2 gap-7">
-          <div>
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-7">
+          <div className="min-w-0">
             <div className="mb-2">
               <h3>{_('Contact information')}</h3>
             </div>
-            <div className="text-textSubdued">
+            <div className="text-textSubdued break-words">
               {customerFullName || billingAddress?.fullName}
             </div>
-            <div className="text-textSubdued">{customerEmail}</div>
+            <div className="text-textSubdued break-all">{customerEmail}</div>
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="mb-2">
               <h3>{_('Shipping Address')}</h3>
             </div>
-            <div className="text-textSubdued">
+            <div className="text-textSubdued break-words">
               {noShippingRequired ? (
                 _('No shipping required')
               ) : (
@@ -111,17 +111,17 @@ export default function CustomerInfo({
               )}
             </div>
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="mb-2">
               <h3>{_('Payment Method')}</h3>
             </div>
-            <div className="text-textSubdued">{paymentMethodName}</div>
+            <div className="text-textSubdued break-words">{paymentMethodName}</div>
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="mb-2">
               <h3>{_('Billing Address')}</h3>
             </div>
-            <div className="text-textSubdued">
+            <div className="text-textSubdued break-words">
               <AddressSummary address={billingAddress} />
             </div>
           </div>

@@ -39,10 +39,10 @@ Group.propTypes = {
 
 function Email({ email }) {
   return (
-    <CardContent className="pt-3 border-t border-border">
+    <CardContent className="pt-3 border-t border-border min-w-0">
       <CardTitle className="mb-2">{_('Email')}</CardTitle>
-      <div>
-        <span>{email}</span>
+      <div className="min-w-0">
+        <span className="block break-all">{email}</span>
       </div>
     </CardContent>
   );

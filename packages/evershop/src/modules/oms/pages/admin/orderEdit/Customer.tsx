@@ -64,21 +64,28 @@ export default function Customer({
       <CardHeader>
         <CardTitle>{_('Customer Information')}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="min-w-0">
         {customerUrl && (
           <a
             href={customerUrl}
-            className="text-interactive hover:underline block"
+            className="text-interactive hover:underline block break-all"
           >
             {customerFullName}
           </a>
         )}
-        {!customerUrl && <span>{customerEmail} (Guest Checkout)</span>}
+        {!customerUrl && (
+          <span className="break-all">
+            {customerEmail} ({_('Guest Checkout')})
+          </span>
+        )}
       </CardContent>
-      <CardContent className="border-t border-border pt-3">
-        <CardTitle className="mb-2">Contact Information</CardTitle>
-        <div>
-          <a href="#" className="text-interactive hover:underline">
+      <CardContent className="border-t border-border pt-3 min-w-0">
+        <CardTitle className="mb-2">{_('Contact Information')}</CardTitle>
+        <div className="min-w-0">
+          <a
+            href="#"
+            className="text-interactive hover:underline block break-all"
+          >
             {customerEmail}
           </a>
         </div>
@@ -89,16 +96,14 @@ export default function Customer({
         )}
       </CardContent>
       <CardContent className="border-t border-border pt-3">
-        <CardTitle className="mb-2">Shipping Address</CardTitle>
+        <CardTitle className="mb-2">{_('Shipping Address')}</CardTitle>
         {!noShippingRequired && <AddressSummary address={shippingAddress} />}
         {noShippingRequired && (
-          <span className="text-muted-foreground">
-            {'No shipping required'}
-          </span>
+          <span className="text-muted-foreground">{_('No shipping required')}</span>
         )}
       </CardContent>
       <CardContent className="border-t border-border pt-3">
-        <CardTitle className="mb-2">Billing address</CardTitle>
+        <CardTitle className="mb-2">{_('Billing address')}</CardTitle>
         <AddressSummary address={billingAddress} />
       </CardContent>
     </Card>

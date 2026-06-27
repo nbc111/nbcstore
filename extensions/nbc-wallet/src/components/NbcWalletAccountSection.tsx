@@ -24,6 +24,7 @@ interface WalletTransactionRow {
   uuid: string;
   transactionType: string;
   amount: number;
+  displayAmount?: number;
   balanceAfter: number;
   status: string;
   createdAt?: string;
@@ -56,10 +57,44 @@ const txTypeLabels: Record<string, string> = {
   onchain_deposit: 'On-chain deposit'
 };
 
+const withdrawalStatusLabels: Record<string, string> = {
+  requested: 'Requested',
+  approved: 'Approved',
+  processing: 'Processing',
+  completed: 'Completed',
+  failed: 'Failed'
+};
+
 export function NbcWalletAccountSection({
   apis,
   publicConfig
 }: NbcWalletAccountSectionProps) {
+  const mapWithdrawalErrorMessage = useCallback((message: string) => {
+    const normalized = String(message || '').toLowerCase();
+    if (
+      normalized.includes('withdraw amount must be greater than 0') ||
+      normalized.includes('amount must be greater than 0')
+    ) {
+      return _('Withdraw amount must be greater than 0');
+    }
+    if (normalized.includes('withdrawal amount must be at least')) {
+      return _('Withdrawal amount must be at least 1 NBC');
+    }
+    if (
+      normalized.includes('withdrawal amount exceeds available balance') ||
+      normalized.includes('balance is insufficient for withdrawal')
+    ) {
+      return _('Withdrawal amount exceeds available balance');
+    }
+    if (normalized.includes('customer login is required')) {
+      return _('Please connect wallet and sign in first.');
+    }
+    if (normalized.includes('daily withdrawal limit')) {
+      return _('Daily withdrawal limit exceeded');
+    }
+    return message;
+  }, []);
+
   const {
     wallet,
     connecting,
@@ -150,9 +185,13 @@ export function NbcWalletAccountSection({
   ]);
 
   const submitWithdrawal = useCallback(async () => {
-    const amount = Math.floor(Number(withdrawAmount || 0));
-    if (!amount || amount <= 0) {
+    const amount = Number(String(withdrawAmount || '').trim());
+    if (!Number.isFinite(amount) || amount <= 0) {
       toast.error(_('Withdrawal amount must be greater than 0'));
+      return;
+    }
+    if (amount < 1) {
+      toast.error(_('Withdrawal amount must be at least 1 NBC'));
       return;
     }
     if (amount > (wallet?.availableBalance || 0)) {
@@ -168,15 +207,17 @@ export function NbcWalletAccountSection({
       await refreshBalance();
       await loadWithdrawals();
     } catch (error) {
-      toast.error(
+      const message = mapWithdrawalErrorMessage(
         error instanceof Error ? error.message : _('Failed to request withdrawal')
       );
+      toast.error(message);
     } finally {
       setSubmittingWithdrawal(false);
     }
   }, [
     apis.withdrawApi,
     loadWithdrawals,
+    mapWithdrawalErrorMessage,
     refreshBalance,
     wallet?.availableBalance,
     withdrawAmount
@@ -303,7 +344,7 @@ export function NbcWalletAccountSection({
                   <input
                     type="number"
                     min="1"
-                    step="1"
+                    step="0.00000001"
                     value={withdrawAmount}
                     onChange={(event) => setWithdrawAmount(event.target.value)}
                     placeholder={_('Withdraw amount')}
@@ -333,31 +374,36 @@ export function NbcWalletAccountSection({
                 <p className="text-sm text-muted-foreground">{_('No transactions yet')}</p>
               ) : (
                 <ul className="divide-y border rounded-md text-sm">
-                  {transactions.map((tx) => (
-                    <li
-                      key={tx.uuid}
-                      className="flex justify-between gap-2 px-3 py-2"
-                    >
-                      <div>
-                        <span className="font-medium">
-                          {_(txTypeLabels[tx.transactionType] || tx.transactionType)}
-                        </span>
-                        {tx.orderNumber && (
-                          <span className="text-muted-foreground ml-2">
-                            #{tx.orderNumber}
-                          </span>
-                        )}
-                      </div>
-                      <span
-                        className={
-                          tx.amount >= 0 ? 'text-green-600' : 'text-destructive'
-                        }
+                  {transactions.map((tx) => {
+                    // Prefer decimal-preserved display amount for on-chain deposits.
+                    // Fallback to `amount` for other transaction types.
+                    const renderedAmount = tx.displayAmount ?? tx.amount;
+                    return (
+                      <li
+                        key={tx.uuid}
+                        className="flex justify-between gap-2 px-3 py-2"
                       >
-                        {tx.amount >= 0 ? '+' : ''}
-                        {formatNbcAmount(tx.amount)} NBC
-                      </span>
-                    </li>
-                  ))}
+                        <div>
+                          <span className="font-medium">
+                            {_(txTypeLabels[tx.transactionType] || tx.transactionType)}
+                          </span>
+                          {tx.orderNumber && (
+                            <span className="text-muted-foreground ml-2">
+                              #{tx.orderNumber}
+                            </span>
+                          )}
+                        </div>
+                        <span
+                          className={
+                            renderedAmount >= 0 ? 'text-green-600' : 'text-destructive'
+                          }
+                        >
+                          {renderedAmount >= 0 ? '+' : ''}
+                          {formatNbcAmount(renderedAmount)} NBC
+                        </span>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </div>
@@ -382,7 +428,7 @@ export function NbcWalletAccountSection({
                           {formatNbcAmount(item.amount)} NBC
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {item.status}
+                          {_(withdrawalStatusLabels[item.status] || item.status)}
                           {item.txHash ? ` · ${item.txHash}` : ''}
                         </div>
                         {item.errorMessage ? (

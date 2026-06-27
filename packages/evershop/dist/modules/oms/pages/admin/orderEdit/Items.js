@@ -93,7 +93,19 @@ Items.propTypes = {
                 value: PropTypes.number,
                 text: PropTypes.string
             }),
-            variantOptions: PropTypes.string,
+            variantOptions: PropTypes.arrayOf(PropTypes.shape({
+                attributeCode: PropTypes.string,
+                attributeName: PropTypes.string,
+                attributeId: PropTypes.oneOfType([
+                    PropTypes.string,
+                    PropTypes.number
+                ]),
+                optionId: PropTypes.oneOfType([
+                    PropTypes.string,
+                    PropTypes.number
+                ]),
+                optionText: PropTypes.string
+            })),
             finalPrice: PropTypes.shape({
                 value: PropTypes.number,
                 text: PropTypes.string

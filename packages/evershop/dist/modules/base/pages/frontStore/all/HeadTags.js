@@ -13,31 +13,64 @@ export default function HeadTags({ pageInfo: { title, description, keywords, can
             head?.appendChild(scriptElement);
         });
     }, []);
-    return /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("title", null, title), /*#__PURE__*/ React.createElement("meta", {
-        name: "description",
-        content: description
-    }), /*#__PURE__*/ React.createElement("meta", {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1.0"
-    }), metas.map((meta, index)=>/*#__PURE__*/ React.createElement("meta", {
-            key: index,
+    const nodes = [
+        /*#__PURE__*/ React.createElement("title", {
+            key: "title"
+        }, title),
+        /*#__PURE__*/ React.createElement("meta", {
+            key: "description",
+            name: "description",
+            content: description
+        }),
+        /*#__PURE__*/ React.createElement("meta", {
+            key: "viewport",
+            name: "viewport",
+            content: "width=device-width, initial-scale=1.0"
+        })
+    ];
+    metas.forEach((meta, index)=>{
+        nodes.push(/*#__PURE__*/ React.createElement("meta", {
+            key: `meta-${index}`,
             ...meta
-        })), links.map((link, index)=>/*#__PURE__*/ React.createElement("link", {
-            key: index,
+        }));
+    });
+    links.forEach((link, index)=>{
+        nodes.push(/*#__PURE__*/ React.createElement("link", {
+            key: `link-${index}`,
             ...link
-        })), scripts.map((script, index)=>/*#__PURE__*/ React.createElement("script", {
-            key: index,
+        }));
+    });
+    scripts.forEach((script, index)=>{
+        nodes.push(/*#__PURE__*/ React.createElement("script", {
+            key: `script-${index}`,
             ...script
-        })), favicon && /*#__PURE__*/ React.createElement("link", {
+        }));
+    });
+    if (favicon) nodes.push(/*#__PURE__*/ React.createElement("link", {
+        key: "favicon",
         rel: "icon",
         href: favicon
-    }), keywords && keywords.length > 0 && /*#__PURE__*/ React.createElement("meta", {
-        name: "keywords",
-        content: keywords.join(', ')
-    }), canonicalUrl && /*#__PURE__*/ React.createElement("link", {
-        rel: "canonical",
-        href: canonicalUrl
-    }), base && /*#__PURE__*/ React.createElement("base", base), /*#__PURE__*/ React.createElement(Og, {
+    }));
+    if (keywords?.length) {
+        nodes.push(/*#__PURE__*/ React.createElement("meta", {
+            key: "keywords",
+            name: "keywords",
+            content: keywords.join(', ')
+        }));
+    }
+    if (canonicalUrl) {
+        nodes.push(/*#__PURE__*/ React.createElement("link", {
+            key: "canonical",
+            rel: "canonical",
+            href: canonicalUrl
+        }));
+    }
+    if (base) nodes.push(/*#__PURE__*/ React.createElement("base", {
+        key: "base",
+        ...base
+    }));
+    nodes.push(/*#__PURE__*/ React.createElement(Og, {
+        key: "og",
         type: ogInfo.type,
         title: title,
         description: description,
@@ -50,6 +83,7 @@ export default function HeadTags({ pageInfo: { title, description, keywords, can
         twitterCreator: ogInfo.twitterCreator,
         twitterImage: ogInfo.twitterImage
     }));
+    return /*#__PURE__*/ React.createElement(React.Fragment, null, nodes);
 }
 export const layout = {
     areaId: 'head',

@@ -1,7 +1,18 @@
 import { DateTime } from 'luxon';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import PropTypes from 'prop-types';
 import React from 'react';
 export default function Activities({ order: { activities = [] } }) {
+    const mapActivityComment = (comment)=>{
+        if (!comment) return comment;
+        const nbcCapturedMatch = /^NBC Wallet payment captured:\s*(.+)\s+NBC$/i.exec(comment);
+        if (nbcCapturedMatch) {
+            return _('NBC Wallet payment captured: ${amount} NBC', {
+                amount: nbcCapturedMatch[1]
+            });
+        }
+        return _(comment);
+    };
     const dailyActivities = [];
     activities.forEach((element)=>{
         const current = dailyActivities[dailyActivities.length - 1];
@@ -40,7 +51,7 @@ export default function Activities({ order: { activities = [] } }) {
         className: "mt-5"
     }, /*#__PURE__*/ React.createElement("h3", {
         className: "text-base font-semibold pb-5 border-b border-divider"
-    }, "Activities"), /*#__PURE__*/ React.createElement("ul", {
+    }, _('Activities')), /*#__PURE__*/ React.createElement("ul", {
         className: "relative py-5 mt-5 before:absolute before:content-[''] before:block before:h-full before:w-0.5 before:top-0 before:left-[0.563rem] before:bg-divider"
     }, dailyActivities.map((group, i)=>/*#__PURE__*/ React.createElement("li", {
             key: i,
@@ -58,9 +69,9 @@ export default function Activities({ order: { activities = [] } }) {
                 className: "flex-1 px-6"
             }, /*#__PURE__*/ React.createElement("span", {
                 className: "block text-sm"
-            }, a.comment), parseInt(a.customerNotified, 10) === 1 && /*#__PURE__*/ React.createElement("span", {
+            }, mapActivityComment(a.comment)), parseInt(a.customerNotified, 10) === 1 && /*#__PURE__*/ React.createElement("span", {
                 className: "block text-muted-foreground italic text-sm mt-1"
-            }, "Customer was notified")), /*#__PURE__*/ React.createElement("span", {
+            }, _('Customer was notified'))), /*#__PURE__*/ React.createElement("span", {
                 className: "text-muted-foreground text-sm shrink-0"
             }, a.time))))))));
 }

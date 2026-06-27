@@ -9,7 +9,9 @@ export async function captureOrderPayment(orderUuid, customerId) {
     const connection = await getConnection();
     try {
         await startTransaction(connection);
-        const order = await connection.query(`SELECT * FROM "order" WHERE uuid = $1 FOR UPDATE`, [orderUuid]);
+        const order = await connection.query(`SELECT * FROM "order" WHERE uuid = $1 FOR UPDATE`, [
+            orderUuid
+        ]);
         const orderRow = order.rows[0];
         if (!orderRow) {
             throw new Error('Order not found');
@@ -29,9 +31,7 @@ export async function captureOrderPayment(orderUuid, customerId) {
                 nbcAmount: String(existingUsage.nbc_amount),
                 cnyAmount: String(existingUsage.cny_amount),
                 exchangeRate: String(existingUsage.exchange_rate),
-                balanceAfter: existingUsage.balance_after === null
-                    ? null
-                    : Number(existingUsage.balance_after),
+                balanceAfter: existingUsage.balance_after === null ? null : Number(existingUsage.balance_after),
                 alreadyCaptured: true
             };
         }
@@ -47,7 +47,9 @@ export async function captureOrderPayment(orderUuid, customerId) {
                 alreadyCaptured: true
             };
         }
-        const walletResult = await connection.query(`SELECT * FROM nbc_wallet WHERE customer_id = $1 FOR UPDATE`, [customerId]);
+        const walletResult = await connection.query(`SELECT * FROM nbc_wallet WHERE customer_id = $1 FOR UPDATE`, [
+            customerId
+        ]);
         const walletRow = walletResult.rows[0];
         if (!walletRow) {
             throw new Error('NBC wallet not found');
@@ -64,9 +66,11 @@ export async function captureOrderPayment(orderUuid, customerId) {
         await connection.query(`UPDATE nbc_wallet
           SET balance = $1,
               updated_at = NOW()
-        WHERE wallet_id = $2`, [balanceAfter, walletRow.wallet_id]);
-        const walletTx = await insert('nbc_wallet_transaction')
-            .given({
+        WHERE wallet_id = $2`, [
+            balanceAfter,
+            walletRow.wallet_id
+        ]);
+        const walletTx = await insert('nbc_wallet_transaction').given({
             wallet_id: walletRow.wallet_id,
             order_id: orderRow.order_id,
             transaction_type: 'debit',
@@ -80,22 +84,22 @@ export async function captureOrderPayment(orderUuid, customerId) {
             metadata: {
                 source: 'order_capture'
             }
-        })
-            .execute(connection);
-        await insert('nbc_order_usage')
-            .given({
+        }).execute(connection);
+        await insert('nbc_order_usage').given({
             order_id: orderRow.order_id,
             wallet_id: walletRow.wallet_id,
             nbc_amount: nbcAmount,
             exchange_rate: exchangeRate,
             cny_amount: orderFiatAmount,
             wallet_tx_id: walletTx.insertId || walletTx.wallet_tx_id
-        })
-            .execute(connection);
+        }).execute(connection);
         await updatePaymentStatus(orderRow.order_id, 'nbc_paid', connection);
         await addOrderActivityLog(orderRow.order_id, `NBC Wallet payment captured: ${nbcAmount} NBC`, false, connection);
         await commit(connection);
-        await emit('order_placed', { ...orderRow, payment_status: 'nbc_paid' });
+        await emit('order_placed', {
+            ...orderRow,
+            payment_status: 'nbc_paid'
+        });
         return {
             orderUuid,
             orderId: orderRow.order_id,
@@ -104,10 +108,8 @@ export async function captureOrderPayment(orderUuid, customerId) {
             exchangeRate,
             balanceAfter
         };
-    }
-    catch (error) {
+    } catch (error) {
         await rollback(connection);
         throw error;
     }
 }
-//# sourceMappingURL=captureOrderPayment.js.map

@@ -5089,3 +5089,28 @@ MetaMask is not installed or unavailable.,MetaMask 未安装或不可用。
 OKX Wallet is not installed or unavailable.,OKX Wallet 未安装或不可用。
 No wallet account returned,未获取到钱包账户
 Wallet login failed,钱包登录失败
+Withdraw amount must be greater than 0,提现金额必须大于 0
+Withdrawal amount must be at least 1 NBC,提现金额至少为 1 NBC
+Withdrawal amount exceeds available balance,提现金额超过可提现余额
+Withdrawal request submitted,提现申请已提交
+Failed to request withdrawal,提交提现申请失败
+Daily withdrawal limit exceeded,已超过当日提现限额
+Withdraw NBC,提现 NBC
+Submit a withdrawal request to transfer NBC back to your connected wallet address.,提交提现申请后，NBC 将转回你已连接的钱包地址。
+Funds will be frozen until the withdrawal is processed.,资金将在提现处理完成前冻结。
+Request withdrawal,申请提现
+Recent withdrawals,最近提现
+No withdrawals yet,暂无提现记录
+Requested,已申请
+Approved,已审核
+Guest Checkout,游客结账
+No notes from customer,客户暂无备注
+Mark Delivered,标记为已送达
+Tracking number is required,请填写物流单号
+Carrier is required,请选择承运商
+Activities,操作记录
+Customer was notified,已通知客户
+Order has been shipped,订单已发货
+Order has been created,订单已创建
+NBC Wallet payment captured: ${amount} NBC,NBC 钱包支付已扣款：${amount} NBC
+Refund NBC Payment,退款 NBC 支付
