@@ -52,6 +52,7 @@ function renderDevelopment(request, response) {
     const route = request.currentRoute;
     const classes = route.isAdmin ? `admin ${route.id}` : `frontStore ${route.id}`;
     const language = getConfig('shop.language', 'en');
+    const adminLanguage = getConfig('shop.adminLanguage', language);
     if (!route) {
         // In testing mode, we do not have devMiddleware
         response.send(`
@@ -71,14 +72,15 @@ function renderDevelopment(request, response) {
         json: true,
         isScriptContext: true
     });
-    const langCode = request.currentRoute?.isAdmin ? 'en' : language;
+    const langCode = request.currentRoute?.isAdmin ? adminLanguage : language;
     const scriptPath = route.isAdmin ? '/backend/admin-main.js' : '/main.js';
     response.send(`<!doctype html><html lang="${langCode}"><head><script>var eContext = ${safeContextValue}</script></head><body class="${classes}"><div id="app"></div><script defer src="${scriptPath}"></script></body></html>`);
 }
 function renderProduction(request, response) {
     const language = getConfig('shop.language', 'en');
+    const adminLanguage = getConfig('shop.adminLanguage', language);
     const route = request.currentRoute;
-    const langCode = route.isAdmin === true ? 'en' : language;
+    const langCode = route.isAdmin === true ? adminLanguage : language;
     const serverIndexPath = path.resolve(getRouteBuildPath(route), 'server', 'index.js');
     const assetsPath = path.resolve(getRouteBuildPath(route), 'client', 'index.json');
     const assets = JSON.parse(fs.readFileSync(assetsPath, 'utf8'));
