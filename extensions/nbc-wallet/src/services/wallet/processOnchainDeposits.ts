@@ -1,7 +1,9 @@
 import { Interface, JsonRpcProvider, id, zeroPadValue } from 'ethers';
 import {
   assertOnchainConfig,
-  getOnchainConfig
+  getOnchainConfig,
+  getOnchainConfigs,
+  NbcOnchainConfig
 } from './getOnchainConfig.js';
 import { getSyncState } from './getSyncState.js';
 import { listAssignedDepositAddresses } from './listAssignedDepositAddresses.js';
@@ -63,7 +65,7 @@ async function mapWithConcurrency<T, R>(
 
 async function getErc20DepositEvents(
   provider: JsonRpcProvider,
-  config: ReturnType<typeof getOnchainConfig>,
+  config: NbcOnchainConfig,
   fromBlock: number,
   toBlock: number
 ) {
@@ -78,7 +80,10 @@ async function getErc20DepositEvents(
       topics: [TRANSFER_TOPIC, null, topicAddress(config.treasuryAddress)]
     });
   } else {
-    assignedAddresses = await listAssignedDepositAddresses();
+    assignedAddresses = await listAssignedDepositAddresses(
+      config.chainId,
+      config.assetKey
+    );
     if (assignedAddresses.size === 0) {
       return [];
     }
@@ -130,13 +135,13 @@ async function getErc20DepositEvents(
 
 async function getNativeDepositEvents(
   provider: JsonRpcProvider,
-  config: ReturnType<typeof getOnchainConfig>,
+  config: NbcOnchainConfig,
   fromBlock: number,
   toBlock: number
 ) {
   const assignedAddresses =
     config.depositMode === 'hd'
-      ? await listAssignedDepositAddresses()
+      ? await listAssignedDepositAddresses(config.chainId, config.assetKey)
       : new Map();
 
   if (config.depositMode === 'hd' && assignedAddresses.size === 0) {
@@ -186,7 +191,7 @@ async function getNativeDepositEvents(
         fromAddress,
         toAddress,
         txHash: String(tx.hash),
-        logIndex: hexToNumber(tx.transactionIndex, events.length),
+        logIndex: 0,
         blockNumber,
         amount,
         addressIndex: assigned?.addressIndex ?? null
@@ -199,7 +204,7 @@ async function getNativeDepositEvents(
 
 async function getDepositEvents(
   provider: JsonRpcProvider,
-  config: ReturnType<typeof getOnchainConfig>,
+  config: NbcOnchainConfig,
   fromBlock: number,
   toBlock: number
 ) {
@@ -208,8 +213,7 @@ async function getDepositEvents(
     : getErc20DepositEvents(provider, config, fromBlock, toBlock);
 }
 
-export async function processOnchainDeposits() {
-  const config = getOnchainConfig();
+async function processOnchainDepositsForAsset(config: NbcOnchainConfig) {
   assertOnchainConfig(config);
 
   const provider = new JsonRpcProvider(config.rpcUrl, config.chainId);
@@ -219,6 +223,7 @@ export async function processOnchainDeposits() {
   if (safeLatestBlock < config.startBlock) {
     return {
       enabled: true,
+      assetSymbol: config.assetSymbol,
       fromBlock: null,
       toBlock: null,
       latestBlock,
@@ -242,6 +247,7 @@ export async function processOnchainDeposits() {
   if (fromBlock > safeLatestBlock) {
     return {
       enabled: true,
+      assetSymbol: config.assetSymbol,
       fromBlock,
       toBlock: safeLatestBlock,
       latestBlock,
@@ -270,12 +276,15 @@ export async function processOnchainDeposits() {
         walletAddress: event.walletAddress,
         chainId: config.chainId,
         tokenAddress: config.assetKey,
+        assetSymbol: config.assetSymbol,
+        tokenDecimals: config.tokenDecimals,
         txHash: event.txHash,
         logIndex: event.logIndex,
         blockNumber: event.blockNumber,
         amount: event.amount,
         metadata: {
           deposit_mode: config.depositMode,
+          asset_symbol: config.assetSymbol,
           asset_type: config.assetType,
           source_wallet_address: event.fromAddress,
           deposit_address: event.toAddress,
@@ -305,11 +314,27 @@ export async function processOnchainDeposits() {
 
   return {
     enabled: true,
+    assetSymbol: config.assetSymbol,
     fromBlock: firstBlock,
     toBlock: lastProcessedBlock,
     latestBlock,
     batches,
     processed,
     settled
+  };
+}
+
+export async function processOnchainDeposits() {
+  const results: Array<Awaited<ReturnType<typeof processOnchainDepositsForAsset>>> = [];
+
+  for (const config of getOnchainConfigs()) {
+    results.push(await processOnchainDepositsForAsset(config));
+  }
+
+  return {
+    enabled: results.some((item) => item.enabled),
+    assets: results,
+    processed: results.reduce((sum, item) => sum + Number(item.processed || 0), 0),
+    settled: results.reduce((sum, item) => sum + Number(item.settled || 0), 0)
   };
 }

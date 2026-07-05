@@ -17,6 +17,14 @@ interface NbcWalletAccountProps {
     treasuryAddress?: string | null;
     depositMode?: string;
     onchainEnabled: boolean;
+    assets?: Array<{
+      symbol: string;
+      displayName?: string;
+      chainId?: number | null;
+      assetType: string;
+      tokenAddress?: string | null;
+      tokenDecimals?: number | null;
+    }>;
   };
 }
 
@@ -48,7 +56,8 @@ export default function NbcWalletAccount({
         chainId: nbcWalletPublicConfig.chainId,
         treasuryAddress: nbcWalletPublicConfig.treasuryAddress,
         depositMode: nbcWalletPublicConfig.depositMode,
-        onchainEnabled: nbcWalletPublicConfig.onchainEnabled
+        onchainEnabled: nbcWalletPublicConfig.onchainEnabled,
+        assets: nbcWalletPublicConfig.assets
       }}
     />
   );
@@ -76,6 +85,14 @@ export const query = `
       treasuryAddress
       depositMode
       onchainEnabled
+      assets {
+        symbol
+        displayName
+        chainId
+        assetType
+        tokenAddress
+        tokenDecimals
+      }
     }
   }
 `;

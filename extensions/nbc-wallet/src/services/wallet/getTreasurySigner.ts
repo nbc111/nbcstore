@@ -1,5 +1,4 @@
 import { Contract, JsonRpcProvider, Wallet } from 'ethers';
-import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 import { getChainRpcConfig } from './getChainRpcConfig.js';
 import { getOnchainConfig } from './getOnchainConfig.js';
 
@@ -10,12 +9,7 @@ const ERC20_ABI = [
 export function getTreasurySigner() {
   const chain = getChainRpcConfig();
   const onchain = getOnchainConfig();
-
-  // Prefer env var over config file to keep private keys out of source control
-  const privateKey = (
-    process.env.NBC_WALLET_TREASURY_PRIVATE_KEY ||
-    String(getConfig('nbcWallet.onchain.treasuryPrivateKey', ''))
-  ).trim();
+  const privateKey = String(process.env.NBC_WALLET_TREASURY_PRIVATE_KEY || '').trim();
 
   if (!onchain.enabled) {
     throw new Error('NBC on-chain transfer is disabled');
@@ -30,7 +24,7 @@ export function getTreasurySigner() {
     throw new Error('nbcWallet.onchain.tokenAddress is required');
   }
   if (!privateKey) {
-    throw new Error('nbcWallet.onchain.treasuryPrivateKey is required');
+    throw new Error('NBC_WALLET_TREASURY_PRIVATE_KEY is required');
   }
 
   const provider = new JsonRpcProvider(chain.rpcUrl, chain.chainId);

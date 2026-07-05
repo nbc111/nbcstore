@@ -8,6 +8,15 @@ export interface WalletSummary {
   availableBalance: number;
   exchangeRate: number;
   currency: string;
+  assets?: Array<{
+    symbol: string;
+    displayName?: string;
+    balance: number;
+    frozenBalance: number;
+    availableBalance: number;
+    tokenAddress?: string | null;
+    tokenDecimals?: number | null;
+  }>;
 }
 
 async function parseJson(response: Response) {
@@ -79,20 +88,27 @@ export interface WalletDepositAddress {
 }
 
 export async function fetchWalletDepositAddress(
-  depositAddressApi: string
+  depositAddressApi: string,
+  assetSymbol = 'NBC'
 ): Promise<WalletDepositAddress> {
+  const url = new URL(depositAddressApi, window.location.origin);
+  url.searchParams.set('asset', assetSymbol);
   const data = await parseJson(
-    await fetch(depositAddressApi, { ...fetchOpts, method: 'GET' })
+    await fetch(url.toString(), { ...fetchOpts, method: 'GET' })
   );
   return data as WalletDepositAddress;
 }
 
 export async function fetchWalletTransactions(
   transactionsApi: string,
-  limit = 10
+  limit = 10,
+  assetSymbol?: string
 ) {
   const url = new URL(transactionsApi, window.location.origin);
   url.searchParams.set('limit', String(limit));
+  if (assetSymbol) {
+    url.searchParams.set('asset', assetSymbol);
+  }
   const data = await parseJson(
     await fetch(url.toString(), { ...fetchOpts, method: 'GET' })
   );
@@ -122,13 +138,14 @@ export async function fetchOnchainNbcBalance(
 
 export async function requestWalletWithdrawal(
   withdrawApi: string,
-  amount: number
+  amount: number,
+  assetSymbol = 'NBC'
 ) {
   return parseJson(
     await fetch(withdrawApi, {
       ...fetchOpts,
       method: 'POST',
-      body: JSON.stringify({ amount })
+      body: JSON.stringify({ amount, asset: assetSymbol })
     })
   );
 }

@@ -6,7 +6,7 @@ const MAX_PAGE_SIZE = 100;
 
 export async function listWalletTransactions(
   customerId: number,
-  options: { page?: number; limit?: number; transactionType?: string } = {}
+  options: { page?: number; limit?: number; transactionType?: string; asset?: string; assetSymbol?: string } = {}
 ) {
   const page = Math.max(Number(options.page) || 1, 1);
   const limit = Math.min(
@@ -22,6 +22,12 @@ export async function listWalletTransactions(
     filters.push(`t.transaction_type = $${params.length}`);
   }
 
+  const assetSymbol = String(options.assetSymbol || options.asset || '').trim().toUpperCase();
+  if (assetSymbol) {
+    params.push(assetSymbol);
+    filters.push(`t.asset_symbol = $${params.length}`);
+  }
+
   const whereClause = filters.join(' AND ');
   const countResult = await pool.query(
     `SELECT COUNT(*)::int AS total
@@ -35,6 +41,7 @@ export async function listWalletTransactions(
   const rowsResult = await pool.query(
     `SELECT t.wallet_tx_id, t.uuid, t.wallet_id, t.order_id,
             o.uuid AS order_uuid, o.order_number,
+            t.asset_symbol, t.token_address, t.token_decimals,
             t.transaction_type, t.amount, t.balance_before, t.balance_after,
             t.exchange_rate, t.cny_amount, t.reference, t.status, t.metadata,
             d.amount AS onchain_raw_amount,
@@ -54,6 +61,9 @@ export async function listWalletTransactions(
       walletTxId: row.wallet_tx_id,
       uuid: row.uuid,
       walletId: row.wallet_id,
+      assetSymbol: row.asset_symbol || 'NBC',
+      tokenAddress: row.token_address || 'native:NBC',
+      tokenDecimals: Number(row.token_decimals || 18),
       orderId: row.order_id,
       orderUuid: row.order_uuid,
       orderNumber: row.order_number,
@@ -61,7 +71,7 @@ export async function listWalletTransactions(
       amount: Number(row.amount),
       displayAmount:
         row.transaction_type === 'onchain_deposit' && row.onchain_raw_amount
-          ? Number(formatUnits(BigInt(row.onchain_raw_amount), 18))
+          ? Number(formatUnits(BigInt(row.onchain_raw_amount), Number(row.token_decimals || 18)))
           : Number(row.amount),
       balanceBefore: Number(row.balance_before),
       balanceAfter: Number(row.balance_after),

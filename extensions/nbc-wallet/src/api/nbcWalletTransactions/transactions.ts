@@ -25,7 +25,9 @@ export default async function getNbcWalletTransactions(
     const transactions = await listWalletTransactions(customer.customer_id, {
       page: request.query?.page,
       limit: request.query?.limit,
-      transactionType: request.query?.transactionType
+      transactionType: request.query?.transactionType,
+      asset: request.query?.asset,
+      assetSymbol: request.query?.assetSymbol
     });
 
     response.status(OK).json({

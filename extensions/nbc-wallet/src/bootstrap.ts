@@ -81,4 +81,11 @@ export default function bootstrap() {
     resolve: path.resolve(currentDir, 'crons', 'reconcileWalletLedger.js'),
     enabled: Number(getConfig('nbcWallet.reconcile.enabled', 1)) === 1
   });
+
+  registerJob({
+    name: 'nbcWalletNotificationFlush',
+    schedule: String(getConfig('nbcWallet.notifications.schedule', '* * * * *')),
+    resolve: path.resolve(currentDir, 'crons', 'sendWalletNotifications.js'),
+    enabled: Number(getConfig('nbcWallet.notifications.enabled', 1)) === 1
+  });
 }

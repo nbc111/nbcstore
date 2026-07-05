@@ -2,8 +2,14 @@ import {
   INVALID_PAYLOAD,
   INTERNAL_SERVER_ERROR,
   OK,
+  TOO_MANY_REQUESTS,
   UNAUTHORIZED
 } from '@evershop/evershop/lib/util/httpStatus';
+import { getConfig } from '@evershop/evershop/lib/util/getConfig';
+import {
+  checkRateLimit,
+  getRequestRateLimitKey
+} from '../../services/security/rateLimit.js';
 import { ensureWalletDepositAddress } from '../../services/wallet/ensureWalletDepositAddress.js';
 
 function mapDepositAddressError(error: unknown): {
@@ -53,7 +59,34 @@ export default async function getNbcWalletDepositAddress(
       return;
     }
 
-    const address = await ensureWalletDepositAddress(customer.customer_id);
+    const assetSymbol =
+      request.query?.assetSymbol ||
+      request.query?.asset ||
+      request.body?.assetSymbol ||
+      request.body?.asset;
+    const rateLimit = checkRateLimit({
+      scope: 'wallet_deposit_address',
+      keys: [getRequestRateLimitKey(request, customer.customer_id, assetSymbol)],
+      limit: Number(getConfig('nbcWallet.rateLimit.depositAddress.limit', 20)),
+      windowSeconds: Number(
+        getConfig('nbcWallet.rateLimit.depositAddress.windowSeconds', 60)
+      )
+    });
+
+    if (!rateLimit.allowed) {
+      response.status(TOO_MANY_REQUESTS).json({
+        error: {
+          status: TOO_MANY_REQUESTS,
+          message: 'Too many requests. Please try again later.'
+        }
+      });
+      return;
+    }
+
+    const address = await ensureWalletDepositAddress(
+      customer.customer_id,
+      assetSymbol
+    );
 
     response.status(OK).json({
       data: address

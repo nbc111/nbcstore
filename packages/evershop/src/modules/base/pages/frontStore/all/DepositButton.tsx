@@ -11,7 +11,6 @@ import { Input } from '@components/common/ui/Input.js';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/common/ui/Tabs.js';
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
-  ChevronRight,
   CircleDollarSign,
   Copy,
   ExternalLink,
@@ -26,6 +25,26 @@ type WalletSummary = {
   availableBalance: number;
   balance: number;
   walletAddress: string;
+  assets?: WalletAssetBalance[];
+};
+
+type WalletAssetBalance = {
+  symbol: string;
+  displayName?: string;
+  balance: number;
+  frozenBalance: number;
+  availableBalance: number;
+  tokenAddress?: string | null;
+  tokenDecimals?: number | null;
+};
+
+type PublicAsset = {
+  symbol: string;
+  displayName?: string;
+  chainId?: number | null;
+  assetType: 'native' | 'erc20' | string;
+  tokenAddress?: string | null;
+  tokenDecimals?: number | null;
 };
 
 type DepositTx = {
@@ -36,6 +55,7 @@ type DepositTx = {
   createdAt?: string;
   reference?: string;
   status?: string;
+  assetSymbol?: string;
 };
 
 type DepositAddressData = {
@@ -78,6 +98,7 @@ interface DepositButtonProps {
     chainId?: number | null;
     tokenAddress?: string | null;
     tokenDecimals?: number | null;
+    assets?: PublicAsset[];
     blockExplorerUrl?: string | null;
     onchainEnabled: boolean;
     onchainEnabledRaw?: number | null;
@@ -156,9 +177,18 @@ const fetchOpts: RequestInit = {
   }
 };
 
-async function requestDepositAddress(depositAddressApi: string): Promise<DepositAddressData> {
+function withAssetParam(api: string, assetSymbol: string) {
+  const url = new URL(api, window.location.origin);
+  url.searchParams.set('asset', assetSymbol);
+  return url.toString();
+}
+
+async function requestDepositAddress(
+  depositAddressApi: string,
+  assetSymbol: string
+): Promise<DepositAddressData> {
   return parseJson(
-    await fetch(depositAddressApi, {
+    await fetch(withAssetParam(depositAddressApi, assetSymbol), {
       ...fetchOpts,
       method: 'POST'
     })
@@ -171,21 +201,27 @@ async function fetchWalletBalance(balanceApi: string): Promise<WalletSummary | n
 }
 
 async function fetchOnchainDepositTransactions(
-  transactionsApi: string
+  transactionsApi: string,
+  assetSymbol: string
 ): Promise<DepositTx[]> {
   const url = new URL(transactionsApi, window.location.origin);
   url.searchParams.set('limit', '5');
   url.searchParams.set('transactionType', 'onchain_deposit');
+  url.searchParams.set('asset', assetSymbol);
   const data = await parseJson(await fetch(url.toString(), { ...fetchOpts, method: 'GET' }));
   return data?.items || [];
 }
 
-async function requestWalletWithdrawal(withdrawApi: string, amount: number) {
+async function requestWalletWithdrawal(
+  withdrawApi: string,
+  amount: number,
+  assetSymbol: string
+) {
   return parseJson(
     await fetch(withdrawApi, {
       ...fetchOpts,
       method: 'POST',
-      body: JSON.stringify({ amount })
+      body: JSON.stringify({ amount, asset: assetSymbol })
     })
   );
 }
@@ -286,7 +322,10 @@ function WalletActionPanel({
   primaryLabel,
   primaryDisabled,
   primaryLoading,
-  balanceLabel
+  balanceLabel,
+  assets,
+  selectedAssetSymbol,
+  onSelectAsset
 }: {
   isDeposit: boolean;
   wallet: WalletSummary | null;
@@ -300,28 +339,56 @@ function WalletActionPanel({
   primaryDisabled?: boolean;
   primaryLoading?: boolean;
   balanceLabel?: string;
+  assets: PublicAsset[];
+  selectedAssetSymbol: string;
+  onSelectAsset: (symbol: string) => void;
 }) {
-  const availableBalance = wallet?.availableBalance || 0;
-  const totalBalance = wallet?.balance || 0;
+  const selectedWalletAsset = wallet?.assets?.find(
+    (asset) => asset.symbol === selectedAssetSymbol
+  );
+  const availableBalance =
+    selectedWalletAsset?.availableBalance ??
+    (selectedAssetSymbol === 'NBC' ? wallet?.availableBalance || 0 : 0);
+  const totalBalance =
+    selectedWalletAsset?.balance ??
+    (selectedAssetSymbol === 'NBC' ? wallet?.balance || 0 : 0);
   const selectedCoinBalance = isDeposit ? totalBalance : availableBalance;
 
   return (
     <div className="space-y-4">
       <div className="space-y-2">
         <p className="text-xs text-muted-foreground">{_('Select coin')}</p>
-        <button
-          type="button"
-          className="w-full rounded-lg border border-border bg-muted/35 px-3 py-2.5 flex items-center justify-between transition-colors hover:bg-muted/55"
-        >
-          <div className="flex items-center gap-2">
-            <CircleDollarSign className="h-4 w-4 text-primary" />
-            <span className="font-medium">NBC</span>
-            <span className="text-xs text-muted-foreground">
-              {loading ? '...' : formatNbcAmount(selectedCoinBalance)}
-            </span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </button>
+        <div className="grid grid-cols-2 gap-2">
+          {assets.map((asset) => {
+            const active = asset.symbol === selectedAssetSymbol;
+            const assetBalance = wallet?.assets?.find(
+              (item) => item.symbol === asset.symbol
+            );
+            const displayBalance =
+              assetBalance?.balance ??
+              (asset.symbol === 'NBC' ? wallet?.balance || 0 : 0);
+            return (
+              <button
+                key={asset.symbol}
+                type="button"
+                className={`rounded-lg border px-3 py-2.5 text-left transition-colors ${
+                  active
+                    ? 'border-primary bg-primary/5 text-primary'
+                    : 'border-border bg-muted/35 hover:bg-muted/55'
+                }`}
+                onClick={() => onSelectAsset(asset.symbol)}
+              >
+                <div className="flex items-center gap-2">
+                  <CircleDollarSign className="h-4 w-4" />
+                  <span className="font-medium">{asset.symbol}</span>
+                </div>
+                <div className="mt-1 text-xs text-muted-foreground">
+                  {loading ? '...' : formatNbcAmount(active ? selectedCoinBalance : displayBalance)}
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div
@@ -332,14 +399,14 @@ function WalletActionPanel({
             {balanceLabel || (isDeposit ? _('Wallet balance') : _('Store balance (for payment)'))}
           </p>
           <p className="font-semibold">
-            {loading ? '...' : `${formatNbcAmount(totalBalance)} NBC`}
+            {loading ? '...' : `${formatNbcAmount(totalBalance)} ${selectedAssetSymbol}`}
           </p>
         </div>
         {!isDeposit && (
           <div className="rounded-lg border border-border bg-muted/30 p-3">
             <p className="text-muted-foreground mb-1">{_('Withdrawable balance')}</p>
             <p className="font-semibold">
-              {loading ? '...' : `${formatNbcAmount(availableBalance)} NBC`}
+              {loading ? '...' : `${formatNbcAmount(availableBalance)} ${selectedAssetSymbol}`}
             </p>
           </div>
         )}
@@ -354,7 +421,7 @@ function WalletActionPanel({
           <Input
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            placeholder="0.00 NBC"
+            placeholder={`0.00 ${selectedAssetSymbol}`}
             className="h-10 rounded-lg bg-background pr-24"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
@@ -421,6 +488,7 @@ export default function DepositButton({
 }: DepositButtonProps) {
   const [open, setOpen] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<'deposit' | 'withdraw'>('deposit');
+  const [selectedAssetSymbol, setSelectedAssetSymbol] = React.useState('NBC');
   const [depositAddress, setDepositAddress] = React.useState<DepositAddressData | null>(
     null
   );
@@ -441,6 +509,35 @@ export default function DepositButton({
   const autoSignInAttemptedRef = React.useRef<string | null>(null);
   const sessionReadyRef = React.useRef(false);
   const hasCustomerSession = Boolean(wallet?.walletAddress);
+  const publicAssets = React.useMemo<PublicAsset[]>(
+    () =>
+      nbcWalletPublicConfig.assets?.length
+        ? nbcWalletPublicConfig.assets
+        : [
+            {
+              symbol: 'NBC',
+              displayName: 'NBC',
+              assetType: nbcWalletPublicConfig.tokenAddress ? 'erc20' : 'native',
+              chainId: nbcWalletPublicConfig.chainId,
+              tokenAddress: nbcWalletPublicConfig.tokenAddress || null,
+              tokenDecimals: nbcWalletPublicConfig.tokenDecimals || 18
+            }
+          ],
+    [nbcWalletPublicConfig]
+  );
+  const selectedPublicAsset = React.useMemo(
+    () =>
+      publicAssets.find((asset) => asset.symbol === selectedAssetSymbol) ||
+      publicAssets[0],
+    [publicAssets, selectedAssetSymbol]
+  );
+  const selectedWalletAsset = React.useMemo(
+    () => wallet?.assets?.find((asset) => asset.symbol === selectedAssetSymbol),
+    [selectedAssetSymbol, wallet?.assets]
+  );
+  const selectedAvailableBalance =
+    selectedWalletAsset?.availableBalance ??
+    (selectedAssetSymbol === 'NBC' ? wallet?.availableBalance || 0 : 0);
   const canSubmitDeposit = React.useMemo(() => {
     const amount = Number(String(depositAmount || '').trim());
     return Number.isFinite(amount) && amount > 0;
@@ -465,9 +562,9 @@ export default function DepositButton({
     setError('');
     try {
       const [addressData, walletData, txData] = await Promise.all([
-        requestDepositAddress(depositAddressApi),
+        requestDepositAddress(depositAddressApi, selectedAssetSymbol),
         fetchWalletBalance(balanceApi),
-        fetchOnchainDepositTransactions(transactionsApi)
+        fetchOnchainDepositTransactions(transactionsApi, selectedAssetSymbol)
       ]);
       console.log('[nbc-wallet] deposit-address response', addressData);
       setPauseDepositPolling(false);
@@ -493,7 +590,13 @@ export default function DepositButton({
       setLoading(false);
       setOpenRefreshing(false);
     }
-  }, [balanceApi, depositAddressApi, pushDebugLog, transactionsApi]);
+  }, [
+    balanceApi,
+    depositAddressApi,
+    pushDebugLog,
+    selectedAssetSymbol,
+    transactionsApi
+  ]);
 
   const loadWalletData = React.useCallback(async () => {
     try {
@@ -680,6 +783,18 @@ export default function DepositButton({
     }
   }, [depositAddress?.depositAddress]);
 
+  const handleSelectAsset = React.useCallback((symbol: string) => {
+    setSelectedAssetSymbol(symbol);
+    setDepositAddress(null);
+    setDepositTxs([]);
+    setDepositAmount('');
+    setWithdrawAmount('');
+    setDepositRatio(0);
+    setWithdrawRatio(0);
+    setError('');
+    setOpenRefreshing(true);
+  }, []);
+
   const handleDepositAction = React.useCallback(async () => {
     pushDebugLog('Add funds clicked');
     setError('');
@@ -687,7 +802,10 @@ export default function DepositButton({
     if (!targetDepositAddress) {
       pushDebugLog('Deposit address missing, requesting address');
       try {
-        const latestAddress = await requestDepositAddress(depositAddressApi);
+        const latestAddress = await requestDepositAddress(
+          depositAddressApi,
+          selectedAssetSymbol
+        );
         setDepositAddress(latestAddress);
         targetDepositAddress = latestAddress.depositAddress;
       } catch (error) {
@@ -748,10 +866,11 @@ export default function DepositButton({
         pushDebugLog('Customer session already exists, skip wallet sign-in');
       }
 
-      if (nbcWalletPublicConfig.chainId && nbcWalletPublicConfig.chainId > 0) {
-        const chainIdHex = `0x${Number(nbcWalletPublicConfig.chainId).toString(16)}`;
+      const chainId = selectedPublicAsset?.chainId || nbcWalletPublicConfig.chainId;
+      if (chainId && chainId > 0) {
+        const chainIdHex = `0x${Number(chainId).toString(16)}`;
         pushDebugLog('Switching wallet chain', {
-          chainId: nbcWalletPublicConfig.chainId,
+          chainId,
           chainIdHex
         });
         await requestWithTimeout(
@@ -765,8 +884,8 @@ export default function DepositButton({
         pushDebugLog('Wallet chain ready');
       }
 
-      const tokenAddress = String(nbcWalletPublicConfig.tokenAddress || '').trim();
-      const tokenDecimals = Number(nbcWalletPublicConfig.tokenDecimals || 18);
+      const tokenAddress = String(selectedPublicAsset?.tokenAddress || '').trim();
+      const tokenDecimals = Number(selectedPublicAsset?.tokenDecimals || 18);
       const units = parseDecimalToUnits(amountText, tokenAddress ? tokenDecimals : 18);
       if (units <= 0n) {
         throw new Error('Deposit amount must be greater than 0');
@@ -832,8 +951,8 @@ export default function DepositButton({
     depositAddressApi,
     customer?.uuid,
     nbcWalletPublicConfig.chainId,
-    nbcWalletPublicConfig.tokenAddress,
-    nbcWalletPublicConfig.tokenDecimals,
+    selectedAssetSymbol,
+    selectedPublicAsset,
     pushDebugLog,
     hasCustomerSession,
     loadWalletData
@@ -846,16 +965,16 @@ export default function DepositButton({
       return;
     }
     if (amount < 1) {
-      toast.error(_('Withdrawal amount must be at least 1 NBC'));
+      toast.error(`Withdrawal amount must be at least 1 ${selectedAssetSymbol}`);
       return;
     }
-    if (amount > (wallet?.availableBalance || 0)) {
+    if (amount > selectedAvailableBalance) {
       toast.error(_('Withdrawal amount exceeds available balance'));
       return;
     }
     try {
       setSubmittingWithdrawal(true);
-      await requestWalletWithdrawal(withdrawApi, amount);
+      await requestWalletWithdrawal(withdrawApi, amount, selectedAssetSymbol);
       toast.success(_('Withdrawal request submitted'));
       setWithdrawAmount('');
       setWithdrawRatio(0);
@@ -868,7 +987,13 @@ export default function DepositButton({
     } finally {
       setSubmittingWithdrawal(false);
     }
-  }, [loadWalletData, wallet?.availableBalance, withdrawAmount, withdrawApi]);
+  }, [
+    loadWalletData,
+    selectedAssetSymbol,
+    selectedAvailableBalance,
+    withdrawAmount,
+    withdrawApi
+  ]);
 
   const latestDeposit = depositTxs[0] || null;
   const explorerTxUrl =
@@ -941,6 +1066,9 @@ export default function DepositButton({
                 primaryDisabled={submittingDeposit || !canSubmitDeposit}
                 primaryLoading={submittingDeposit}
                 balanceLabel={_('Store balance (for payment)')}
+                assets={publicAssets}
+                selectedAssetSymbol={selectedAssetSymbol}
+                onSelectAsset={handleSelectAsset}
               />
               {debugLogs.length > 0 && (
                 <div className="rounded-lg border border-border bg-muted/20 p-3 text-xs">
@@ -996,7 +1124,8 @@ export default function DepositButton({
                     <div className="rounded-md border border-border bg-background p-2 text-xs">
                       <p>
                         {_('Latest deposit')}: +
-                        {latestDeposit.displayAmount ?? latestDeposit.amount} NBC
+                        {latestDeposit.displayAmount ?? latestDeposit.amount}{' '}
+                        {latestDeposit.assetSymbol || selectedAssetSymbol}
                       </p>
                       <p className="text-muted-foreground">
                         {_('Status')}: {latestDeposit.status || 'completed'}
@@ -1032,6 +1161,9 @@ export default function DepositButton({
               primaryLoading={submittingWithdrawal}
               primaryDisabled={!wallet || submittingWithdrawal}
               balanceLabel={_('Store balance (for payment)')}
+              assets={publicAssets}
+              selectedAssetSymbol={selectedAssetSymbol}
+              onSelectAsset={handleSelectAsset}
             />
           </TabsContent>
         </Tabs>
@@ -1061,6 +1193,14 @@ export const query = `
       chainId
       tokenAddress
       tokenDecimals
+      assets {
+        symbol
+        displayName
+        chainId
+        assetType
+        tokenAddress
+        tokenDecimals
+      }
       blockExplorerUrl
       onchainEnabled
       onchainEnabledRaw

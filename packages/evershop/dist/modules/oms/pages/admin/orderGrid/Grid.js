@@ -413,4 +413,3 @@ export const variables = `
 {
   filters: getContextValue('filtersFromUrl')
 }`;
-

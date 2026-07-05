@@ -1,4 +1,5 @@
 import { getConfig } from '@evershop/evershop/lib/util/getConfig';
+import { getWalletAssetConfig, getWalletAssetConfigs } from './assets.js';
 import { getChainRpcConfig } from './getChainRpcConfig.js';
 import { normalizeWalletAddress } from './normalizeWalletAddress.js';
 
@@ -8,7 +9,9 @@ export type NbcOnchainConfig = {
   chainId: number;
   assetType: 'native' | 'erc20';
   tokenAddress: string;
+  tokenDecimals: number;
   assetKey: string;
+  assetSymbol: string;
   treasuryAddress: string;
   depositMode: 'treasury' | 'hd';
   hdPathPrefix: string;
@@ -24,8 +27,9 @@ export type NbcOnchainConfig = {
   reconcileSchedule: string;
 };
 
-export function getOnchainConfig(): NbcOnchainConfig {
+export function getOnchainConfig(assetSymbol = 'NBC'): NbcOnchainConfig {
   const chain = getChainRpcConfig();
+  const asset = getWalletAssetConfig(assetSymbol);
   const treasuryAddress = String(
     process.env.NBC_WALLET_TREASURY_ADDRESS ||
       getConfig('nbcWallet.onchain.treasuryAddress', '')
@@ -45,10 +49,12 @@ export function getOnchainConfig(): NbcOnchainConfig {
           getConfig('nbcWallet.onchain.enabled', 1)
       ) === 1,
     rpcUrl: chain.rpcUrl,
-    chainId: chain.chainId,
-    assetType: chain.assetType,
-    tokenAddress: chain.tokenAddress,
-    assetKey: chain.assetType === 'native' ? 'native:NBC' : chain.tokenAddress,
+    chainId: asset.chainId || chain.chainId,
+    assetType: asset.assetType,
+    tokenAddress: asset.assetType === 'native' ? '' : asset.tokenAddress,
+    tokenDecimals: asset.tokenDecimals,
+    assetKey: asset.tokenAddress,
+    assetSymbol: asset.symbol,
     treasuryAddress: treasuryAddress
       ? normalizeWalletAddress(treasuryAddress)
       : '',
@@ -117,6 +123,10 @@ export function getOnchainConfig(): NbcOnchainConfig {
   };
 }
 
+export function getOnchainConfigs(): NbcOnchainConfig[] {
+  return getWalletAssetConfigs().map((asset) => getOnchainConfig(asset.symbol));
+}
+
 export function assertOnchainConfig(config = getOnchainConfig()) {
   if (!config.enabled) {
     throw new Error('NBC on-chain listener is disabled');
@@ -132,6 +142,12 @@ export function assertOnchainConfig(config = getOnchainConfig()) {
   }
   if (config.depositMode === 'treasury' && !config.treasuryAddress) {
     throw new Error('nbcWallet.onchain.treasuryAddress is required');
+  }
+  if (
+    config.confirmations <= 0 &&
+    !['development', 'test'].includes(String(process.env.NODE_ENV || ''))
+  ) {
+    throw new Error('nbcWallet.onchain.confirmations must be greater than 0');
   }
   if (
     config.depositMode === 'hd' &&

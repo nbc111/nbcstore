@@ -22,6 +22,7 @@ import {
 
 interface WalletTransactionRow {
   uuid: string;
+  assetSymbol?: string;
   transactionType: string;
   amount: number;
   displayAmount?: number;
@@ -33,6 +34,7 @@ interface WalletTransactionRow {
 
 interface WalletWithdrawalRow {
   uuid: string;
+  assetSymbol?: string;
   amount: number;
   status: string;
   txHash?: string | null;
@@ -114,6 +116,26 @@ export function NbcWalletAccountSection({
   const [loadingWithdrawals, setLoadingWithdrawals] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [submittingWithdrawal, setSubmittingWithdrawal] = useState(false);
+  const [selectedAssetSymbol, setSelectedAssetSymbol] = useState('NBC');
+  const walletAssets = wallet?.assets?.length
+    ? wallet.assets
+    : wallet
+      ? [
+          {
+            symbol: 'NBC',
+            displayName: 'NBC',
+            balance: wallet.balance,
+            frozenBalance: wallet.frozenBalance,
+            availableBalance: wallet.availableBalance
+          }
+        ]
+      : [];
+  const selectedWalletAsset = walletAssets.find(
+    (asset) => asset.symbol === selectedAssetSymbol
+  );
+  const selectedAvailableBalance =
+    selectedWalletAsset?.availableBalance ||
+    (selectedAssetSymbol === 'NBC' ? wallet?.availableBalance || 0 : 0);
 
   const loadTransactions = useCallback(async () => {
     if (!isConnected) {
@@ -122,14 +144,18 @@ export function NbcWalletAccountSection({
     }
     setLoadingTx(true);
     try {
-      const data = await fetchWalletTransactions(apis.transactionsApi, 10);
+      const data = await fetchWalletTransactions(
+        apis.transactionsApi,
+        10,
+        selectedAssetSymbol
+      );
       setTransactions(data?.items || []);
     } catch {
       setTransactions([]);
     } finally {
       setLoadingTx(false);
     }
-  }, [apis.transactionsApi, isConnected]);
+  }, [apis.transactionsApi, isConnected, selectedAssetSymbol]);
 
   const loadWithdrawals = useCallback(async () => {
     if (!isConnected) {
@@ -170,7 +196,12 @@ export function NbcWalletAccountSection({
 
     setLoadingDepositAddress(true);
     try {
-      setDepositAddress(await fetchWalletDepositAddress(apis.depositAddressApi));
+      setDepositAddress(
+        await fetchWalletDepositAddress(
+          apis.depositAddressApi,
+          selectedAssetSymbol
+        )
+      );
     } catch {
       setDepositAddress(null);
     } finally {
@@ -181,7 +212,8 @@ export function NbcWalletAccountSection({
     isConnected,
     publicConfig.chainId,
     publicConfig.onchainEnabled,
-    publicConfig.treasuryAddress
+    publicConfig.treasuryAddress,
+    selectedAssetSymbol
   ]);
 
   const submitWithdrawal = useCallback(async () => {
@@ -191,17 +223,21 @@ export function NbcWalletAccountSection({
       return;
     }
     if (amount < 1) {
-      toast.error(_('Withdrawal amount must be at least 1 NBC'));
+      toast.error(`Withdrawal amount must be at least 1 ${selectedAssetSymbol}`);
       return;
     }
-    if (amount > (wallet?.availableBalance || 0)) {
+    if (amount > selectedAvailableBalance) {
       toast.error(_('Withdrawal amount exceeds available balance'));
       return;
     }
 
     try {
       setSubmittingWithdrawal(true);
-      await requestWalletWithdrawal(apis.withdrawApi, amount);
+      await requestWalletWithdrawal(
+        apis.withdrawApi,
+        amount,
+        selectedAssetSymbol
+      );
       setWithdrawAmount('');
       toast.success(_('Withdrawal request submitted'));
       await refreshBalance();
@@ -219,7 +255,8 @@ export function NbcWalletAccountSection({
     loadWithdrawals,
     mapWithdrawalErrorMessage,
     refreshBalance,
-    wallet?.availableBalance,
+    selectedAssetSymbol,
+    selectedAvailableBalance,
     withdrawAmount
   ]);
 
@@ -282,12 +319,17 @@ export function NbcWalletAccountSection({
                   {_('Available balance')}
                 </span>
                 <span className="text-lg font-semibold">
-                  {loadingBalance ? '…' : `${formatNbcAmount(wallet!.availableBalance)} NBC`}
+                  {loadingBalance
+                    ? '…'
+                    : `${formatNbcAmount(selectedAvailableBalance)} ${selectedAssetSymbol}`}
                 </span>
               </div>
               <div>
                 <span className="text-muted-foreground block">{_('Total balance')}</span>
-                <span>{formatNbcAmount(wallet!.balance)} NBC</span>
+                <span>
+                  {formatNbcAmount(selectedWalletAsset?.balance || 0)}{' '}
+                  {selectedAssetSymbol}
+                </span>
               </div>
               <div>
                 <span className="text-muted-foreground block">{_('Exchange rate')}</span>
@@ -301,11 +343,43 @@ export function NbcWalletAccountSection({
               </div>
             </div>
 
+            {walletAssets.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {walletAssets.map((asset) => (
+                  <button
+                    key={asset.symbol}
+                    type="button"
+                    className={`rounded-md border p-3 text-left ${
+                      selectedAssetSymbol === asset.symbol
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border'
+                    }`}
+                    onClick={() => {
+                      setSelectedAssetSymbol(asset.symbol);
+                      setWithdrawAmount('');
+                    }}
+                  >
+                    <div className="font-medium">{asset.symbol}</div>
+                    <div className="mt-1 text-sm text-muted-foreground">
+                      {_('Available balance')}: {formatNbcAmount(asset.availableBalance)}{' '}
+                      {asset.symbol}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {_('Total balance')}: {formatNbcAmount(asset.balance)}{' '}
+                      {asset.symbol}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
             {publicConfig.onchainEnabled && (
               <div className="rounded-md bg-muted/50 p-3 text-xs">
-                <p className="font-medium mb-1">{_('Top up (on-chain deposit)')}</p>
+                <p className="font-medium mb-1">
+                  {_('Top up (on-chain deposit)')} - {selectedAssetSymbol}
+                </p>
                 <p className="text-muted-foreground mb-1">
-                  {_('Send NBC tokens to the deposit address below. Balance updates after confirmations.')}
+                  Send {selectedAssetSymbol} tokens to the deposit address below. Balance updates after confirmations.
                 </p>
                 <p className="font-mono break-all">
                   {loadingDepositAddress
@@ -332,9 +406,11 @@ export function NbcWalletAccountSection({
             </div>
 
             <div className="rounded-md border p-4 space-y-3">
-              <h4 className="font-medium">{_('Withdraw NBC')}</h4>
+              <h4 className="font-medium">
+                {_('Withdraw')} {selectedAssetSymbol}
+              </h4>
               <p className="text-sm text-muted-foreground">
-                {_('Submit a withdrawal request to transfer NBC back to your connected wallet address.')}
+                Submit a withdrawal request to transfer {selectedAssetSymbol} back to your connected wallet address.
               </p>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                 <div className="flex-1">
@@ -399,7 +475,8 @@ export function NbcWalletAccountSection({
                           }
                         >
                           {renderedAmount >= 0 ? '+' : ''}
-                          {formatNbcAmount(renderedAmount)} NBC
+                          {formatNbcAmount(renderedAmount)}{' '}
+                          {tx.assetSymbol || selectedAssetSymbol}
                         </span>
                       </li>
                     );
@@ -425,7 +502,8 @@ export function NbcWalletAccountSection({
                     >
                       <div>
                         <div className="font-medium">
-                          {formatNbcAmount(item.amount)} NBC
+                          {formatNbcAmount(item.amount)}{' '}
+                          {item.assetSymbol || selectedAssetSymbol}
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {_(withdrawalStatusLabels[item.status] || item.status)}

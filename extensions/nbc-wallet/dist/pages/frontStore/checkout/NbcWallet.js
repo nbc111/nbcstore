@@ -8,17 +8,13 @@ import { NbcWalletBridge } from '../../../components/NbcWalletBridge.js';
 import { NbcWalletCheckoutPanel } from '../../../components/NbcWalletCheckoutPanel.js';
 import { useCheckoutWalletSnapshot } from '../../../lib/checkoutWalletStore.js';
 export default function NbcWallet({ captureAPI, authRequestApi, authVerifyApi, balanceApi, onchainBalanceApi, checkoutSuccessUrl, myCart, nbcWalletPublicConfig }) {
+    var _a, _b;
     const { data: cart } = useCartState();
     const checkoutState = useCheckout();
     const { orderPlaced, orderId, checkoutData, loadingStates } = checkoutState;
     const { registerPaymentComponent } = useCheckoutDispatch();
     const captureRequestedRef = useRef(false);
-    const apis = {
-        authRequestApi,
-        authVerifyApi,
-        balanceApi,
-        onchainBalanceApi
-    };
+    const apis = { authRequestApi, authVerifyApi, balanceApi, onchainBalanceApi };
     const publicConfig = {
         exchangeRate: nbcWalletPublicConfig.exchangeRate,
         shopCurrency: nbcWalletPublicConfig.shopCurrency,
@@ -34,13 +30,18 @@ export default function NbcWallet({ captureAPI, authRequestApi, authVerifyApi, b
         treasuryAddress: nbcWalletPublicConfig.treasuryAddress,
         onchainEnabled: nbcWalletPublicConfig.onchainEnabled
     };
-    const checkoutGrandTotal = cart?.grandTotal?.value;
-    const initialGrandTotal = myCart?.grandTotal?.value;
-    const orderCnyTotal = typeof checkoutGrandTotal === 'number' && checkoutGrandTotal > 0 ? checkoutGrandTotal : typeof initialGrandTotal === 'number' ? initialGrandTotal : checkoutGrandTotal ?? 0;
-    const isNbcSelected = checkoutData?.paymentMethod === 'nbc_wallet';
-    useEffect(()=>{
-        const captureOrder = async ()=>{
-            if (!orderPlaced || !orderId || checkoutData?.paymentMethod !== 'nbc_wallet') {
+    const checkoutGrandTotal = (_a = cart === null || cart === void 0 ? void 0 : cart.grandTotal) === null || _a === void 0 ? void 0 : _a.value;
+    const initialGrandTotal = (_b = myCart === null || myCart === void 0 ? void 0 : myCart.grandTotal) === null || _b === void 0 ? void 0 : _b.value;
+    const orderCnyTotal = typeof checkoutGrandTotal === 'number' && checkoutGrandTotal > 0
+        ? checkoutGrandTotal
+        : typeof initialGrandTotal === 'number'
+            ? initialGrandTotal
+            : checkoutGrandTotal !== null && checkoutGrandTotal !== void 0 ? checkoutGrandTotal : 0;
+    const isNbcSelected = (checkoutData === null || checkoutData === void 0 ? void 0 : checkoutData.paymentMethod) === 'nbc_wallet';
+    useEffect(() => {
+        const captureOrder = async () => {
+            var _a;
+            if (!orderPlaced || !orderId || (checkoutData === null || checkoutData === void 0 ? void 0 : checkoutData.paymentMethod) !== 'nbc_wallet') {
                 return;
             }
             if (captureRequestedRef.current) {
@@ -51,20 +52,17 @@ export default function NbcWallet({ captureAPI, authRequestApi, authVerifyApi, b
                 const response = await fetch(captureAPI, {
                     method: 'POST',
                     credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        order_uuid: orderId
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order_uuid: orderId })
                 });
                 const json = await response.json();
                 if (!response.ok || json.error) {
                     captureRequestedRef.current = false;
-                    throw new Error(json.error?.message || _('NBC payment failed'));
+                    throw new Error(((_a = json.error) === null || _a === void 0 ? void 0 : _a.message) || _('NBC payment failed'));
                 }
                 window.location.href = `${checkoutSuccessUrl}/${orderId}`;
-            } catch (error) {
+            }
+            catch (error) {
                 captureRequestedRef.current = false;
                 toast.error(error instanceof Error ? error.message : _('NBC payment failed'));
             }
@@ -73,23 +71,15 @@ export default function NbcWallet({ captureAPI, authRequestApi, authVerifyApi, b
     }, [
         orderPlaced,
         orderId,
-        checkoutData?.paymentMethod,
+        checkoutData === null || checkoutData === void 0 ? void 0 : checkoutData.paymentMethod,
         captureAPI,
         checkoutSuccessUrl
     ]);
-    useEffect(()=>{
+    useEffect(() => {
         registerPaymentComponent('nbc_wallet', {
-            nameRenderer: ({ isSelected })=>/*#__PURE__*/ React.createElement("span", {
-                    className: isSelected ? 'font-medium' : ''
-                }, nbcWalletPublicConfig.displayName || _('NBC Wallet')),
-            formRenderer: ({ isSelected })=>/*#__PURE__*/ React.createElement(NbcWalletCheckoutPanel, {
-                    publicConfig: publicConfig,
-                    orderCnyTotal: orderCnyTotal,
-                    isSelected: isSelected
-                }),
-            checkoutButtonRenderer: ()=>/*#__PURE__*/ React.createElement(NbcWalletPayButton, {
-                    isNbcSelected: isNbcSelected
-                })
+            nameRenderer: ({ isSelected }) => (React.createElement("span", { className: isSelected ? 'font-medium' : '' }, nbcWalletPublicConfig.displayName || _('NBC Wallet'))),
+            formRenderer: ({ isSelected }) => (React.createElement(NbcWalletCheckoutPanel, { publicConfig: publicConfig, orderCnyTotal: orderCnyTotal, isSelected: isSelected })),
+            checkoutButtonRenderer: () => (React.createElement(NbcWalletPayButton, { isNbcSelected: isNbcSelected }))
         });
     }, [
         registerPaymentComponent,
@@ -97,12 +87,7 @@ export default function NbcWallet({ captureAPI, authRequestApi, authVerifyApi, b
         orderCnyTotal,
         isNbcSelected
     ]);
-    return /*#__PURE__*/ React.createElement(NbcWalletBridge, {
-        apis: apis,
-        publicConfig: publicConfig,
-        orderCnyTotal: orderCnyTotal,
-        enabled: isNbcSelected
-    });
+    return (React.createElement(NbcWalletBridge, { apis: apis, publicConfig: publicConfig, orderCnyTotal: orderCnyTotal, enabled: isNbcSelected }));
 }
 function NbcWalletPayButton({ isNbcSelected }) {
     const dispatch = useCheckoutDispatch();
@@ -110,7 +95,7 @@ function NbcWalletPayButton({ isNbcSelected }) {
     const { loadingStates, orderPlaced } = useCheckout();
     const { isConnected, hasSufficientBalance, connecting, loadingBalance } = useCheckoutWalletSnapshot();
     const canPay = isConnected && hasSufficientBalance && !connecting && !loadingBalance;
-    const onCheckout = async (event)=>{
+    const onCheckout = async (event) => {
         event.preventDefault();
         if (!canPay) {
             toast.error(_('Connect your wallet and ensure sufficient NBC balance'));
@@ -118,21 +103,17 @@ function NbcWalletPayButton({ isNbcSelected }) {
         }
         try {
             await checkout();
-        } catch (error) {
+        }
+        catch (error) {
             toast.error(error instanceof Error ? error.message : _('Failed to place order'));
         }
     };
     if (!isNbcSelected) {
         return null;
     }
-    return /*#__PURE__*/ React.createElement(Button, {
-        variant: "default",
-        size: "xl",
-        type: "button",
-        onClick: onCheckout,
-        disabled: loadingStates.placingOrder || orderPlaced || !canPay,
-        className: "w-full"
-    }, loadingStates.placingOrder ? _('Placing Order...') : _('Pay with NBC Wallet'));
+    return (React.createElement(Button, { variant: "default", size: "xl", type: "button", onClick: onCheckout, disabled: loadingStates.placingOrder || orderPlaced || !canPay, className: "w-full" }, loadingStates.placingOrder
+        ? _('Placing Order...')
+        : _('Pay with NBC Wallet')));
 }
 export const layout = {
     areaId: 'checkoutFormAfter',
@@ -169,3 +150,4 @@ export const query = `
     }
   }
 `;
+//# sourceMappingURL=NbcWallet.js.map

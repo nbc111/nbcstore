@@ -2,14 +2,25 @@ import {
   INTERNAL_SERVER_ERROR,
   INVALID_PAYLOAD,
   OK,
+  TOO_MANY_REQUESTS,
   UNAUTHORIZED
 } from '@evershop/evershop/lib/util/httpStatus';
+import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 import { establishCustomerSession } from '../../services/auth/establishCustomerSession.js';
 import { verifyWalletSignature } from '../../services/auth/verifyWalletSignature.js';
+import { getRequestDomain } from '../../services/security/getRequestDomain.js';
+import {
+  checkRateLimit,
+  getRequestRateLimitKey
+} from '../../services/security/rateLimit.js';
 import { getWalletCustomerByAddress } from '../../services/wallet/getWalletCustomerByAddress.js';
+import { getOnchainConfig } from '../../services/wallet/getOnchainConfig.js';
 import { isValidWalletAddress } from '../../services/wallet/isValidWalletAddress.js';
 import { upsertWalletCustomer } from '../../services/wallet/upsertWalletCustomer.js';
-import { useWalletAuthNonce } from '../../services/wallet/useWalletAuthNonce.js';
+import {
+  getWalletAuthNonce,
+  markWalletAuthNonceUsed
+} from '../../services/wallet/useWalletAuthNonce.js';
 
 export default async function verifyWalletAuth(
   request: any,
@@ -19,6 +30,24 @@ export default async function verifyWalletAuth(
     const walletAddress = request.body?.walletAddress;
     const signature = request.body?.signature;
     const nonce = request.body?.nonce;
+    const rateLimit = checkRateLimit({
+      scope: 'wallet_auth_verify',
+      keys: [getRequestRateLimitKey(request, walletAddress)],
+      limit: Number(getConfig('nbcWallet.rateLimit.authVerify.limit', 10)),
+      windowSeconds: Number(
+        getConfig('nbcWallet.rateLimit.authVerify.windowSeconds', 60)
+      )
+    });
+
+    if (!rateLimit.allowed) {
+      response.status(TOO_MANY_REQUESTS).json({
+        error: {
+          status: TOO_MANY_REQUESTS,
+          message: 'Too many requests. Please try again later.'
+        }
+      });
+      return;
+    }
 
     if (!walletAddress || !signature || !nonce) {
       response.status(INVALID_PAYLOAD).json({
@@ -40,7 +69,12 @@ export default async function verifyWalletAuth(
       return;
     }
 
-    const nonceRow = await useWalletAuthNonce(walletAddress, nonce);
+    const nonceContext = {
+      domain: getRequestDomain(request),
+      chainId: getOnchainConfig().chainId,
+      purpose: 'wallet_login'
+    };
+    const nonceRow = await getWalletAuthNonce(walletAddress, nonce, nonceContext);
 
     if (!nonceRow) {
       response.status(UNAUTHORIZED).json({
@@ -63,6 +97,22 @@ export default async function verifyWalletAuth(
         error: {
           status: UNAUTHORIZED,
           message: 'Signature verification failed'
+        }
+      });
+      return;
+    }
+
+    const usedNonceRow = await markWalletAuthNonceUsed(
+      walletAddress,
+      nonce,
+      nonceContext
+    );
+
+    if (!usedNonceRow) {
+      response.status(UNAUTHORIZED).json({
+        error: {
+          status: UNAUTHORIZED,
+          message: 'Nonce is invalid or expired'
         }
       });
       return;

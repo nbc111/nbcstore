@@ -1,5 +1,6 @@
 import { pool } from '@evershop/evershop/lib/postgres';
 import { getExchangeRate } from './getExchangeRate.js';
+import { getWalletAssetConfigs } from './assets.js';
 
 function roundAmount(value: number, digits = 8) {
   return Number(value.toFixed(digits));
@@ -42,6 +43,35 @@ export async function getWalletSummary(customerId: number) {
   const frozenBalance = Number(wallet.frozen_balance);
   const availableBalance = roundAmount(balance - frozenBalance);
   const exchangeRate = await getExchangeRate();
+  const assetRows = await pool.query(
+    `SELECT asset_symbol, chain_id, token_address, token_decimals,
+            balance, frozen_balance, status, updated_at
+       FROM nbc_wallet_asset_balance
+      WHERE wallet_id = $1`,
+    [wallet.wallet_id]
+  );
+  const assets = getWalletAssetConfigs().map((asset) => {
+    const row = assetRows.rows.find(
+      (item) => String(item.asset_symbol).toUpperCase() === asset.symbol
+    );
+    const rawBalance =
+      asset.symbol === 'NBC' ? balance : Number(row?.balance || 0);
+    const rawFrozen =
+      asset.symbol === 'NBC' ? frozenBalance : Number(row?.frozen_balance || 0);
+    const available = roundAmount(rawBalance - rawFrozen);
+    return {
+      symbol: asset.symbol,
+      displayName: asset.displayName,
+      chainId: asset.chainId,
+      tokenAddress: asset.tokenAddress,
+      tokenDecimals: asset.tokenDecimals,
+      balance: roundAmount(rawBalance),
+      frozenBalance: rawFrozen,
+      availableBalance: available,
+      status: row?.status ?? 1,
+      updatedAt: row?.updated_at || null
+    };
+  });
 
   return {
     walletId: wallet.wallet_id,
@@ -60,6 +90,7 @@ export async function getWalletSummary(customerId: number) {
     exchangeRate,
     cnyValue: roundAmount(balance * exchangeRate),
     availableCnyValue: roundAmount(availableBalance * exchangeRate),
+    assets,
     lastLoginAt: wallet.last_login_at,
     createdAt: wallet.created_at,
     updatedAt: wallet.updated_at

@@ -12,6 +12,8 @@ type RecordOnchainDepositInput = {
   walletId?: number | null;
   chainId: number;
   tokenAddress: string;
+  assetSymbol?: string;
+  tokenDecimals?: number;
   txHash: string;
   logIndex: number;
   blockNumber: number;
@@ -87,6 +89,8 @@ export async function recordOnchainDeposit(input: RecordOnchainDepositInput) {
         wallet_address: walletAddress,
         chain_id: input.chainId,
         token_address: tokenAddress,
+        asset_symbol: input.assetSymbol || 'NBC',
+        token_decimals: Number(input.tokenDecimals ?? 18),
         tx_hash: input.txHash,
         log_index: input.logIndex,
         block_number: input.blockNumber,

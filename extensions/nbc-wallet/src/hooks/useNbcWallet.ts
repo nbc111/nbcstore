@@ -37,6 +37,14 @@ export interface NbcWalletPublicConfig {
   nativeSymbol?: string;
   tokenAddress?: string | null;
   tokenDecimals?: number;
+  assets?: Array<{
+    symbol: string;
+    displayName?: string;
+    chainId?: number | null;
+    assetType: string;
+    tokenAddress?: string | null;
+    tokenDecimals?: number | null;
+  }>;
   blockExplorerUrl?: string | null;
   chainBalanceEnabled?: boolean;
   treasuryAddress?: string | null;

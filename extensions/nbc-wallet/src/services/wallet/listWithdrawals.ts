@@ -4,7 +4,8 @@ export async function listWithdrawals(customerId: number, limit = 20) {
   const pageSize = Math.min(Math.max(Number(limit) || 20, 1), 100);
   const result = await pool.query(
     `SELECT withdrawal_id, uuid, wallet_id, customer_id, wallet_address,
-            chain_id, token_address, amount, tx_hash, wallet_tx_id, status,
+            chain_id, token_address, token_decimals, asset_symbol,
+            amount, tx_hash, wallet_tx_id, status,
             requested_at, processed_at, failed_at, error_message, metadata,
             created_at, updated_at
        FROM nbc_withdrawal
@@ -22,6 +23,8 @@ export async function listWithdrawals(customerId: number, limit = 20) {
     walletAddress: row.wallet_address,
     chainId: row.chain_id,
     tokenAddress: row.token_address,
+    tokenDecimals: Number(row.token_decimals || 18),
+    assetSymbol: row.asset_symbol || 'NBC',
     amount: Number(row.amount),
     txHash: row.tx_hash,
     walletTxId: row.wallet_tx_id,

@@ -77,7 +77,24 @@
       "priceField": "buy"
     },
     "exchangeRate": {
-      "NBC_TO_USD": 0.01
+      "NBC_TO_USD": 0.01,
+      "USDT_TO_USD": 1
+    },
+    "assets": {
+      "USDT": {
+        "tokenAddress": "0x4E4D07268eFFB4d3507a69F64b5780Eb16551f85",
+        "tokenDecimals": 6,
+        "withdrawal": {
+          "minAmount": 1,
+          "maxAmount": 0,
+          "dailyLimit": 0,
+          "frequencyWindowSeconds": 3600,
+          "maxRequestsPerWindow": 3,
+          "requireDualControl": 1,
+          "dualControlAmount": 0,
+          "blacklistedAddresses": []
+        }
+      }
     },
     "onchain": {
       "enabled": 1,
@@ -93,7 +110,6 @@
       "tokenDecimals": 18,
       "blockExplorerUrl": "",
       "treasuryAddress": "0xd54482180fbb5fe3735a508f5abcff4f5390a3d5",
-      "treasuryPrivateKey": "",
       "deposit": {
         "mode": "treasury",
         "xpub": "",
@@ -113,7 +129,44 @@
       "requireApproval": 1,
       "minAmount": 1,
       "maxAmount": 0,
-      "dailyLimit": 0
+      "dailyLimit": 0,
+      "frequencyWindowSeconds": 3600,
+      "maxRequestsPerWindow": 3,
+      "requireDualControl": 1,
+      "dualControlAmount": 0,
+      "blacklistedAddresses": []
+    },
+    "rateLimit": {
+      "default": {
+        "limit": 60,
+        "windowSeconds": 60
+      },
+      "authRequest": {
+        "limit": 10,
+        "windowSeconds": 60
+      },
+      "authVerify": {
+        "limit": 10,
+        "windowSeconds": 60
+      },
+      "withdraw": {
+        "limit": 5,
+        "windowSeconds": 300
+      },
+      "depositAddress": {
+        "limit": 20,
+        "windowSeconds": 60
+      },
+      "onchainBalance": {
+        "limit": 30,
+        "windowSeconds": 60
+      }
+    },
+    "notifications": {
+      "enabled": 1,
+      "schedule": "* * * * *",
+      "batchSize": 10,
+      "batchWindowMinutes": 5
     }
   }
 }

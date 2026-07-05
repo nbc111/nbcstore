@@ -4,6 +4,7 @@ import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 import { getChainRpcConfig, isChainRpcConfigured } from '../../../services/wallet/getChainRpcConfig.js';
 import { getExchangeRate } from '../../../services/wallet/getExchangeRate.js';
 import { getOnchainConfig } from '../../../services/wallet/getOnchainConfig.js';
+import { getWalletAssetConfigs } from '../../../services/wallet/assets.js';
 import { getWalletSummary } from '../../../services/wallet/getWalletSummary.js';
 import { listWithdrawals } from '../../../services/wallet/listWithdrawals.js';
 import { listWalletTransactions } from '../../../services/wallet/listWalletTransactions.js';
@@ -69,7 +70,16 @@ export default {
         treasuryAddress: onchain.treasuryAddress || null,
         depositMode: onchain.depositMode,
         onchainEnabled: onchain.enabled,
-        onchainEnabledRaw: onchain.enabled ? 1 : 0
+        onchainEnabledRaw: onchain.enabled ? 1 : 0,
+        assets: getWalletAssetConfigs().map((asset) => ({
+          symbol: asset.symbol,
+          displayName: asset.displayName,
+          chainId: asset.chainId > 0 ? asset.chainId : null,
+          assetType: asset.assetType,
+          tokenAddress:
+            asset.assetType === 'native' ? null : asset.tokenAddress,
+          tokenDecimals: asset.tokenDecimals
+        }))
       };
     },
     nbcWallet: async (_, args, { customer }) => {

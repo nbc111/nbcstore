@@ -1,9 +1,29 @@
-import { INTERNAL_SERVER_ERROR, INVALID_PAYLOAD, OK } from '@evershop/evershop/lib/util/httpStatus';
+import { INTERNAL_SERVER_ERROR, INVALID_PAYLOAD, OK, TOO_MANY_REQUESTS } from '@evershop/evershop/lib/util/httpStatus';
+import { getConfig } from '@evershop/evershop/lib/util/getConfig';
+import { getOnchainConfig } from '../../services/wallet/getOnchainConfig.js';
+import { getRequestDomain } from '../../services/security/getRequestDomain.js';
+import { checkRateLimit, getRequestRateLimitKey } from '../../services/security/rateLimit.js';
 import { isValidWalletAddress } from '../../services/wallet/isValidWalletAddress.js';
 import { upsertWalletAuthNonce } from '../../services/wallet/upsertWalletAuthNonce.js';
 export default async function requestWalletAuth(request, response) {
+    var _a;
     try {
-        const walletAddress = request.body?.walletAddress;
+        const walletAddress = (_a = request.body) === null || _a === void 0 ? void 0 : _a.walletAddress;
+        const rateLimit = checkRateLimit({
+            scope: 'wallet_auth_request',
+            keys: [getRequestRateLimitKey(request, walletAddress)],
+            limit: Number(getConfig('nbcWallet.rateLimit.authRequest.limit', 10)),
+            windowSeconds: Number(getConfig('nbcWallet.rateLimit.authRequest.windowSeconds', 60))
+        });
+        if (!rateLimit.allowed) {
+            response.status(TOO_MANY_REQUESTS).json({
+                error: {
+                    status: TOO_MANY_REQUESTS,
+                    message: 'Too many requests. Please try again later.'
+                }
+            });
+            return;
+        }
         if (!walletAddress) {
             response.status(INVALID_PAYLOAD).json({
                 error: {
@@ -22,7 +42,11 @@ export default async function requestWalletAuth(request, response) {
             });
             return;
         }
-        const nonceRow = await upsertWalletAuthNonce(walletAddress);
+        const nonceRow = await upsertWalletAuthNonce(walletAddress, {
+            domain: getRequestDomain(request),
+            chainId: getOnchainConfig().chainId,
+            purpose: 'wallet_login'
+        });
         response.status(OK).json({
             data: {
                 walletAddress: nonceRow.wallet_address,
@@ -31,7 +55,8 @@ export default async function requestWalletAuth(request, response) {
                 expiresAt: nonceRow.expires_at
             }
         });
-    } catch (error) {
+    }
+    catch (error) {
         response.status(INTERNAL_SERVER_ERROR).json({
             error: {
                 status: INTERNAL_SERVER_ERROR,
@@ -40,3 +65,4 @@ export default async function requestWalletAuth(request, response) {
         });
     }
 }
+//# sourceMappingURL=%5BbodyParser%5Drequest.js.map

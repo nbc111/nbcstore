@@ -14,8 +14,22 @@ type NbcWallet {
   exchangeRate: Float!
   cnyValue: Float!
   availableCnyValue: Float!
+  assets: [NbcWalletAssetBalance]
   lastLoginAt: DateTime
   createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type NbcWalletAssetBalance {
+  symbol: String!
+  displayName: String!
+  chainId: Int
+  tokenAddress: String
+  tokenDecimals: Int!
+  balance: Float!
+  frozenBalance: Float!
+  availableBalance: Float!
+  status: Int!
   updatedAt: DateTime
 }
 
@@ -107,6 +121,16 @@ type NbcWalletPublicConfig {
   depositMode: String!
   onchainEnabled: Boolean!
   onchainEnabledRaw: Int!
+  assets: [NbcWalletPublicAsset!]!
+}
+
+type NbcWalletPublicAsset {
+  symbol: String!
+  displayName: String!
+  chainId: Int
+  assetType: String!
+  tokenAddress: String
+  tokenDecimals: Int!
 }
 
 extend type Query {

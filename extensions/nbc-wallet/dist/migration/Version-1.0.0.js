@@ -122,3 +122,4 @@ export default async function migrate(connection) {
       "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     )`);
 }
+//# sourceMappingURL=Version-1.0.0.js.map

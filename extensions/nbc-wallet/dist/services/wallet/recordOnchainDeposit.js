@@ -9,9 +9,12 @@ function normalizeAmount(amount) {
     return normalized.toString();
 }
 function normalizeAssetAddress(tokenAddress) {
-    return tokenAddress.startsWith('native:') ? tokenAddress : normalizeWalletAddress(tokenAddress);
+    return tokenAddress.startsWith('native:')
+        ? tokenAddress
+        : normalizeWalletAddress(tokenAddress);
 }
 export async function recordOnchainDeposit(input) {
+    var _a;
     const walletAddress = normalizeWalletAddress(input.walletAddress);
     const tokenAddress = normalizeAssetAddress(input.tokenAddress);
     const amount = normalizeAmount(input.amount);
@@ -23,11 +26,7 @@ export async function recordOnchainDeposit(input) {
         WHERE chain_id = $1
           AND tx_hash = $2
           AND log_index = $3
-        FOR UPDATE`, [
-            input.chainId,
-            input.txHash,
-            input.logIndex
-        ]);
+        FOR UPDATE`, [input.chainId, input.txHash, input.logIndex]);
         if (existing.rows[0]) {
             await commit(connection);
             return {
@@ -36,42 +35,46 @@ export async function recordOnchainDeposit(input) {
                 alreadyRecorded: true
             };
         }
-        const walletResult = input.walletId ? await connection.query(`SELECT *
+        const walletResult = input.walletId
+            ? await connection.query(`SELECT *
              FROM nbc_wallet
             WHERE wallet_id = $1
-            FOR UPDATE`, [
-            input.walletId
-        ]) : await connection.query(`SELECT *
+            FOR UPDATE`, [input.walletId])
+            : await connection.query(`SELECT *
              FROM nbc_wallet
             WHERE deposit_address = $1
                OR wallet_address = $1
             ORDER BY CASE WHEN deposit_address = $1 THEN 0 ELSE 1 END
             LIMIT 1
-            FOR UPDATE`, [
-            walletAddress
-        ]);
+            FOR UPDATE`, [walletAddress]);
         const wallet = walletResult.rows[0];
-        const deposit = await insert('nbc_onchain_deposit').given({
-            wallet_id: wallet?.wallet_id || null,
+        const deposit = await insert('nbc_onchain_deposit')
+            .given({
+            wallet_id: (wallet === null || wallet === void 0 ? void 0 : wallet.wallet_id) || null,
             wallet_address: walletAddress,
             chain_id: input.chainId,
             token_address: tokenAddress,
+            asset_symbol: input.assetSymbol || 'NBC',
+            token_decimals: Number((_a = input.tokenDecimals) !== null && _a !== void 0 ? _a : 18),
             tx_hash: input.txHash,
             log_index: input.logIndex,
             block_number: input.blockNumber,
             amount,
             status: wallet ? 'pending' : 'unmatched',
             metadata: input.metadata || null
-        }).execute(connection);
+        })
+            .execute(connection);
         await commit(connection);
         return {
             depositId: deposit.insertId || deposit.deposit_id,
-            walletId: wallet?.wallet_id || null,
+            walletId: (wallet === null || wallet === void 0 ? void 0 : wallet.wallet_id) || null,
             status: wallet ? 'pending' : 'unmatched',
             alreadyRecorded: false
         };
-    } catch (error) {
+    }
+    catch (error) {
         await rollback(connection);
         throw error;
     }
 }
+//# sourceMappingURL=recordOnchainDeposit.js.map

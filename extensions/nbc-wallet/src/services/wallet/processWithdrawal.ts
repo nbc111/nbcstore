@@ -7,9 +7,16 @@ import {
 import { getConnection } from '@evershop/evershop/lib/postgres';
 import { emit } from '@evershop/evershop/lib/event';
 import { getConfig } from '@evershop/evershop/lib/util/getConfig';
-import { getTreasurySigner } from './getTreasurySigner.js';
-import { getChainRpcConfig } from './getChainRpcConfig.js';
+import { Contract } from 'ethers';
+import { getWalletAssetConfig } from './assets.js';
+import { ensureWalletAssetBalance } from './walletAssetBalance.js';
+import { enqueueWalletNotification } from './notificationQueue.js';
 import { writeAuditLog } from './writeAuditLog.js';
+import { getTreasurySigner } from './getTreasurySigner.js';
+
+const ERC20_ABI = [
+  'function transfer(address to, uint256 amount) returns (bool)'
+];
 
 /**
  * When `nbcWallet.withdrawal.requireApproval` is 1 (default in production),
@@ -19,6 +26,24 @@ import { writeAuditLog } from './writeAuditLog.js';
 function getProcessableStatuses(): string[] {
   const requireApproval = Number(getConfig('nbcWallet.withdrawal.requireApproval', 1));
   return requireApproval === 1 ? ['approved'] : ['requested', 'approved'];
+}
+
+function requiresDualControl(amount: number, assetSymbol: string) {
+  const assetPrefix = `nbcWallet.assets.${assetSymbol}.withdrawal`;
+  const requireDualControl = Number(
+    getConfig(
+      `${assetPrefix}.requireDualControl`,
+      getConfig('nbcWallet.withdrawal.requireDualControl', 1)
+    )
+  );
+  const threshold = Number(
+    getConfig(
+      `${assetPrefix}.dualControlAmount`,
+      getConfig('nbcWallet.withdrawal.dualControlAmount', 0)
+    )
+  );
+
+  return requireDualControl === 1 && (threshold <= 0 || amount >= threshold);
 }
 
 /**
@@ -43,14 +68,16 @@ export async function processWithdrawal(
   withdrawalUuid: string,
   performedBy = 'system'
 ) {
-  const { signer, token } = getTreasurySigner();
-  const { assetType, tokenDecimals } = getChainRpcConfig();
-
   // ── Phase 1: validate + mark processing (committed DB txn) ───────────────
   let withdrawalId: number;
   let walletId: number;
+  let customerId: number;
   let walletAddress: string;
   let amount: number;
+  let assetSymbol: string;
+  let assetType: 'native' | 'erc20';
+  let tokenAddress: string;
+  let tokenDecimals: number;
   let balanceBefore: number;
   let balanceAfter: number;
   let frozenBefore: number;
@@ -97,8 +124,24 @@ export async function processWithdrawal(
       if (!wallet) throw new Error('NBC wallet not found');
 
       amount = Number(wd.amount);
-      frozenBefore = Number(wallet.frozen_balance);
-      balanceBefore = Number(wallet.balance);
+      assetSymbol = wd.asset_symbol || 'NBC';
+      if (requiresDualControl(amount, assetSymbol)) {
+        if (!wd.approved_by) {
+          throw new Error('Withdrawal approval must record an approver before processing');
+        }
+        if (wd.approved_by === performedBy) {
+          throw new Error('Withdrawal must be processed by a different admin than the approver');
+        }
+      }
+
+      const asset = getWalletAssetConfig(assetSymbol);
+      assetType = asset.assetType;
+      tokenAddress = wd.token_address || asset.tokenAddress;
+      tokenDecimals = Number(wd.token_decimals || asset.tokenDecimals);
+      const assetBalance = await ensureWalletAssetBalance(conn, wallet, asset);
+
+      frozenBefore = Number(assetBalance.frozen_balance);
+      balanceBefore = Number(assetBalance.balance);
 
       if (frozenBefore < amount) throw new Error('Frozen balance is insufficient for withdrawal');
       if (balanceBefore < amount) throw new Error('Wallet balance is insufficient for withdrawal');
@@ -107,22 +150,37 @@ export async function processWithdrawal(
       const nextFrozen = frozenBefore - amount;
 
       await conn.query(
-        `UPDATE nbc_wallet
+        `UPDATE nbc_wallet_asset_balance
             SET balance = $1, frozen_balance = $2, updated_at = NOW()
-          WHERE wallet_id = $3`,
-        [balanceAfter, nextFrozen, wallet.wallet_id]
+          WHERE wallet_asset_id = $3`,
+        [balanceAfter, nextFrozen, assetBalance.wallet_asset_id]
       );
+
+      if (asset.symbol === 'NBC') {
+        await conn.query(
+          `UPDATE nbc_wallet
+              SET balance = $1, frozen_balance = $2, updated_at = NOW()
+            WHERE wallet_id = $3`,
+          [balanceAfter, nextFrozen, wallet.wallet_id]
+        );
+      }
 
       await conn.query(
         `UPDATE nbc_withdrawal
             SET status = 'processing', processing_at = NOW(), updated_at = NOW(),
-                metadata = COALESCE(metadata, '{}'::jsonb) || $1::jsonb
-          WHERE withdrawal_id = $2`,
-        [JSON.stringify({ performed_by: performedBy }), wd.withdrawal_id]
+                processed_by = $1,
+                metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb
+          WHERE withdrawal_id = $3`,
+        [
+          performedBy,
+          JSON.stringify({ performed_by: performedBy }),
+          wd.withdrawal_id
+        ]
       );
 
       withdrawalId = wd.withdrawal_id;
       walletId = wallet.wallet_id;
+      customerId = wallet.customer_id;
       walletAddress = wd.wallet_address;
 
       await commit(conn);
@@ -137,7 +195,11 @@ export async function processWithdrawal(
   let onchainError: Error | undefined;
 
   try {
+    const { signer } = getTreasurySigner();
     const onchainAmount = BigInt(amount) * BigInt(10) ** BigInt(tokenDecimals);
+    const token = assetType === 'erc20'
+      ? new Contract(tokenAddress, ERC20_ABI, signer)
+      : null;
     const tx = assetType === 'native'
       ? await signer.sendTransaction({
           to: walletAddress,
@@ -160,6 +222,9 @@ export async function processWithdrawal(
       const walletTx = await insert('nbc_wallet_transaction')
         .given({
           wallet_id: walletId,
+          asset_symbol: assetSymbol!,
+          token_address: tokenAddress!,
+          token_decimals: tokenDecimals!,
           transaction_type: 'withdrawal',
           amount: -amount,
           balance_before: balanceBefore,
@@ -169,6 +234,8 @@ export async function processWithdrawal(
           metadata: {
             source: 'onchain_withdrawal',
             asset_type: assetType,
+            asset_symbol: assetSymbol,
+            token_address: tokenAddress,
             tx_hash: txHash,
             performed_by: performedBy
           }
@@ -199,7 +266,16 @@ export async function processWithdrawal(
 
     await Promise.all([
       emit('nbc_wallet_withdrawal_completed', {
-        withdrawalUuid, withdrawalId, walletId, txHash, amount, balanceAfter
+        withdrawalUuid, withdrawalId, walletId, txHash, amount, balanceAfter, assetSymbol
+      }).catch(() => {}),
+      enqueueWalletNotification({
+        walletId,
+        customerId,
+        type: 'withdrawal_completed',
+        assetSymbol: assetSymbol!,
+        amount,
+        reference: txHash,
+        payload: { withdrawalUuid, withdrawalId, txHash, balanceAfter }
       }).catch(() => {}),
       writeAuditLog({
         entityType: 'withdrawal',
@@ -226,11 +302,21 @@ export async function processWithdrawal(
       const restoredFrozen = Math.max(frozenBefore - amount, 0);
 
       await conn3.query(
-        `UPDATE nbc_wallet
+        `UPDATE nbc_wallet_asset_balance
             SET balance = $1, frozen_balance = $2, updated_at = NOW()
-          WHERE wallet_id = $3`,
-        [balanceBefore, restoredFrozen, walletId]
+          WHERE wallet_id = $3
+            AND asset_symbol = $4`,
+        [balanceBefore, restoredFrozen, walletId, assetSymbol]
       );
+
+      if (assetSymbol === 'NBC') {
+        await conn3.query(
+          `UPDATE nbc_wallet
+              SET balance = $1, frozen_balance = $2, updated_at = NOW()
+            WHERE wallet_id = $3`,
+          [balanceBefore, restoredFrozen, walletId]
+        );
+      }
 
       await conn3.query(
         `UPDATE nbc_withdrawal
@@ -246,9 +332,20 @@ export async function processWithdrawal(
       // Restoration failed — row stays in `processing`, needs manual review
     }
 
-    await emit('nbc_wallet_withdrawal_failed', {
-      withdrawalUuid, withdrawalId, walletId, error: onchainError!.message
-    }).catch(() => {});
+    await Promise.all([
+      emit('nbc_wallet_withdrawal_failed', {
+        withdrawalUuid, withdrawalId, walletId, error: onchainError!.message
+      }).catch(() => {}),
+      enqueueWalletNotification({
+        walletId,
+        customerId,
+        type: 'withdrawal_failed',
+        assetSymbol: assetSymbol!,
+        amount,
+        reference: withdrawalUuid,
+        payload: { withdrawalUuid, withdrawalId, error: onchainError!.message }
+      }).catch(() => {})
+    ]);
 
     throw onchainError!;
   }

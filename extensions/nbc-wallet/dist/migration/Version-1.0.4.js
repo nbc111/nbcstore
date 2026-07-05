@@ -35,3 +35,4 @@ export default async function migrate(connection) {
        ON "nbc_wallet" ("address_index")
        WHERE "address_index" IS NOT NULL`);
 }
+//# sourceMappingURL=Version-1.0.4.js.map

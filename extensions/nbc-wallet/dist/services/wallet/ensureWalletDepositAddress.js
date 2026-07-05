@@ -2,8 +2,8 @@ import { commit, rollback, startTransaction } from '@evershop/postgres-query-bui
 import { getConnection } from '@evershop/evershop/lib/postgres';
 import { deriveDepositAddress } from './deriveDepositAddress.js';
 import { getOnchainConfig } from './getOnchainConfig.js';
-export async function ensureWalletDepositAddress(customerId) {
-    const config = getOnchainConfig();
+export async function ensureWalletDepositAddress(customerId, assetSymbol = 'NBC') {
+    const config = getOnchainConfig(assetSymbol);
     if (config.depositMode !== 'hd') {
         return {
             mode: config.depositMode,
@@ -19,9 +19,7 @@ export async function ensureWalletDepositAddress(customerId) {
         const walletResult = await connection.query(`SELECT *
          FROM nbc_wallet
         WHERE customer_id = $1
-        FOR UPDATE`, [
-            customerId
-        ]);
+        FOR UPDATE`, [customerId]);
         const wallet = walletResult.rows[0];
         if (!wallet) {
             throw new Error('NBC wallet not found');
@@ -47,11 +45,7 @@ export async function ensureWalletDepositAddress(customerId) {
           SET deposit_address = $1,
               address_index = $2,
               updated_at = NOW()
-        WHERE wallet_id = $3`, [
-            depositAddress,
-            addressIndex,
-            wallet.wallet_id
-        ]);
+        WHERE wallet_id = $3`, [depositAddress, addressIndex, wallet.wallet_id]);
         await commit(connection);
         return {
             mode: config.depositMode,
@@ -62,8 +56,10 @@ export async function ensureWalletDepositAddress(customerId) {
             chainId: config.chainId,
             tokenAddress: config.tokenAddress
         };
-    } catch (error) {
+    }
+    catch (error) {
         await rollback(connection);
         throw error;
     }
 }
+//# sourceMappingURL=ensureWalletDepositAddress.js.map

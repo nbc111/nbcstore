@@ -7,8 +7,8 @@ import { getConnection } from '@evershop/evershop/lib/postgres';
 import { deriveDepositAddress } from './deriveDepositAddress.js';
 import { getOnchainConfig } from './getOnchainConfig.js';
 
-export async function ensureWalletDepositAddress(customerId: number) {
-  const config = getOnchainConfig();
+export async function ensureWalletDepositAddress(customerId: number, assetSymbol = 'NBC') {
+  const config = getOnchainConfig(assetSymbol);
 
   if (config.depositMode !== 'hd') {
     return {

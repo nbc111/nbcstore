@@ -53,6 +53,7 @@ export async function listAdminWithdrawals(input: ListAdminWithdrawalsInput = {}
       `SELECT
           w.withdrawal_id, w.uuid, w.wallet_id, w.customer_id,
           w.wallet_address, w.chain_id, w.token_address,
+          w.token_decimals, w.asset_symbol,
           w.amount, w.tx_hash, w.wallet_tx_id, w.status,
           w.requested_at, w.approved_at, w.approved_by,
           w.processing_at, w.processed_at, w.failed_at,
@@ -83,6 +84,8 @@ export async function listAdminWithdrawals(input: ListAdminWithdrawalsInput = {}
       walletAddress: row.wallet_address,
       chainId: row.chain_id,
       tokenAddress: row.token_address,
+      tokenDecimals: Number(row.token_decimals || 18),
+      assetSymbol: row.asset_symbol || 'NBC',
       amount: Number(row.amount),
       txHash: row.tx_hash,
       walletTxId: row.wallet_tx_id,

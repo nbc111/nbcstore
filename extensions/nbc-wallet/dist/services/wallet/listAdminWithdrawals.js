@@ -1,12 +1,7 @@
 import { pool } from '@evershop/evershop/lib/postgres';
-const VALID_STATUSES = [
-    'requested',
-    'approved',
-    'processing',
-    'completed',
-    'failed'
-];
+const VALID_STATUSES = ['requested', 'approved', 'processing', 'completed', 'failed'];
 export async function listAdminWithdrawals(input = {}) {
+    var _a;
     const limit = Math.min(Math.max(Number(input.limit) || 20, 1), 100);
     const page = Math.max(Number(input.page) || 1, 1);
     const offset = (page - 1) * limit;
@@ -38,6 +33,7 @@ export async function listAdminWithdrawals(input = {}) {
         pool.query(`SELECT
           w.withdrawal_id, w.uuid, w.wallet_id, w.customer_id,
           w.wallet_address, w.chain_id, w.token_address,
+          w.token_decimals, w.asset_symbol,
           w.amount, w.tx_hash, w.wallet_tx_id, w.status,
           w.requested_at, w.approved_at, w.approved_by,
           w.processing_at, w.processed_at, w.failed_at,
@@ -47,39 +43,37 @@ export async function listAdminWithdrawals(input = {}) {
     LEFT JOIN customer c ON c.customer_id = w.customer_id
        ${where}
       ORDER BY w.created_at DESC, w.withdrawal_id DESC
-        LIMIT $${idx} OFFSET $${idx + 1}`, [
-            ...params,
-            limit,
-            offset
-        ]),
+        LIMIT $${idx} OFFSET $${idx + 1}`, [...params, limit, offset]),
         pool.query(`SELECT COUNT(*) AS total FROM nbc_withdrawal w ${where}`, params)
     ]);
-    const total = Number(countResult.rows[0]?.total || 0);
+    const total = Number(((_a = countResult.rows[0]) === null || _a === void 0 ? void 0 : _a.total) || 0);
     return {
-        items: rowsResult.rows.map((row)=>({
-                withdrawalId: row.withdrawal_id,
-                uuid: row.uuid,
-                walletId: row.wallet_id,
-                customerId: row.customer_id,
-                customerEmail: row.customer_email,
-                walletAddress: row.wallet_address,
-                chainId: row.chain_id,
-                tokenAddress: row.token_address,
-                amount: Number(row.amount),
-                txHash: row.tx_hash,
-                walletTxId: row.wallet_tx_id,
-                status: row.status,
-                requestedAt: row.requested_at,
-                approvedAt: row.approved_at,
-                approvedBy: row.approved_by,
-                processingAt: row.processing_at,
-                processedAt: row.processed_at,
-                failedAt: row.failed_at,
-                errorMessage: row.error_message,
-                metadata: row.metadata,
-                createdAt: row.created_at,
-                updatedAt: row.updated_at
-            })),
+        items: rowsResult.rows.map((row) => ({
+            withdrawalId: row.withdrawal_id,
+            uuid: row.uuid,
+            walletId: row.wallet_id,
+            customerId: row.customer_id,
+            customerEmail: row.customer_email,
+            walletAddress: row.wallet_address,
+            chainId: row.chain_id,
+            tokenAddress: row.token_address,
+            tokenDecimals: Number(row.token_decimals || 18),
+            assetSymbol: row.asset_symbol || 'NBC',
+            amount: Number(row.amount),
+            txHash: row.tx_hash,
+            walletTxId: row.wallet_tx_id,
+            status: row.status,
+            requestedAt: row.requested_at,
+            approvedAt: row.approved_at,
+            approvedBy: row.approved_by,
+            processingAt: row.processing_at,
+            processedAt: row.processed_at,
+            failedAt: row.failed_at,
+            errorMessage: row.error_message,
+            metadata: row.metadata,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at
+        })),
         pagination: {
             total,
             page,
@@ -88,3 +82,4 @@ export async function listAdminWithdrawals(input = {}) {
         }
     };
 }
+//# sourceMappingURL=listAdminWithdrawals.js.map

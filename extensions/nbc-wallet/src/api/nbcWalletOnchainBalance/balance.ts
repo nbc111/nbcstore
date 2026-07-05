@@ -1,8 +1,14 @@
 import {
   INTERNAL_SERVER_ERROR,
   INVALID_PAYLOAD,
-  OK
+  OK,
+  TOO_MANY_REQUESTS
 } from '@evershop/evershop/lib/util/httpStatus';
+import { getConfig } from '@evershop/evershop/lib/util/getConfig';
+import {
+  checkRateLimit,
+  getRequestRateLimitKey
+} from '../../services/security/rateLimit.js';
 import { getOnchainNbcBalance } from '../../services/wallet/getOnchainNbcBalance.js';
 
 export default async function getNbcWalletOnchainBalance(
@@ -13,6 +19,24 @@ export default async function getNbcWalletOnchainBalance(
     const walletAddress = String(
       request.query?.walletAddress || request.query?.address || ''
     ).trim();
+    const rateLimit = checkRateLimit({
+      scope: 'wallet_onchain_balance',
+      keys: [getRequestRateLimitKey(request, walletAddress)],
+      limit: Number(getConfig('nbcWallet.rateLimit.onchainBalance.limit', 30)),
+      windowSeconds: Number(
+        getConfig('nbcWallet.rateLimit.onchainBalance.windowSeconds', 60)
+      )
+    });
+
+    if (!rateLimit.allowed) {
+      response.status(TOO_MANY_REQUESTS).json({
+        error: {
+          status: TOO_MANY_REQUESTS,
+          message: 'Too many requests. Please try again later.'
+        }
+      });
+      return;
+    }
 
     if (!walletAddress) {
       response.status(INVALID_PAYLOAD).json({
@@ -24,7 +48,10 @@ export default async function getNbcWalletOnchainBalance(
       return;
     }
 
-    const balance = await getOnchainNbcBalance(walletAddress);
+    const balance = await getOnchainNbcBalance(
+      walletAddress,
+      request.query?.assetSymbol || request.query?.asset
+    );
 
     response.status(OK).json({
       data: balance
