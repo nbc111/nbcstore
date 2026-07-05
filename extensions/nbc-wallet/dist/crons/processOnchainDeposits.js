@@ -12,8 +12,7 @@ export default async function runNbcOnchainDepositPoller() {
     running = true;
     try {
         await processOnchainDeposits();
-    }
-    finally {
+    } finally{
         running = false;
     }
 }
