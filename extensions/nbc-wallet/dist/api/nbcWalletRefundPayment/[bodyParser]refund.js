@@ -1,7 +1,7 @@
 import { FORBIDDEN, INTERNAL_SERVER_ERROR, INVALID_PAYLOAD, OK } from '@evershop/evershop/lib/util/httpStatus';
 import { refundOrderPayment } from '../../services/wallet/refundOrderPayment.js';
 export default async function refundNbcOrder(request, response) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e, _f, _g;
     try {
         const orderUuid = ((_a = request.params) === null || _a === void 0 ? void 0 : _a.order_uuid) ||
             ((_b = request.body) === null || _b === void 0 ? void 0 : _b.order_uuid) ||
@@ -25,7 +25,10 @@ export default async function refundNbcOrder(request, response) {
             });
             return;
         }
-        const result = await refundOrderPayment(orderUuid, `admin:${adminUser.uuid}`);
+        const result = await refundOrderPayment(orderUuid, `admin:${adminUser.uuid}`, {
+            amount: (_e = request.body) === null || _e === void 0 ? void 0 : _e.amount,
+            items: ((_f = request.body) === null || _f === void 0 ? void 0 : _f.items) || ((_g = request.body) === null || _g === void 0 ? void 0 : _g.line_items)
+        });
         response.status(OK).json({
             data: result
         });

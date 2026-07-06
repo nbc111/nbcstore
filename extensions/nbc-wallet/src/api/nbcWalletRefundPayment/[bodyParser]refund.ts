@@ -39,7 +39,11 @@ export default async function refundNbcOrder(
 
     const result = await refundOrderPayment(
       orderUuid,
-      `admin:${adminUser.uuid}`
+      `admin:${adminUser.uuid}`,
+      {
+        amount: request.body?.amount,
+        items: request.body?.items || request.body?.line_items
+      }
     );
 
     response.status(OK).json({
