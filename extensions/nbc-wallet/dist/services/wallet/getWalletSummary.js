@@ -5,12 +5,13 @@ function roundAmount(value, digits = 8) {
     return Number(value.toFixed(digits));
 }
 export async function getWalletSummary(customerId) {
-    var _a;
     const result = await pool.query(`SELECT wallet_id, uuid, customer_id, wallet_address, deposit_address,
             address_index, chain_id, balance,
             frozen_balance, status, last_login_at, created_at, updated_at
        FROM nbc_wallet
-      WHERE customer_id = $1`, [customerId]);
+      WHERE customer_id = $1`, [
+        customerId
+    ]);
     const wallet = result.rows[0];
     if (!wallet) {
         return null;
@@ -26,20 +27,23 @@ export async function getWalletSummary(customerId) {
        INNER JOIN nbc_wallet_transaction t ON t.wallet_tx_id = d.wallet_tx_id
       WHERE d.wallet_id = $1
         AND d.status = 'completed'
-        AND t.transaction_type = 'onchain_deposit'`, [wallet.wallet_id]);
-    const balance = roundAmount(Number(wallet.balance) + Number(((_a = fractionalDeltaResult.rows[0]) === null || _a === void 0 ? void 0 : _a.fractional_delta) || 0));
+        AND t.transaction_type = 'onchain_deposit'`, [
+        wallet.wallet_id
+    ]);
+    const balance = roundAmount(Number(wallet.balance) + Number(fractionalDeltaResult.rows[0]?.fractional_delta || 0));
     const frozenBalance = Number(wallet.frozen_balance);
     const availableBalance = roundAmount(balance - frozenBalance);
     const exchangeRate = await getExchangeRate();
     const assetRows = await pool.query(`SELECT asset_symbol, chain_id, token_address, token_decimals,
             balance, frozen_balance, status, updated_at
        FROM nbc_wallet_asset_balance
-      WHERE wallet_id = $1`, [wallet.wallet_id]);
-    const assets = getWalletAssetConfigs().map((asset) => {
-        var _a;
-        const row = assetRows.rows.find((item) => String(item.asset_symbol).toUpperCase() === asset.symbol);
-        const rawBalance = asset.symbol === 'NBC' ? balance : Number((row === null || row === void 0 ? void 0 : row.balance) || 0);
-        const rawFrozen = asset.symbol === 'NBC' ? frozenBalance : Number((row === null || row === void 0 ? void 0 : row.frozen_balance) || 0);
+      WHERE wallet_id = $1`, [
+        wallet.wallet_id
+    ]);
+    const assets = getWalletAssetConfigs().map((asset)=>{
+        const row = assetRows.rows.find((item)=>String(item.asset_symbol).toUpperCase() === asset.symbol);
+        const rawBalance = asset.symbol === 'NBC' ? balance : Number(row?.balance || 0);
+        const rawFrozen = asset.symbol === 'NBC' ? frozenBalance : Number(row?.frozen_balance || 0);
         const available = roundAmount(rawBalance - rawFrozen);
         return {
             symbol: asset.symbol,
@@ -50,8 +54,8 @@ export async function getWalletSummary(customerId) {
             balance: roundAmount(rawBalance),
             frozenBalance: rawFrozen,
             availableBalance: available,
-            status: (_a = row === null || row === void 0 ? void 0 : row.status) !== null && _a !== void 0 ? _a : 1,
-            updatedAt: (row === null || row === void 0 ? void 0 : row.updated_at) || null
+            status: row?.status ?? 1,
+            updatedAt: row?.updated_at || null
         };
     });
     return {
@@ -76,4 +80,3 @@ export async function getWalletSummary(customerId) {
         updatedAt: wallet.updated_at
     };
 }
-//# sourceMappingURL=getWalletSummary.js.map

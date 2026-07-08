@@ -17,20 +17,15 @@ function calculateRefundNbcAmount(requestedFiatAmount, totalFiatAmount, totalNbc
     if (requestedFiatAmount >= totalFiatAmount - MONEY_EPSILON) {
         return totalNbcAmount;
     }
-    return Math.max(1, Math.ceil((requestedFiatAmount / totalFiatAmount) * totalNbcAmount));
+    return Math.max(1, Math.ceil(requestedFiatAmount / totalFiatAmount * totalNbcAmount));
 }
 async function calculateRefundFiatAmountFromItems(connection, orderId, items) {
     if (!Array.isArray(items) || items.length === 0) {
         return null;
     }
-    const itemIds = items
-        .map((item) => { var _a; return (_a = item.order_item_id) !== null && _a !== void 0 ? _a : item.orderItemId; })
-        .filter((value) => value !== undefined && value !== null)
-        .map((value) => Number(value));
-    const itemUuids = items
-        .map((item) => item.uuid)
-        .filter((value) => Boolean(value));
-    if (itemIds.some((value) => !Number.isInteger(value) || value <= 0)) {
+    const itemIds = items.map((item)=>item.order_item_id ?? item.orderItemId).filter((value)=>value !== undefined && value !== null).map((value)=>Number(value));
+    const itemUuids = items.map((item)=>item.uuid).filter((value)=>Boolean(value));
+    if (itemIds.some((value)=>!Number.isInteger(value) || value <= 0)) {
         throw new Error('Refund item id is invalid');
     }
     if (itemIds.length === 0 && itemUuids.length === 0) {
@@ -42,17 +37,21 @@ async function calculateRefundFiatAmountFromItems(connection, orderId, items) {
         AND (
           order_item_id = ANY($2::int[])
           OR uuid = ANY($3::uuid[])
-        )`, [orderId, itemIds, itemUuids]);
-    const rowsById = new Map(result.rows.map((row) => [
-        Number(row.order_item_id),
-        row
-    ]));
-    const rowsByUuid = new Map(result.rows.map((row) => [String(row.uuid), row]));
-    const refundAmount = items.reduce((total, item) => {
-        var _a;
-        const row = item.order_item_id || item.orderItemId
-            ? rowsById.get(Number((_a = item.order_item_id) !== null && _a !== void 0 ? _a : item.orderItemId))
-            : rowsByUuid.get(String(item.uuid));
+        )`, [
+        orderId,
+        itemIds,
+        itemUuids
+    ]);
+    const rowsById = new Map(result.rows.map((row)=>[
+            Number(row.order_item_id),
+            row
+        ]));
+    const rowsByUuid = new Map(result.rows.map((row)=>[
+            String(row.uuid),
+            row
+        ]));
+    const refundAmount = items.reduce((total, item)=>{
+        const row = item.order_item_id || item.orderItemId ? rowsById.get(Number(item.order_item_id ?? item.orderItemId)) : rowsByUuid.get(String(item.uuid));
         if (!row) {
             throw new Error('Refund item does not belong to this order');
         }
@@ -65,21 +64,22 @@ async function calculateRefundFiatAmountFromItems(connection, orderId, items) {
             throw new Error('Refund item quantity exceeds purchased quantity');
         }
         const lineTotal = Number(row.line_total_with_discount_incl_tax);
-        return total + (lineTotal / purchasedQty) * qty;
+        return total + lineTotal / purchasedQty * qty;
     }, 0);
     return roundMoney(refundAmount);
 }
 async function getCompletedRefundTotals(connection, orderId) {
-    var _a, _b;
     const result = await connection.query(`SELECT COALESCE(SUM(amount), 0) AS nbc_amount,
             COALESCE(SUM(cny_amount), 0) AS fiat_amount
        FROM nbc_wallet_transaction
       WHERE order_id = $1
         AND transaction_type = 'refund'
-        AND status = 'completed'`, [orderId]);
+        AND status = 'completed'`, [
+        orderId
+    ]);
     return {
-        nbcAmount: Number(((_a = result.rows[0]) === null || _a === void 0 ? void 0 : _a.nbc_amount) || 0),
-        fiatAmount: Number(((_b = result.rows[0]) === null || _b === void 0 ? void 0 : _b.fiat_amount) || 0)
+        nbcAmount: Number(result.rows[0]?.nbc_amount || 0),
+        fiatAmount: Number(result.rows[0]?.fiat_amount || 0)
     };
 }
 export async function refundOrderPayment(orderUuid, performedBy = 'system', options = {}) {
@@ -89,7 +89,9 @@ export async function refundOrderPayment(orderUuid, performedBy = 'system', opti
         const orderResult = await connection.query(`SELECT * FROM "order"
         WHERE uuid::text = $1
            OR order_id::text = $1
-        FOR UPDATE`, [String(orderUuid)]);
+        FOR UPDATE`, [
+            String(orderUuid)
+        ]);
         const orderRow = orderResult.rows[0];
         if (!orderRow) {
             throw new Error('Order not found');
@@ -107,8 +109,7 @@ export async function refundOrderPayment(orderUuid, performedBy = 'system', opti
             throw new Error('NBC usage amount is invalid for this order');
         }
         const refundedTotals = await getCompletedRefundTotals(connection, orderRow.order_id);
-        if (orderRow.payment_status === 'nbc_refunded' ||
-            refundedTotals.nbcAmount >= paidNbcAmount) {
+        if (orderRow.payment_status === 'nbc_refunded' || refundedTotals.nbcAmount >= paidNbcAmount) {
             if (orderRow.payment_status !== 'nbc_refunded') {
                 await updatePaymentStatus(orderRow.order_id, 'nbc_refunded', connection);
             }
@@ -123,7 +124,9 @@ export async function refundOrderPayment(orderUuid, performedBy = 'system', opti
                 paymentStatus: 'nbc_refunded'
             };
         }
-        const walletResult = await connection.query(`SELECT * FROM nbc_wallet WHERE wallet_id = $1 FOR UPDATE`, [usage.wallet_id]);
+        const walletResult = await connection.query(`SELECT * FROM nbc_wallet WHERE wallet_id = $1 FOR UPDATE`, [
+            usage.wallet_id
+        ]);
         const walletRow = walletResult.rows[0];
         if (!walletRow) {
             throw new Error('NBC wallet not found');
@@ -131,9 +134,7 @@ export async function refundOrderPayment(orderUuid, performedBy = 'system', opti
         const lineItemFiatAmount = await calculateRefundFiatAmountFromItems(connection, orderRow.order_id, options.items || []);
         const remainingNbcAmount = paidNbcAmount - refundedTotals.nbcAmount;
         const remainingFiatAmount = roundMoney(paidFiatAmount - refundedTotals.fiatAmount);
-        const requestedFiatAmount = lineItemFiatAmount !== null && lineItemFiatAmount !== void 0 ? lineItemFiatAmount : (options.amount !== undefined && options.amount !== null && options.amount !== ''
-            ? roundMoney(parsePositiveNumber(options.amount, 'Refund amount'))
-            : remainingFiatAmount);
+        const requestedFiatAmount = lineItemFiatAmount ?? (options.amount !== undefined && options.amount !== null && options.amount !== '' ? roundMoney(parsePositiveNumber(options.amount, 'Refund amount')) : remainingFiatAmount);
         if (requestedFiatAmount > remainingFiatAmount + MONEY_EPSILON) {
             throw new Error('Refund amount exceeds remaining refundable amount');
         }
@@ -146,14 +147,19 @@ export async function refundOrderPayment(orderUuid, performedBy = 'system', opti
         await connection.query(`UPDATE nbc_wallet
           SET balance = $1,
               updated_at = NOW()
-        WHERE wallet_id = $2`, [balanceAfter, walletRow.wallet_id]);
+        WHERE wallet_id = $2`, [
+            balanceAfter,
+            walletRow.wallet_id
+        ]);
         await connection.query(`UPDATE nbc_wallet_asset_balance
           SET balance = balance + $1,
               updated_at = NOW()
         WHERE wallet_id = $2
-          AND asset_symbol = 'NBC'`, [refundAmount, walletRow.wallet_id]);
-        await insert('nbc_wallet_transaction')
-            .given({
+          AND asset_symbol = 'NBC'`, [
+            refundAmount,
+            walletRow.wallet_id
+        ]);
+        await insert('nbc_wallet_transaction').given({
             wallet_id: walletRow.wallet_id,
             order_id: orderRow.order_id,
             transaction_type: 'refund',
@@ -171,8 +177,7 @@ export async function refundOrderPayment(orderUuid, performedBy = 'system', opti
                 requested_amount: requestedFiatAmount,
                 items: options.items || []
             }
-        })
-            .execute(connection);
+        }).execute(connection);
         await updatePaymentStatus(orderRow.order_id, paymentStatus, connection);
         await addOrderActivityLog(orderRow.order_id, `NBC Wallet refund completed: ${refundAmount} NBC (${requestedFiatAmount} ${orderRow.currency})`, false, connection);
         await commit(connection);
@@ -186,10 +191,8 @@ export async function refundOrderPayment(orderUuid, performedBy = 'system', opti
             paymentStatus,
             totalRefundedNbcAmount
         };
-    }
-    catch (error) {
+    } catch (error) {
         await rollback(connection);
         throw error;
     }
 }
-//# sourceMappingURL=refundOrderPayment.js.map

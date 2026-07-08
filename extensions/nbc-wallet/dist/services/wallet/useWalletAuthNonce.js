@@ -1,7 +1,6 @@
 import { pool } from '@evershop/evershop/lib/postgres';
 import { normalizeWalletAddress } from './normalizeWalletAddress.js';
 export async function getWalletAuthNonce(walletAddress, nonce, context) {
-    var _a;
     const normalizedAddress = normalizeWalletAddress(walletAddress);
     const result = await pool.query(`SELECT *
        FROM nbc_wallet_auth_nonce
@@ -18,10 +17,9 @@ export async function getWalletAuthNonce(walletAddress, nonce, context) {
         Number(context.chainId),
         context.purpose || 'wallet_login'
     ]);
-    return (_a = result.rows[0]) !== null && _a !== void 0 ? _a : null;
+    return result.rows[0] ?? null;
 }
 export async function markWalletAuthNonceUsed(walletAddress, nonce, context) {
-    var _a;
     const normalizedAddress = normalizeWalletAddress(walletAddress);
     const result = await pool.query(`UPDATE nbc_wallet_auth_nonce
         SET used_at = NOW(),
@@ -40,7 +38,6 @@ export async function markWalletAuthNonceUsed(walletAddress, nonce, context) {
         Number(context.chainId),
         context.purpose || 'wallet_login'
     ]);
-    return (_a = result.rows[0]) !== null && _a !== void 0 ? _a : null;
+    return result.rows[0] ?? null;
 }
 export const useWalletAuthNonce = markWalletAuthNonceUsed;
-//# sourceMappingURL=useWalletAuthNonce.js.map

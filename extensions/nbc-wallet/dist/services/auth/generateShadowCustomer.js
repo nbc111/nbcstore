@@ -8,4 +8,3 @@ export function generateShadowCustomerName(walletAddress) {
 export function generateShadowCustomerPassword() {
     return `nbc-${crypto.randomBytes(12).toString('hex')}`;
 }
-//# sourceMappingURL=generateShadowCustomer.js.map

@@ -6,12 +6,13 @@ import { checkRateLimit, getRequestRateLimitKey } from '../../services/security/
 import { isValidWalletAddress } from '../../services/wallet/isValidWalletAddress.js';
 import { upsertWalletAuthNonce } from '../../services/wallet/upsertWalletAuthNonce.js';
 export default async function requestWalletAuth(request, response) {
-    var _a;
     try {
-        const walletAddress = (_a = request.body) === null || _a === void 0 ? void 0 : _a.walletAddress;
+        const walletAddress = request.body?.walletAddress;
         const rateLimit = checkRateLimit({
             scope: 'wallet_auth_request',
-            keys: [getRequestRateLimitKey(request, walletAddress)],
+            keys: [
+                getRequestRateLimitKey(request, walletAddress)
+            ],
             limit: Number(getConfig('nbcWallet.rateLimit.authRequest.limit', 10)),
             windowSeconds: Number(getConfig('nbcWallet.rateLimit.authRequest.windowSeconds', 60))
         });
@@ -55,8 +56,7 @@ export default async function requestWalletAuth(request, response) {
                 expiresAt: nonceRow.expires_at
             }
         });
-    }
-    catch (error) {
+    } catch (error) {
         response.status(INTERNAL_SERVER_ERROR).json({
             error: {
                 status: INTERNAL_SERVER_ERROR,
@@ -65,4 +65,3 @@ export default async function requestWalletAuth(request, response) {
         });
     }
 }
-//# sourceMappingURL=%5BbodyParser%5Drequest.js.map

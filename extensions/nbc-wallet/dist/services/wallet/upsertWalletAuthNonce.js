@@ -36,7 +36,14 @@ export async function upsertWalletAuthNonce(walletAddress, context) {
        expires_at = EXCLUDED.expires_at,
        used_at = NULL,
        updated_at = NOW()
-     RETURNING wallet_address, nonce, message, domain, chain_id, purpose, expires_at`, [normalizedAddress, nonce, message, domain, chainId, purpose, expiresAt]);
+     RETURNING wallet_address, nonce, message, domain, chain_id, purpose, expires_at`, [
+        normalizedAddress,
+        nonce,
+        message,
+        domain,
+        chainId,
+        purpose,
+        expiresAt
+    ]);
     return result.rows[0];
 }
-//# sourceMappingURL=upsertWalletAuthNonce.js.map

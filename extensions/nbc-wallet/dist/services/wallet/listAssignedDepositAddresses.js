@@ -1,22 +1,22 @@
 import { pool } from '@evershop/evershop/lib/postgres';
 import { normalizeWalletAddress } from './normalizeWalletAddress.js';
 export async function listAssignedDepositAddresses(chainId, tokenAddress) {
-    var _a;
     if (chainId && tokenAddress) {
         const tableResult = await pool.query(`SELECT to_regclass('public.nbc_wallet_deposit_address') AS table_name`);
-        if ((_a = tableResult.rows[0]) === null || _a === void 0 ? void 0 : _a.table_name) {
-            const tokenKey = tokenAddress.startsWith('native:')
-                ? tokenAddress
-                : normalizeWalletAddress(tokenAddress);
+        if (tableResult.rows[0]?.table_name) {
+            const tokenKey = tokenAddress.startsWith('native:') ? tokenAddress : normalizeWalletAddress(tokenAddress);
             const assignedResult = await pool.query(`SELECT da.wallet_id, w.wallet_address, da.deposit_address, da.address_index
            FROM nbc_wallet_deposit_address da
            INNER JOIN nbc_wallet w ON w.wallet_id = da.wallet_id
           WHERE da.chain_id = $1
             AND da.token_address = $2
-            AND da.status = 1`, [chainId, tokenKey]);
+            AND da.status = 1`, [
+                chainId,
+                tokenKey
+            ]);
             if (assignedResult.rows.length > 0) {
                 const assigned = new Map();
-                for (const row of assignedResult.rows) {
+                for (const row of assignedResult.rows){
                     const depositAddress = normalizeWalletAddress(row.deposit_address);
                     assigned.set(depositAddress, {
                         walletId: Number(row.wallet_id),
@@ -33,7 +33,7 @@ export async function listAssignedDepositAddresses(chainId, tokenAddress) {
        FROM nbc_wallet
       WHERE deposit_address IS NOT NULL`);
     const addresses = new Map();
-    for (const row of result.rows) {
+    for (const row of result.rows){
         const depositAddress = normalizeWalletAddress(row.deposit_address);
         addresses.set(depositAddress, {
             walletId: Number(row.wallet_id),
@@ -44,4 +44,3 @@ export async function listAssignedDepositAddresses(chainId, tokenAddress) {
     }
     return addresses;
 }
-//# sourceMappingURL=listAssignedDepositAddresses.js.map

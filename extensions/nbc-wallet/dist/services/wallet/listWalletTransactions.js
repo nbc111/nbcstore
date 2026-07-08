@@ -3,12 +3,15 @@ import { formatUnits } from 'ethers';
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
 export async function listWalletTransactions(customerId, options = {}) {
-    var _a;
     const page = Math.max(Number(options.page) || 1, 1);
     const limit = Math.min(Math.max(Number(options.limit) || DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE);
     const offset = (page - 1) * limit;
-    const params = [customerId];
-    const filters = ['w.customer_id = $1'];
+    const params = [
+        customerId
+    ];
+    const filters = [
+        'w.customer_id = $1'
+    ];
     if (options.transactionType) {
         params.push(options.transactionType);
         filters.push(`t.transaction_type = $${params.length}`);
@@ -39,33 +42,30 @@ export async function listWalletTransactions(customerId, options = {}) {
       ORDER BY t.created_at DESC, t.wallet_tx_id DESC
       LIMIT $${params.length - 1} OFFSET $${params.length}`, params);
     return {
-        items: rowsResult.rows.map((row) => ({
-            walletTxId: row.wallet_tx_id,
-            uuid: row.uuid,
-            walletId: row.wallet_id,
-            assetSymbol: row.asset_symbol || 'NBC',
-            tokenAddress: row.token_address || 'native:NBC',
-            tokenDecimals: Number(row.token_decimals || 18),
-            orderId: row.order_id,
-            orderUuid: row.order_uuid,
-            orderNumber: row.order_number,
-            transactionType: row.transaction_type,
-            amount: Number(row.amount),
-            displayAmount: row.transaction_type === 'onchain_deposit' && row.onchain_raw_amount
-                ? Number(formatUnits(BigInt(row.onchain_raw_amount), Number(row.token_decimals || 18)))
-                : Number(row.amount),
-            balanceBefore: Number(row.balance_before),
-            balanceAfter: Number(row.balance_after),
-            exchangeRate: row.exchange_rate === null ? null : Number(row.exchange_rate),
-            cnyAmount: row.cny_amount === null ? null : Number(row.cny_amount),
-            reference: row.reference,
-            status: row.status,
-            metadata: row.metadata,
-            createdAt: row.created_at
-        })),
+        items: rowsResult.rows.map((row)=>({
+                walletTxId: row.wallet_tx_id,
+                uuid: row.uuid,
+                walletId: row.wallet_id,
+                assetSymbol: row.asset_symbol || 'NBC',
+                tokenAddress: row.token_address || 'native:NBC',
+                tokenDecimals: Number(row.token_decimals || 18),
+                orderId: row.order_id,
+                orderUuid: row.order_uuid,
+                orderNumber: row.order_number,
+                transactionType: row.transaction_type,
+                amount: Number(row.amount),
+                displayAmount: row.transaction_type === 'onchain_deposit' && row.onchain_raw_amount ? Number(formatUnits(BigInt(row.onchain_raw_amount), Number(row.token_decimals || 18))) : Number(row.amount),
+                balanceBefore: Number(row.balance_before),
+                balanceAfter: Number(row.balance_after),
+                exchangeRate: row.exchange_rate === null ? null : Number(row.exchange_rate),
+                cnyAmount: row.cny_amount === null ? null : Number(row.cny_amount),
+                reference: row.reference,
+                status: row.status,
+                metadata: row.metadata,
+                createdAt: row.created_at
+            })),
         currentPage: page,
         pageSize: limit,
-        total: Number(((_a = countResult.rows[0]) === null || _a === void 0 ? void 0 : _a.total) || 0)
+        total: Number(countResult.rows[0]?.total || 0)
     };
 }
-//# sourceMappingURL=listWalletTransactions.js.map

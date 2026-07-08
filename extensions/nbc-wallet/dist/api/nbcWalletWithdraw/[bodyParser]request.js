@@ -3,7 +3,6 @@ import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 import { checkRateLimit, getRequestRateLimitKey } from '../../services/security/rateLimit.js';
 import { requestWithdrawal } from '../../services/wallet/requestWithdrawal.js';
 export default async function requestNbcWalletWithdrawal(request, response) {
-    var _a, _b, _c, _d, _e;
     try {
         const customer = request.getCurrentCustomer();
         if (!customer) {
@@ -15,11 +14,11 @@ export default async function requestNbcWalletWithdrawal(request, response) {
             });
             return;
         }
-        const amount = Number((_a = request.body) === null || _a === void 0 ? void 0 : _a.amount);
+        const amount = Number(request.body?.amount);
         const rateLimit = checkRateLimit({
             scope: 'wallet_withdrawal_request',
             keys: [
-                getRequestRateLimitKey(request, customer.customer_id, ((_b = request.body) === null || _b === void 0 ? void 0 : _b.assetSymbol) || ((_c = request.body) === null || _c === void 0 ? void 0 : _c.asset))
+                getRequestRateLimitKey(request, customer.customer_id, request.body?.assetSymbol || request.body?.asset)
             ],
             limit: Number(getConfig('nbcWallet.rateLimit.withdraw.limit', 5)),
             windowSeconds: Number(getConfig('nbcWallet.rateLimit.withdraw.windowSeconds', 300))
@@ -45,13 +44,12 @@ export default async function requestNbcWalletWithdrawal(request, response) {
         const result = await requestWithdrawal({
             customerId: customer.customer_id,
             amount,
-            assetSymbol: ((_d = request.body) === null || _d === void 0 ? void 0 : _d.assetSymbol) || ((_e = request.body) === null || _e === void 0 ? void 0 : _e.asset)
+            assetSymbol: request.body?.assetSymbol || request.body?.asset
         });
         response.status(OK).json({
             data: result
         });
-    }
-    catch (error) {
+    } catch (error) {
         response.status(INTERNAL_SERVER_ERROR).json({
             error: {
                 status: INTERNAL_SERVER_ERROR,
@@ -60,4 +58,3 @@ export default async function requestNbcWalletWithdrawal(request, response) {
         });
     }
 }
-//# sourceMappingURL=%5BbodyParser%5Drequest.js.map

@@ -19,7 +19,9 @@ export async function ensureWalletDepositAddress(customerId, assetSymbol = 'NBC'
         const walletResult = await connection.query(`SELECT *
          FROM nbc_wallet
         WHERE customer_id = $1
-        FOR UPDATE`, [customerId]);
+        FOR UPDATE`, [
+            customerId
+        ]);
         const wallet = walletResult.rows[0];
         if (!wallet) {
             throw new Error('NBC wallet not found');
@@ -45,7 +47,11 @@ export async function ensureWalletDepositAddress(customerId, assetSymbol = 'NBC'
           SET deposit_address = $1,
               address_index = $2,
               updated_at = NOW()
-        WHERE wallet_id = $3`, [depositAddress, addressIndex, wallet.wallet_id]);
+        WHERE wallet_id = $3`, [
+            depositAddress,
+            addressIndex,
+            wallet.wallet_id
+        ]);
         await commit(connection);
         return {
             mode: config.depositMode,
@@ -56,10 +62,8 @@ export async function ensureWalletDepositAddress(customerId, assetSymbol = 'NBC'
             chainId: config.chainId,
             tokenAddress: config.tokenAddress
         };
-    }
-    catch (error) {
+    } catch (error) {
         await rollback(connection);
         throw error;
     }
 }
-//# sourceMappingURL=ensureWalletDepositAddress.js.map

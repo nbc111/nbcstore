@@ -53,11 +53,11 @@ export default function bootstrap() {
         }
     });
     registerPaymentMethod({
-        init: async () => ({
-            code: 'nbc_wallet',
-            name: String(getConfig('nbcWallet.displayName', 'NBC Wallet'))
-        }),
-        validator: async () => {
+        init: async ()=>({
+                code: 'nbc_wallet',
+                name: String(getConfig('nbcWallet.displayName', 'NBC Wallet'))
+            }),
+        validator: async ()=>{
             const status = Number(getConfig('nbcWallet.status', 1));
             return status === 1;
         }
@@ -82,4 +82,3 @@ export default function bootstrap() {
         enabled: Number(getConfig('nbcWallet.notifications.enabled', 1)) === 1
     });
 }
-//# sourceMappingURL=bootstrap.js.map

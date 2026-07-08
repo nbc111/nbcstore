@@ -5,8 +5,7 @@ import { getAssetSymbolByTokenAddress, getWalletAssetConfig } from './assets.js'
 import { ensureWalletAssetBalance } from './walletAssetBalance.js';
 import { enqueueWalletNotification } from './notificationQueue.js';
 function normalizeDepositAmount(rawAmount, tokenDecimals) {
-    if (tokenDecimals <= 0)
-        return rawAmount;
+    if (tokenDecimals <= 0) return rawAmount;
     const divisor = BigInt(10) ** BigInt(tokenDecimals);
     return rawAmount / divisor;
 }
@@ -17,7 +16,9 @@ export async function settleOnchainDeposit(depositId) {
         const depositResult = await connection.query(`SELECT *
          FROM nbc_onchain_deposit
         WHERE deposit_id = $1
-        FOR UPDATE`, [depositId]);
+        FOR UPDATE`, [
+            depositId
+        ]);
         const deposit = depositResult.rows[0];
         if (!deposit) {
             throw new Error('NBC on-chain deposit not found');
@@ -31,25 +32,29 @@ export async function settleOnchainDeposit(depositId) {
                 alreadySettled: true
             };
         }
-        const walletResult = deposit.wallet_id
-            ? await connection.query(`SELECT *
+        const walletResult = deposit.wallet_id ? await connection.query(`SELECT *
              FROM nbc_wallet
             WHERE wallet_id = $1
-            FOR UPDATE`, [deposit.wallet_id])
-            : await connection.query(`SELECT *
+            FOR UPDATE`, [
+            deposit.wallet_id
+        ]) : await connection.query(`SELECT *
              FROM nbc_wallet
             WHERE deposit_address = $1
                OR wallet_address = $1
             ORDER BY CASE WHEN deposit_address = $1 THEN 0 ELSE 1 END
             LIMIT 1
-            FOR UPDATE`, [deposit.wallet_address]);
+            FOR UPDATE`, [
+            deposit.wallet_address
+        ]);
         const wallet = walletResult.rows[0];
         if (!wallet) {
             await connection.query(`UPDATE nbc_onchain_deposit
             SET status = 'unmatched',
                 error_message = 'NBC wallet not found',
                 updated_at = NOW()
-          WHERE deposit_id = $1`, [depositId]);
+          WHERE deposit_id = $1`, [
+                depositId
+            ]);
             await commit(connection);
             return {
                 depositId,
@@ -67,9 +72,15 @@ export async function settleOnchainDeposit(depositId) {
             SET status = 'failed',
                 error_message = 'Normalized amount is zero (check tokenDecimals config)',
                 updated_at = NOW()
-          WHERE deposit_id = $1`, [depositId]);
+          WHERE deposit_id = $1`, [
+                depositId
+            ]);
             await commit(connection);
-            return { depositId, status: 'failed', alreadySettled: false };
+            return {
+                depositId,
+                status: 'failed',
+                alreadySettled: false
+            };
         }
         const assetBalance = await ensureWalletAssetBalance(connection, wallet, asset);
         const balanceBefore = BigInt(assetBalance.balance);
@@ -77,15 +88,20 @@ export async function settleOnchainDeposit(depositId) {
         await connection.query(`UPDATE nbc_wallet_asset_balance
           SET balance = $1,
               updated_at = NOW()
-        WHERE wallet_asset_id = $2`, [balanceAfter.toString(), assetBalance.wallet_asset_id]);
+        WHERE wallet_asset_id = $2`, [
+            balanceAfter.toString(),
+            assetBalance.wallet_asset_id
+        ]);
         if (asset.symbol === 'NBC') {
             await connection.query(`UPDATE nbc_wallet
             SET balance = $1,
                 updated_at = NOW()
-          WHERE wallet_id = $2`, [balanceAfter.toString(), wallet.wallet_id]);
+          WHERE wallet_id = $2`, [
+                balanceAfter.toString(),
+                wallet.wallet_id
+            ]);
         }
-        const tx = await insert('nbc_wallet_transaction')
-            .given({
+        const tx = await insert('nbc_wallet_transaction').given({
             wallet_id: wallet.wallet_id,
             order_id: null,
             asset_symbol: asset.symbol,
@@ -107,8 +123,7 @@ export async function settleOnchainDeposit(depositId) {
                 log_index: deposit.log_index,
                 block_number: deposit.block_number
             }
-        })
-            .execute(connection);
+        }).execute(connection);
         const walletTxId = tx.insertId || tx.wallet_tx_id;
         await connection.query(`UPDATE nbc_onchain_deposit
           SET wallet_id = $1,
@@ -119,7 +134,13 @@ export async function settleOnchainDeposit(depositId) {
               error_message = NULL,
               processed_at = NOW(),
               updated_at = NOW()
-        WHERE deposit_id = $5`, [wallet.wallet_id, walletTxId, asset.symbol, tokenDecimals, depositId]);
+        WHERE deposit_id = $5`, [
+            wallet.wallet_id,
+            walletTxId,
+            asset.symbol,
+            tokenDecimals,
+            depositId
+        ]);
         await commit(connection);
         const result = {
             depositId,
@@ -136,7 +157,7 @@ export async function settleOnchainDeposit(depositId) {
             alreadySettled: false
         };
         await Promise.all([
-            emit('nbc_wallet_deposit_completed', result).catch(() => { }),
+            emit('nbc_wallet_deposit_completed', result).catch(()=>{}),
             enqueueWalletNotification({
                 walletId: wallet.wallet_id,
                 customerId: wallet.customer_id,
@@ -145,13 +166,11 @@ export async function settleOnchainDeposit(depositId) {
                 amount: amount.toString(),
                 reference: deposit.tx_hash,
                 payload: result
-            }).catch(() => { })
+            }).catch(()=>{})
         ]);
         return result;
-    }
-    catch (error) {
+    } catch (error) {
         await rollback(connection);
         throw error;
     }
 }
-//# sourceMappingURL=settleOnchainDeposit.js.map

@@ -5,4 +5,3 @@ export function getAuthConfig() {
         messagePrefix: String(getConfig('nbcWallet.auth.messagePrefix', 'Sign this message to authenticate with NBC Store.'))
     };
 }
-//# sourceMappingURL=getAuthConfig.js.map

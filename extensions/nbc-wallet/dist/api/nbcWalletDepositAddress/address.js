@@ -5,8 +5,7 @@ import { ensureWalletDepositAddress } from '../../services/wallet/ensureWalletDe
 function mapDepositAddressError(error) {
     const message = error instanceof Error ? String(error.message || '') : String(error || '');
     const normalized = message.toLowerCase();
-    if (normalized.includes('hdmastermnemonic is required') ||
-        normalized.includes('treasuryaddress is required')) {
+    if (normalized.includes('hdmastermnemonic is required') || normalized.includes('treasuryaddress is required')) {
         return {
             status: INVALID_PAYLOAD,
             message: 'On-chain deposit is not configured yet. Please contact support.'
@@ -24,7 +23,6 @@ function mapDepositAddressError(error) {
     };
 }
 export default async function getNbcWalletDepositAddress(request, response) {
-    var _a, _b, _c, _d;
     try {
         const customer = request.getCurrentCustomer();
         if (!customer) {
@@ -36,13 +34,12 @@ export default async function getNbcWalletDepositAddress(request, response) {
             });
             return;
         }
-        const assetSymbol = ((_a = request.query) === null || _a === void 0 ? void 0 : _a.assetSymbol) ||
-            ((_b = request.query) === null || _b === void 0 ? void 0 : _b.asset) ||
-            ((_c = request.body) === null || _c === void 0 ? void 0 : _c.assetSymbol) ||
-            ((_d = request.body) === null || _d === void 0 ? void 0 : _d.asset);
+        const assetSymbol = request.query?.assetSymbol || request.query?.asset || request.body?.assetSymbol || request.body?.asset;
         const rateLimit = checkRateLimit({
             scope: 'wallet_deposit_address',
-            keys: [getRequestRateLimitKey(request, customer.customer_id, assetSymbol)],
+            keys: [
+                getRequestRateLimitKey(request, customer.customer_id, assetSymbol)
+            ],
             limit: Number(getConfig('nbcWallet.rateLimit.depositAddress.limit', 20)),
             windowSeconds: Number(getConfig('nbcWallet.rateLimit.depositAddress.windowSeconds', 60))
         });
@@ -59,8 +56,7 @@ export default async function getNbcWalletDepositAddress(request, response) {
         response.status(OK).json({
             data: address
         });
-    }
-    catch (error) {
+    } catch (error) {
         const mapped = mapDepositAddressError(error);
         response.status(mapped.status).json({
             error: {
@@ -70,4 +66,3 @@ export default async function getNbcWalletDepositAddress(request, response) {
         });
     }
 }
-//# sourceMappingURL=address.js.map

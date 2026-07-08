@@ -11,4 +11,3 @@ export function buildWalletAuthMessage(input) {
         `Purpose: ${input.purpose || 'wallet_login'}`
     ].join('\n');
 }
-//# sourceMappingURL=buildWalletAuthMessage.js.map

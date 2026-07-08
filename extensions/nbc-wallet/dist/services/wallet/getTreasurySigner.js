@@ -25,13 +25,10 @@ export function getTreasurySigner() {
     }
     const provider = new JsonRpcProvider(chain.rpcUrl, chain.chainId);
     const signer = new Wallet(privateKey, provider);
-    const token = chain.assetType === 'erc20'
-        ? new Contract(chain.tokenAddress, ERC20_ABI, signer)
-        : null;
+    const token = chain.assetType === 'erc20' ? new Contract(chain.tokenAddress, ERC20_ABI, signer) : null;
     return {
         signer,
         token,
         chain
     };
 }
-//# sourceMappingURL=getTreasurySigner.js.map
