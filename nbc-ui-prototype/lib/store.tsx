@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useMemo, useState, useCallback } from "react"
+import { createContext, useContext, useMemo, useState, useCallback, useEffect } from "react"
 import { PRODUCTS, type Product } from "./data"
 
 type CartLine = { product: Product; qty: number }
@@ -35,14 +35,29 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     { product: PRODUCTS[2], qty: 2 },
   ])
 
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("nbc_connected") === "1") {
+        setConnected(true)
+        setAddress(DEMO_ADDRESS)
+      }
+    } catch {}
+  }, [])
+
   const connect = useCallback(() => {
     setConnected(true)
     setAddress(DEMO_ADDRESS)
+    try {
+      localStorage.setItem("nbc_connected", "1")
+    } catch {}
   }, [])
 
   const disconnect = useCallback(() => {
     setConnected(false)
     setAddress(null)
+    try {
+      localStorage.removeItem("nbc_connected")
+    } catch {}
   }, [])
 
   const addToCart = useCallback((product: Product, qty = 1) => {
