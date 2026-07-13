@@ -3,6 +3,7 @@ const VALID_TYPES = [
     'debit', 'onchain_deposit', 'withdrawal', 'refund',
     'admin_credit', 'admin_debit'
 ];
+const VALID_ASSET_SYMBOLS = ['NBC', 'USDT'];
 export async function listAdminTransactions(input = {}) {
     var _a;
     const limit = Math.min(Math.max(Number(input.limit) || 20, 1), 100);
@@ -27,6 +28,13 @@ export async function listAdminTransactions(input = {}) {
         conditions.push(`t.transaction_type = $${idx++}`);
         params.push(input.transactionType);
     }
+    if (input.assetSymbol) {
+        const assetSymbol = String(input.assetSymbol).trim().toUpperCase();
+        if (VALID_ASSET_SYMBOLS.includes(assetSymbol)) {
+            conditions.push(`COALESCE(t.asset_symbol, 'NBC') = $${idx++}`);
+            params.push(assetSymbol);
+        }
+    }
     if (input.dateFrom) {
         conditions.push(`t.created_at >= $${idx++}`);
         params.push(input.dateFrom);
@@ -40,6 +48,7 @@ export async function listAdminTransactions(input = {}) {
         pool.query(`SELECT
           t.wallet_tx_id, t.uuid, t.wallet_id, t.order_id,
           o.uuid AS order_uuid, o.order_number,
+          t.asset_symbol, t.token_address, t.token_decimals,
           t.transaction_type, t.amount,
           t.balance_before, t.balance_after,
           t.exchange_rate, t.cny_amount,
@@ -70,6 +79,9 @@ export async function listAdminTransactions(input = {}) {
             orderId: row.order_id,
             orderUuid: row.order_uuid,
             orderNumber: row.order_number,
+            assetSymbol: row.asset_symbol || 'NBC',
+            tokenAddress: row.token_address || 'native:NBC',
+            tokenDecimals: Number(row.token_decimals || 18),
             transactionType: row.transaction_type,
             amount: Number(row.amount),
             balanceBefore: Number(row.balance_before),

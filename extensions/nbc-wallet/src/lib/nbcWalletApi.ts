@@ -16,6 +16,7 @@ export interface WalletSummary {
     availableBalance: number;
     tokenAddress?: string | null;
     tokenDecimals?: number | null;
+    exchangeRate?: number | null;
   }>;
 }
 
@@ -123,14 +124,17 @@ export interface OnchainNbcBalance {
   source: 'native' | 'erc20';
   chainId: number;
   tokenAddress: string | null;
+  assetSymbol?: string;
 }
 
 export async function fetchOnchainNbcBalance(
   onchainBalanceApi: string,
-  walletAddress: string
+  walletAddress: string,
+  assetSymbol = 'NBC'
 ): Promise<OnchainNbcBalance> {
   const url = new URL(onchainBalanceApi, window.location.origin);
   url.searchParams.set('walletAddress', walletAddress);
+  url.searchParams.set('asset', assetSymbol);
   return parseJson(
     await fetch(url.toString(), { ...fetchOpts, method: 'GET' })
   ) as Promise<OnchainNbcBalance>;
@@ -160,4 +164,42 @@ export async function fetchWalletWithdrawals(
     await fetch(url.toString(), { ...fetchOpts, method: 'GET' })
   );
   return data;
+}
+
+export interface WalletUserProfile {
+  walletId: number;
+  customerId: number;
+  customerEmail: string;
+  requiresCustomerEmail?: boolean;
+  email?: string | null;
+  emailVerified: boolean;
+  emailVerifiedAt?: string | null;
+  depositNotificationsEnabled: boolean;
+  withdrawalNotificationsEnabled: boolean;
+}
+
+export async function fetchWalletProfile(
+  profileApi: string
+): Promise<WalletUserProfile | null> {
+  const data = await parseJson(
+    await fetch(profileApi, { ...fetchOpts, method: 'GET' })
+  );
+  return (data?.profile as WalletUserProfile) || null;
+}
+
+export async function bindWalletCustomer(
+  bindCustomerApi: string,
+  payload: {
+    email: string;
+    password?: string;
+    fullName?: string;
+  }
+) {
+  return parseJson(
+    await fetch(bindCustomerApi, {
+      ...fetchOpts,
+      method: 'POST',
+      body: JSON.stringify(payload)
+    })
+  );
 }

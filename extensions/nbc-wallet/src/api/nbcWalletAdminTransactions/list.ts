@@ -20,7 +20,8 @@ export default async function listNbcWalletAdminTransactions(
 
     const {
       walletId, customerId, walletAddress,
-      transactionType, dateFrom, dateTo, limit, page
+      transactionType, assetSymbol, asset,
+      dateFrom, dateTo, limit, page
     } = request.query || {};
 
     const result = await listAdminTransactions({
@@ -28,6 +29,7 @@ export default async function listNbcWalletAdminTransactions(
       customerId: customerId ? Number(customerId) : undefined,
       walletAddress: walletAddress ? String(walletAddress) : undefined,
       transactionType: transactionType ? String(transactionType) : undefined,
+      assetSymbol: assetSymbol || asset ? String(assetSymbol || asset) : undefined,
       dateFrom: dateFrom ? String(dateFrom) : undefined,
       dateTo: dateTo ? String(dateTo) : undefined,
       limit: limit ? Number(limit) : 20,

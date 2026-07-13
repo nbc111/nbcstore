@@ -1,7 +1,10 @@
 import { useAppDispatch } from '@evershop/evershop/components/common/context/app';
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { calculateRequiredNbc } from '../lib/calculateRequiredNbc.js';
+import {
+  calculateRequiredNbc,
+  calculateRequiredWalletAssetAmount
+} from '../lib/calculateRequiredNbc.js';
 import {
   connectWalletAddress,
   ensureWalletChain,
@@ -44,6 +47,7 @@ export interface NbcWalletPublicConfig {
     assetType: string;
     tokenAddress?: string | null;
     tokenDecimals?: number | null;
+    exchangeRate?: number | null;
   }>;
   blockExplorerUrl?: string | null;
   chainBalanceEnabled?: boolean;
@@ -60,13 +64,15 @@ export function useNbcWallet(
     autoLoadBalance?: boolean;
     redirectUrl?: string;
     syncPageContextOnConnect?: boolean;
+    selectedAssetSymbol?: string;
   } = {}
 ) {
   const {
     orderCnyTotal = 0,
     autoLoadBalance = true,
     redirectUrl,
-    syncPageContextOnConnect = true
+    syncPageContextOnConnect = true,
+    selectedAssetSymbol = 'NBC'
   } = options;
   const appDispatch = useAppDispatch() as { fetchPageData: (url: string) => Promise<void> };
   const [wallet, setWallet] = useState<WalletSummary | null>(null);
@@ -98,9 +104,49 @@ export function useNbcWallet(
     [orderCnyTotal, publicConfig.exchangeRate]
   );
 
-  const availableBalance = wallet?.availableBalance ?? 0;
+  const selectedAsset = useMemo(() => {
+    const symbol = String(selectedAssetSymbol || 'NBC').toUpperCase();
+    return (
+      publicConfig.assets?.find((asset) => asset.symbol === symbol) ||
+      publicConfig.assets?.find((asset) => asset.symbol === 'NBC') ||
+      {
+        symbol: 'NBC',
+        displayName: 'NBC',
+        chainId: publicConfig.chainId,
+        assetType: publicConfig.tokenAddress ? 'erc20' : 'native',
+        tokenAddress: publicConfig.tokenAddress,
+        tokenDecimals: publicConfig.tokenDecimals,
+        exchangeRate: publicConfig.exchangeRate
+      }
+    );
+  }, [
+    publicConfig.assets,
+    publicConfig.chainId,
+    publicConfig.exchangeRate,
+    publicConfig.tokenAddress,
+    publicConfig.tokenDecimals,
+    selectedAssetSymbol
+  ]);
+  const requiredAssetAmount = useMemo(
+    () =>
+      calculateRequiredWalletAssetAmount(
+        orderCnyTotal,
+        selectedAsset.exchangeRate || publicConfig.exchangeRate || 0.01
+      ),
+    [
+      orderCnyTotal,
+      publicConfig.exchangeRate,
+      selectedAsset.exchangeRate
+    ]
+  );
+  const walletAssetBalance = wallet?.assets?.find(
+    (asset) => asset.symbol === selectedAsset.symbol
+  );
+  const availableBalance =
+    walletAssetBalance?.availableBalance ??
+    (selectedAsset.symbol === 'NBC' ? wallet?.availableBalance ?? 0 : 0);
   const hasSufficientBalance =
-    wallet !== null && availableBalance >= requiredNbc;
+    wallet !== null && availableBalance >= requiredAssetAmount;
   const isConnected = wallet !== null;
 
   const refreshOnchainBalance = useCallback(
@@ -129,7 +175,8 @@ export function useNbcWallet(
       try {
         const result = await fetchOnchainNbcBalance(
           apis.onchainBalanceApi,
-          address
+          address,
+          selectedAsset.symbol
         );
         setOnchainBalance(result.balance);
         setOnchainWalletAddress(result.walletAddress);
@@ -144,6 +191,7 @@ export function useNbcWallet(
     [
       apis.onchainBalanceApi,
       publicConfig.chainBalanceEnabled,
+      selectedAsset.symbol,
       wallet?.walletAddress
     ]
   );
@@ -280,6 +328,9 @@ export function useNbcWallet(
     error,
     setError,
     requiredNbc,
+    requiredAssetAmount,
+    selectedAssetSymbol: selectedAsset.symbol,
+    selectedAsset,
     availableBalance,
     hasSufficientBalance,
     isConnected,

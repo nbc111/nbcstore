@@ -5,7 +5,9 @@ interface NbcWalletAccountProps {
   authRequestApi: string;
   authVerifyApi: string;
   balanceApi: string;
+  bindCustomerApi: string;
   depositAddressApi: string;
+  profileApi: string;
   transactionsApi: string;
   withdrawalsApi: string;
   withdrawApi: string;
@@ -24,6 +26,7 @@ interface NbcWalletAccountProps {
       assetType: string;
       tokenAddress?: string | null;
       tokenDecimals?: number | null;
+      exchangeRate?: number | null;
     }>;
   };
 }
@@ -32,7 +35,9 @@ export default function NbcWalletAccount({
   authRequestApi,
   authVerifyApi,
   balanceApi,
+  bindCustomerApi,
   depositAddressApi,
+  profileApi,
   transactionsApi,
   withdrawalsApi,
   withdrawApi,
@@ -44,7 +49,9 @@ export default function NbcWalletAccount({
         authRequestApi,
         authVerifyApi,
         balanceApi,
+        bindCustomerApi,
         depositAddressApi,
+        profileApi,
         transactionsApi,
         withdrawalsApi,
         withdrawApi
@@ -73,7 +80,9 @@ export const query = `
     authRequestApi: url(routeId: "authRequest")
     authVerifyApi: url(routeId: "authVerify")
     balanceApi: url(routeId: "nbcWalletBalance")
+    bindCustomerApi: url(routeId: "nbcWalletBindCustomer")
     depositAddressApi: url(routeId: "nbcWalletDepositAddress")
+    profileApi: url(routeId: "nbcWalletProfile")
     transactionsApi: url(routeId: "nbcWalletTransactions")
     withdrawalsApi: url(routeId: "nbcWalletWithdrawals")
     withdrawApi: url(routeId: "nbcWalletWithdraw")
@@ -92,6 +101,7 @@ export const query = `
         assetType
         tokenAddress
         tokenDecimals
+        exchangeRate
       }
     }
   }

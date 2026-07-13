@@ -2,7 +2,7 @@ import { GraphQLJSON } from 'graphql-type-json';
 import { pool } from '@evershop/evershop/lib/postgres';
 import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 import { getChainRpcConfig, isChainRpcConfigured } from '../../../services/wallet/getChainRpcConfig.js';
-import { getExchangeRate } from '../../../services/wallet/getExchangeRate.js';
+import { getAssetExchangeRate, getExchangeRate } from '../../../services/wallet/getExchangeRate.js';
 import { getOnchainConfig } from '../../../services/wallet/getOnchainConfig.js';
 import { getWalletAssetConfigs } from '../../../services/wallet/assets.js';
 import { getWalletSummary } from '../../../services/wallet/getWalletSummary.js';
@@ -13,11 +13,17 @@ async function loadOrderUsage(orderId) {
             u.exchange_rate,
             u.cny_amount,
             u.wallet_id,
+            u.asset_symbol,
+            u.token_address,
+            u.token_decimals,
             u.wallet_tx_id,
             w.customer_id,
             t.wallet_tx_id AS transaction_wallet_tx_id,
             t.uuid AS transaction_uuid,
             t.transaction_type,
+            t.asset_symbol AS transaction_asset_symbol,
+            t.token_address AS transaction_token_address,
+            t.token_decimals AS transaction_token_decimals,
             t.amount AS transaction_amount,
             t.balance_before,
             t.balance_after,
@@ -66,14 +72,15 @@ export default {
                 depositMode: onchain.depositMode,
                 onchainEnabled: onchain.enabled,
                 onchainEnabledRaw: onchain.enabled ? 1 : 0,
-                assets: getWalletAssetConfigs().map((asset) => ({
+                assets: await Promise.all(getWalletAssetConfigs().map(async (asset) => ({
                     symbol: asset.symbol,
                     displayName: asset.displayName,
                     chainId: asset.chainId > 0 ? asset.chainId : null,
                     assetType: asset.assetType,
                     tokenAddress: asset.assetType === 'native' ? null : asset.tokenAddress,
-                    tokenDecimals: asset.tokenDecimals
-                }))
+                    tokenDecimals: asset.tokenDecimals,
+                    exchangeRate: await getAssetExchangeRate(asset.symbol)
+                })))
             };
         },
         nbcWallet: async (_, args, { customer }) => {
@@ -119,7 +126,11 @@ export default {
                     ? Number(usage.transaction_wallet_tx_id)
                     : null,
                 transactionUuid: usage.transaction_uuid || null,
+                assetSymbol: usage.asset_symbol || usage.transaction_asset_symbol || 'NBC',
+                tokenAddress: usage.token_address || usage.transaction_token_address || 'native:NBC',
+                tokenDecimals: Number(usage.token_decimals || usage.transaction_token_decimals || 18),
                 nbcAmount: Number(usage.nbc_amount),
+                amount: Number(usage.nbc_amount),
                 exchangeRate: Number(usage.exchange_rate),
                 cnyAmount: Number(usage.cny_amount),
                 balanceBefore: usage.balance_before === null ? null : Number(usage.balance_before),
@@ -134,6 +145,13 @@ export default {
                         orderId,
                         orderUuid: usage.order_uuid || null,
                         orderNumber: usage.order_number || null,
+                        assetSymbol: usage.transaction_asset_symbol || usage.asset_symbol || 'NBC',
+                        tokenAddress: usage.transaction_token_address ||
+                            usage.token_address ||
+                            'native:NBC',
+                        tokenDecimals: Number(usage.transaction_token_decimals ||
+                            usage.token_decimals ||
+                            18),
                         transactionType: usage.transaction_type,
                         amount: Number(usage.transaction_amount),
                         balanceBefore: Number(usage.balance_before),

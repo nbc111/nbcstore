@@ -10,6 +10,14 @@ export interface CheckoutWalletSnapshot {
   loadingOnchainBalance: boolean;
   error: string | null;
   requiredNbc: number;
+  requiredAssetAmount: number;
+  selectedAssetSymbol: string;
+  selectedAsset: {
+    symbol: string;
+    displayName?: string;
+    exchangeRate?: number | null;
+    tokenDecimals?: number | null;
+  } | null;
   availableBalance: number;
   hasSufficientBalance: boolean;
   isConnected: boolean;
@@ -26,6 +34,9 @@ const defaultSnapshot: CheckoutWalletSnapshot = {
   loadingOnchainBalance: false,
   error: null,
   requiredNbc: 0,
+  requiredAssetAmount: 0,
+  selectedAssetSymbol: 'NBC',
+  selectedAsset: null,
   availableBalance: 0,
   hasSufficientBalance: false,
   isConnected: false,

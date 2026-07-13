@@ -7,16 +7,19 @@ import {
 } from '@evershop/evershop/components/common/ui/Card';
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { Loader2, Wallet } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNbcWallet, NbcWalletApis, NbcWalletPublicConfig } from '../hooks/useNbcWallet.js';
 import { formatFiatAmount, formatNbcExchangeRate } from '../lib/formatFiat.js';
 import { formatNbcAmount, shortenAddress } from '../lib/formatWallet.js';
 import {
+  bindWalletCustomer,
   fetchWalletDepositAddress,
+  fetchWalletProfile,
   fetchWalletTransactions,
   fetchWalletWithdrawals,
   WalletDepositAddress,
+  WalletUserProfile,
   requestWalletWithdrawal
 } from '../lib/nbcWalletApi.js';
 
@@ -32,6 +35,11 @@ interface WalletTransactionRow {
   orderNumber?: string;
 }
 
+type LoadTransactionsOptions = {
+  notifyDeposits?: boolean;
+  silent?: boolean;
+};
+
 interface WalletWithdrawalRow {
   uuid: string;
   assetSymbol?: string;
@@ -43,7 +51,9 @@ interface WalletWithdrawalRow {
 
 interface NbcWalletAccountSectionProps {
   apis: NbcWalletApis & {
+    bindCustomerApi?: string;
     depositAddressApi?: string;
+    profileApi?: string;
     transactionsApi: string;
     withdrawalsApi: string;
     withdrawApi: string;
@@ -66,6 +76,10 @@ const withdrawalStatusLabels: Record<string, string> = {
   completed: 'Completed',
   failed: 'Failed'
 };
+
+function isShadowEmail(email?: string | null) {
+  return /^wallet_[^@\s]+@nbc\.local$/i.test(String(email || '').trim());
+}
 
 export function NbcWalletAccountSection({
   apis,
@@ -117,6 +131,14 @@ export function NbcWalletAccountSection({
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [submittingWithdrawal, setSubmittingWithdrawal] = useState(false);
   const [selectedAssetSymbol, setSelectedAssetSymbol] = useState('NBC');
+  const [profile, setProfile] = useState<WalletUserProfile | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [accountEmail, setAccountEmail] = useState('');
+  const [accountPassword, setAccountPassword] = useState('');
+  const [submittingAccountEmail, setSubmittingAccountEmail] = useState(false);
+  const seenDepositTransactionUuidsRef = useRef<Set<string>>(new Set());
+  const depositToastBaselineReadyRef = useRef(false);
+  const accountEmailNeedsCompletion = isShadowEmail(profile?.customerEmail);
   const walletAssets = wallet?.assets?.length
     ? wallet.assets
     : wallet
@@ -133,27 +155,74 @@ export function NbcWalletAccountSection({
   const selectedWalletAsset = walletAssets.find(
     (asset) => asset.symbol === selectedAssetSymbol
   );
+  const selectedPublicAsset = publicConfig.assets?.find(
+    (asset) => asset.symbol === selectedAssetSymbol
+  );
+  const selectedExchangeRate =
+    selectedWalletAsset?.exchangeRate ||
+    selectedPublicAsset?.exchangeRate ||
+    wallet?.exchangeRate ||
+    publicConfig.exchangeRate;
   const selectedAvailableBalance =
     selectedWalletAsset?.availableBalance ||
     (selectedAssetSymbol === 'NBC' ? wallet?.availableBalance || 0 : 0);
 
-  const loadTransactions = useCallback(async () => {
+  const loadTransactions = useCallback(async (
+    options: LoadTransactionsOptions = {}
+  ) => {
     if (!isConnected) {
       setTransactions([]);
+      seenDepositTransactionUuidsRef.current = new Set();
+      depositToastBaselineReadyRef.current = false;
       return;
     }
-    setLoadingTx(true);
+    if (!options.silent) {
+      setLoadingTx(true);
+    }
     try {
       const data = await fetchWalletTransactions(
         apis.transactionsApi,
         10,
         selectedAssetSymbol
       );
-      setTransactions(data?.items || []);
+      const items = (data?.items || []) as WalletTransactionRow[];
+      const completedDeposits = items.filter(
+        (tx) =>
+          tx.transactionType === 'onchain_deposit' &&
+          tx.status === 'completed'
+      );
+      const seen = seenDepositTransactionUuidsRef.current;
+
+      if (!depositToastBaselineReadyRef.current) {
+        completedDeposits.forEach((tx) => seen.add(tx.uuid));
+        depositToastBaselineReadyRef.current = true;
+      } else if (options.notifyDeposits) {
+        completedDeposits
+          .filter((tx) => !seen.has(tx.uuid))
+          .reverse()
+          .forEach((tx) => {
+            seen.add(tx.uuid);
+            const amount = tx.displayAmount ?? tx.amount;
+            const asset = tx.assetSymbol || selectedAssetSymbol;
+            toast.success(
+              _('Deposit received: ${amount} ${asset}', {
+                amount: formatNbcAmount(amount),
+                asset
+              }),
+              { toastId: `nbc-wallet-deposit-${tx.uuid}` }
+            );
+          });
+      }
+
+      setTransactions(items);
     } catch {
-      setTransactions([]);
+      if (!options.silent) {
+        setTransactions([]);
+      }
     } finally {
-      setLoadingTx(false);
+      if (!options.silent) {
+        setLoadingTx(false);
+      }
     }
   }, [apis.transactionsApi, isConnected, selectedAssetSymbol]);
 
@@ -216,6 +285,71 @@ export function NbcWalletAccountSection({
     selectedAssetSymbol
   ]);
 
+  const loadProfile = useCallback(async () => {
+    if (!isConnected || !apis.profileApi) {
+      setProfile(null);
+      setAccountEmail('');
+      return;
+    }
+
+    setLoadingProfile(true);
+    try {
+      const nextProfile = await fetchWalletProfile(apis.profileApi);
+      setProfile(nextProfile);
+      setAccountEmail(
+        isShadowEmail(nextProfile?.customerEmail)
+          ? nextProfile?.email || ''
+          : nextProfile?.customerEmail || nextProfile?.email || ''
+      );
+    } catch {
+      setProfile(null);
+    } finally {
+      setLoadingProfile(false);
+    }
+  }, [apis.profileApi, isConnected]);
+
+  const submitAccountEmail = useCallback(async () => {
+    const email = accountEmail.trim();
+    if (!email) {
+      toast.error(_('Email is required'));
+      return;
+    }
+
+    if (!apis.bindCustomerApi) {
+      toast.error(_('Wallet account binding is unavailable'));
+      return;
+    }
+
+    setSubmittingAccountEmail(true);
+    try {
+      const data = await bindWalletCustomer(apis.bindCustomerApi, {
+        email,
+        password: accountPassword || undefined
+      });
+      setAccountPassword('');
+      setProfile(data?.profile || null);
+      toast.success(
+        data?.mode === 'bound_existing'
+          ? _('Wallet linked to your existing account')
+          : _('Account email saved')
+      );
+      await refreshBalance();
+      await loadProfile();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : _('Failed to save account email')
+      );
+    } finally {
+      setSubmittingAccountEmail(false);
+    }
+  }, [
+    accountEmail,
+    accountPassword,
+    apis.bindCustomerApi,
+    loadProfile,
+    refreshBalance
+  ]);
+
   const submitWithdrawal = useCallback(async () => {
     const amount = Number(String(withdrawAmount || '').trim());
     if (!Number.isFinite(amount) || amount <= 0) {
@@ -261,7 +395,13 @@ export function NbcWalletAccountSection({
   ]);
 
   useEffect(() => {
+    seenDepositTransactionUuidsRef.current = new Set();
+    depositToastBaselineReadyRef.current = false;
+  }, [selectedAssetSymbol, wallet?.walletAddress]);
+
+  useEffect(() => {
     if (isConnected) {
+      loadProfile();
       loadDepositAddress();
       loadTransactions();
       loadWithdrawals();
@@ -269,11 +409,23 @@ export function NbcWalletAccountSection({
   }, [
     isConnected,
     loadDepositAddress,
+    loadProfile,
     loadTransactions,
-    loadWithdrawals,
-    wallet?.balance,
-    wallet?.frozenBalance
+    loadWithdrawals
   ]);
+
+  useEffect(() => {
+    if (!isConnected) {
+      return undefined;
+    }
+
+    const timer = window.setInterval(() => {
+      refreshBalance();
+      loadTransactions({ notifyDeposits: true, silent: true });
+    }, 15000);
+
+    return () => window.clearInterval(timer);
+  }, [isConnected, loadTransactions, refreshBalance]);
 
   return (
     <Card className="mb-7 w-full">
@@ -334,14 +486,80 @@ export function NbcWalletAccountSection({
               <div>
                 <span className="text-muted-foreground block">{_('Exchange rate')}</span>
                 <span>
-                  1 NBC ={' '}
+                  1 {selectedAssetSymbol} ={' '}
                   {formatNbcExchangeRate(
-                    wallet!.exchangeRate,
+                    selectedExchangeRate,
                     publicConfig.shopCurrency || 'USD'
                   )}
                 </span>
               </div>
             </div>
+
+            {apis.profileApi && apis.bindCustomerApi && (
+              <div className="rounded-md border p-4 space-y-3">
+                <div>
+                  <h4 className="font-medium">{_('Account email')}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {accountEmailNeedsCompletion
+                      ? _(
+                          'Add your real email, or enter an existing account email and password to link this wallet.'
+                        )
+                      : _('This wallet is linked to your customer account.')}
+                  </p>
+                </div>
+                {accountEmailNeedsCompletion ? (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="mb-1 block text-sm font-medium">
+                        {_('Email')}
+                      </label>
+                      <input
+                        type="email"
+                        value={accountEmail}
+                        onChange={(event) => setAccountEmail(event.target.value)}
+                        placeholder={_('Enter your email')}
+                        className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium">
+                        {_('Password')}
+                      </label>
+                      <input
+                        type="password"
+                        value={accountPassword}
+                        onChange={(event) =>
+                          setAccountPassword(event.target.value)
+                        }
+                        placeholder={_('Required for an existing account')}
+                        className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+                      />
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {_(
+                          'Leave password empty when saving a new email for this wallet account.'
+                        )}
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      className=""
+                      onClick={() => submitAccountEmail()}
+                      isLoading={submittingAccountEmail}
+                      disabled={submittingAccountEmail || loadingProfile}
+                    >
+                      {_('Save account email')}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-sm">
+                    <span className="text-muted-foreground block">
+                      {_('Customer email')}
+                    </span>
+                    <span>{profile?.customerEmail || accountEmail}</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {walletAssets.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

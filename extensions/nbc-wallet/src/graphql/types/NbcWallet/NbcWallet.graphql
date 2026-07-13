@@ -26,6 +26,7 @@ type NbcWalletAssetBalance {
   chainId: Int
   tokenAddress: String
   tokenDecimals: Int!
+  exchangeRate: Float!
   balance: Float!
   frozenBalance: Float!
   availableBalance: Float!
@@ -41,6 +42,9 @@ type NbcWalletTransaction {
   orderUuid: String
   orderNumber: String
   transactionType: String!
+  assetSymbol: String!
+  tokenAddress: String
+  tokenDecimals: Int!
   amount: Float!
   balanceBefore: Float!
   balanceAfter: Float!
@@ -75,6 +79,8 @@ type NbcWalletWithdrawal {
   processedAt: DateTime
   failedAt: DateTime
   errorMessage: String
+  assetSymbol: String!
+  tokenDecimals: Int!
   metadata: JSON
   createdAt: DateTime
   updatedAt: DateTime
@@ -83,7 +89,11 @@ type NbcWalletWithdrawal {
 type NbcOrderUsage {
   walletTxId: Int
   transactionUuid: String
+  assetSymbol: String!
+  tokenAddress: String
+  tokenDecimals: Int!
   nbcAmount: Float!
+  amount: Float!
   exchangeRate: Float!
   cnyAmount: Float!
   balanceBefore: Float
@@ -131,6 +141,7 @@ type NbcWalletPublicAsset {
   assetType: String!
   tokenAddress: String
   tokenDecimals: Int!
+  exchangeRate: Float!
 }
 
 extend type Query {

@@ -3,9 +3,11 @@ import { getConnection } from '@evershop/evershop/lib/postgres';
 import { emit } from '@evershop/evershop/lib/event';
 import { addOrderActivityLog, updatePaymentStatus } from '@evershop/evershop/oms/services';
 import { calculateNbcAmount } from './calculateNbcAmount.js';
-import { getExchangeRate } from './getExchangeRate.js';
+import { getAssetExchangeRate } from './getExchangeRate.js';
 import { getOrderUsageByOrderId } from './getOrderUsageByOrderId.js';
-export async function captureOrderPayment(orderUuid, customerId) {
+import { getWalletAssetConfig, normalizeAssetSymbol } from './assets.js';
+import { ensureWalletAssetBalance } from './walletAssetBalance.js';
+export async function captureOrderPayment(orderUuid, customerId, assetSymbolInput = 'NBC') {
     const connection = await getConnection();
     try {
         await startTransaction(connection);
@@ -26,7 +28,9 @@ export async function captureOrderPayment(orderUuid, customerId) {
             return {
                 orderUuid,
                 orderId: orderRow.order_id,
+                assetSymbol: existingUsage.asset_symbol || 'NBC',
                 nbcAmount: String(existingUsage.nbc_amount),
+                amount: String(existingUsage.nbc_amount),
                 cnyAmount: String(existingUsage.cny_amount),
                 exchangeRate: String(existingUsage.exchange_rate),
                 balanceAfter: existingUsage.balance_after === null
@@ -40,7 +44,9 @@ export async function captureOrderPayment(orderUuid, customerId) {
             return {
                 orderUuid,
                 orderId: orderRow.order_id,
+                assetSymbol: null,
                 nbcAmount: null,
+                amount: null,
                 cnyAmount: null,
                 exchangeRate: null,
                 balanceAfter: null,
@@ -52,25 +58,37 @@ export async function captureOrderPayment(orderUuid, customerId) {
         if (!walletRow) {
             throw new Error('NBC wallet not found');
         }
-        const exchangeRate = await getExchangeRate();
+        const assetSymbol = normalizeAssetSymbol(assetSymbolInput);
+        const asset = getWalletAssetConfig(assetSymbol);
+        const exchangeRate = await getAssetExchangeRate(asset.symbol, orderRow.currency);
         const orderFiatAmount = Number(orderRow.grand_total);
-        const nbcAmount = calculateNbcAmount(orderFiatAmount, exchangeRate);
-        const availableBalance = Number(walletRow.balance) - Number(walletRow.frozen_balance);
-        if (availableBalance < nbcAmount) {
-            throw new Error('NBC balance is insufficient');
+        const paymentAmount = calculateNbcAmount(orderFiatAmount, exchangeRate);
+        const assetBalance = await ensureWalletAssetBalance(connection, walletRow, asset);
+        const availableBalance = Number(assetBalance.balance) - Number(assetBalance.frozen_balance);
+        if (availableBalance < paymentAmount) {
+            throw new Error(`${asset.symbol} balance is insufficient`);
         }
-        const balanceBefore = Number(walletRow.balance);
-        const balanceAfter = balanceBefore - nbcAmount;
-        await connection.query(`UPDATE nbc_wallet
+        const balanceBefore = Number(assetBalance.balance);
+        const balanceAfter = balanceBefore - paymentAmount;
+        await connection.query(`UPDATE nbc_wallet_asset_balance
           SET balance = $1,
               updated_at = NOW()
-        WHERE wallet_id = $2`, [balanceAfter, walletRow.wallet_id]);
+        WHERE wallet_asset_id = $2`, [balanceAfter, assetBalance.wallet_asset_id]);
+        if (asset.symbol === 'NBC') {
+            await connection.query(`UPDATE nbc_wallet
+            SET balance = $1,
+                updated_at = NOW()
+          WHERE wallet_id = $2`, [balanceAfter, walletRow.wallet_id]);
+        }
         const walletTx = await insert('nbc_wallet_transaction')
             .given({
             wallet_id: walletRow.wallet_id,
             order_id: orderRow.order_id,
+            asset_symbol: asset.symbol,
+            token_address: asset.tokenAddress,
+            token_decimals: asset.tokenDecimals,
             transaction_type: 'debit',
-            amount: nbcAmount,
+            amount: paymentAmount,
             balance_before: balanceBefore,
             balance_after: balanceAfter,
             exchange_rate: exchangeRate,
@@ -78,7 +96,8 @@ export async function captureOrderPayment(orderUuid, customerId) {
             reference: orderRow.uuid,
             status: 'completed',
             metadata: {
-                source: 'order_capture'
+                source: 'order_capture',
+                asset_symbol: asset.symbol
             }
         })
             .execute(connection);
@@ -86,20 +105,25 @@ export async function captureOrderPayment(orderUuid, customerId) {
             .given({
             order_id: orderRow.order_id,
             wallet_id: walletRow.wallet_id,
-            nbc_amount: nbcAmount,
+            nbc_amount: paymentAmount,
+            asset_symbol: asset.symbol,
+            token_address: asset.tokenAddress,
+            token_decimals: asset.tokenDecimals,
             exchange_rate: exchangeRate,
             cny_amount: orderFiatAmount,
             wallet_tx_id: walletTx.insertId || walletTx.wallet_tx_id
         })
             .execute(connection);
         await updatePaymentStatus(orderRow.order_id, 'nbc_paid', connection);
-        await addOrderActivityLog(orderRow.order_id, `NBC Wallet payment captured: ${nbcAmount} NBC`, false, connection);
+        await addOrderActivityLog(orderRow.order_id, `NBC Wallet payment captured: ${paymentAmount} ${asset.symbol}`, false, connection);
         await commit(connection);
         await emit('order_placed', { ...orderRow, payment_status: 'nbc_paid' });
         return {
             orderUuid,
             orderId: orderRow.order_id,
-            nbcAmount,
+            assetSymbol: asset.symbol,
+            nbcAmount: paymentAmount,
+            amount: paymentAmount,
             cnyAmount: orderFiatAmount,
             exchangeRate,
             balanceAfter

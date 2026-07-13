@@ -38,6 +38,15 @@ interface NbcWalletProps {
     chainBalanceEnabled: boolean;
     treasuryAddress?: string | null;
     onchainEnabled: boolean;
+    assets?: Array<{
+      symbol: string;
+      displayName?: string;
+      chainId?: number | null;
+      assetType: string;
+      tokenAddress?: string | null;
+      tokenDecimals?: number | null;
+      exchangeRate?: number | null;
+    }>;
   };
 }
 
@@ -68,23 +77,71 @@ export default function NbcWallet({
     ) => void;
   };
   const captureRequestedRef = useRef(false);
+  const publicAssets = React.useMemo(
+    () =>
+      nbcWalletPublicConfig.assets?.length
+        ? nbcWalletPublicConfig.assets
+        : [
+            {
+              symbol: 'NBC',
+              displayName: 'NBC',
+              chainId: nbcWalletPublicConfig.chainId,
+              assetType: nbcWalletPublicConfig.tokenAddress ? 'erc20' : 'native',
+              tokenAddress: nbcWalletPublicConfig.tokenAddress,
+              tokenDecimals: nbcWalletPublicConfig.tokenDecimals,
+              exchangeRate: nbcWalletPublicConfig.exchangeRate
+            }
+          ],
+    [
+      nbcWalletPublicConfig.assets,
+      nbcWalletPublicConfig.chainId,
+      nbcWalletPublicConfig.exchangeRate,
+      nbcWalletPublicConfig.tokenAddress,
+      nbcWalletPublicConfig.tokenDecimals
+    ]
+  );
+  const [selectedAssetSymbol, setSelectedAssetSymbol] = React.useState(
+    publicAssets[0]?.symbol || 'NBC'
+  );
 
-  const apis = { authRequestApi, authVerifyApi, balanceApi, onchainBalanceApi };
-  const publicConfig = {
-    exchangeRate: nbcWalletPublicConfig.exchangeRate,
-    shopCurrency: nbcWalletPublicConfig.shopCurrency,
-    displayName: nbcWalletPublicConfig.displayName,
-    chainId: nbcWalletPublicConfig.chainId,
-    rpcUrl: nbcWalletPublicConfig.rpcUrl,
-    chainName: nbcWalletPublicConfig.chainName,
-    nativeSymbol: nbcWalletPublicConfig.nativeSymbol,
-    tokenAddress: nbcWalletPublicConfig.tokenAddress,
-    tokenDecimals: nbcWalletPublicConfig.tokenDecimals,
-    blockExplorerUrl: nbcWalletPublicConfig.blockExplorerUrl,
-    chainBalanceEnabled: nbcWalletPublicConfig.chainBalanceEnabled,
-    treasuryAddress: nbcWalletPublicConfig.treasuryAddress,
-    onchainEnabled: nbcWalletPublicConfig.onchainEnabled
-  };
+  const apis = React.useMemo(
+    () => ({ authRequestApi, authVerifyApi, balanceApi, onchainBalanceApi }),
+    [authRequestApi, authVerifyApi, balanceApi, onchainBalanceApi]
+  );
+  const publicConfig = React.useMemo(
+    () => ({
+      exchangeRate: nbcWalletPublicConfig.exchangeRate,
+      shopCurrency: nbcWalletPublicConfig.shopCurrency,
+      displayName: nbcWalletPublicConfig.displayName,
+      chainId: nbcWalletPublicConfig.chainId,
+      rpcUrl: nbcWalletPublicConfig.rpcUrl,
+      chainName: nbcWalletPublicConfig.chainName,
+      nativeSymbol: nbcWalletPublicConfig.nativeSymbol,
+      tokenAddress: nbcWalletPublicConfig.tokenAddress,
+      tokenDecimals: nbcWalletPublicConfig.tokenDecimals,
+      blockExplorerUrl: nbcWalletPublicConfig.blockExplorerUrl,
+      chainBalanceEnabled: nbcWalletPublicConfig.chainBalanceEnabled,
+      treasuryAddress: nbcWalletPublicConfig.treasuryAddress,
+      onchainEnabled: nbcWalletPublicConfig.onchainEnabled,
+      assets: publicAssets
+    }),
+    [
+      nbcWalletPublicConfig.blockExplorerUrl,
+      nbcWalletPublicConfig.chainBalanceEnabled,
+      nbcWalletPublicConfig.chainId,
+      nbcWalletPublicConfig.chainName,
+      nbcWalletPublicConfig.displayName,
+      nbcWalletPublicConfig.exchangeRate,
+      nbcWalletPublicConfig.nativeSymbol,
+      nbcWalletPublicConfig.onchainEnabled,
+      nbcWalletPublicConfig.rpcUrl,
+      nbcWalletPublicConfig.shopCurrency,
+      nbcWalletPublicConfig.tokenAddress,
+      nbcWalletPublicConfig.tokenDecimals,
+      nbcWalletPublicConfig.treasuryAddress,
+      publicAssets
+    ]
+  );
 
   const checkoutGrandTotal = cart?.grandTotal?.value;
   const initialGrandTotal = myCart?.grandTotal?.value;
@@ -111,7 +168,10 @@ export default function NbcWallet({
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ order_uuid: orderId })
+          body: JSON.stringify({
+            order_uuid: orderId,
+            asset: selectedAssetSymbol
+          })
         });
         const json = await response.json();
         if (!response.ok || json.error) {
@@ -132,7 +192,8 @@ export default function NbcWallet({
     orderId,
     checkoutData?.paymentMethod,
     captureAPI,
-    checkoutSuccessUrl
+    checkoutSuccessUrl,
+    selectedAssetSymbol
   ]);
 
   useEffect(() => {
@@ -147,17 +208,24 @@ export default function NbcWallet({
           publicConfig={publicConfig}
           orderCnyTotal={orderCnyTotal}
           isSelected={isSelected}
+          selectedAssetSymbol={selectedAssetSymbol}
+          onSelectAsset={setSelectedAssetSymbol}
         />
       ),
       checkoutButtonRenderer: () => (
-        <NbcWalletPayButton isNbcSelected={isNbcSelected} />
+        <NbcWalletPayButton
+          isNbcSelected={isNbcSelected}
+          selectedAssetSymbol={selectedAssetSymbol}
+        />
       )
     });
   }, [
     registerPaymentComponent,
     nbcWalletPublicConfig.displayName,
     orderCnyTotal,
-    isNbcSelected
+    isNbcSelected,
+    publicConfig,
+    selectedAssetSymbol
   ]);
 
   return (
@@ -166,11 +234,18 @@ export default function NbcWallet({
       publicConfig={publicConfig}
       orderCnyTotal={orderCnyTotal}
       enabled={isNbcSelected}
+      selectedAssetSymbol={selectedAssetSymbol}
     />
   );
 }
 
-function NbcWalletPayButton({ isNbcSelected }: { isNbcSelected: boolean }) {
+function NbcWalletPayButton({
+  isNbcSelected,
+  selectedAssetSymbol
+}: {
+  isNbcSelected: boolean;
+  selectedAssetSymbol: string;
+}) {
   const dispatch = useCheckoutDispatch() as { checkout: () => Promise<void> };
   const { checkout } = dispatch;
   const { loadingStates, orderPlaced } = useCheckout() as {
@@ -190,7 +265,12 @@ function NbcWalletPayButton({ isNbcSelected }: { isNbcSelected: boolean }) {
   const onCheckout = async (event: React.MouseEvent) => {
     event.preventDefault();
     if (!canPay) {
-      toast.error(_('Connect your wallet and ensure sufficient NBC balance'));
+      toast.error(
+        _('Connect your wallet and ensure sufficient balance').replace(
+          'balance',
+          `${selectedAssetSymbol} balance`
+        )
+      );
       return;
     }
     try {
@@ -217,7 +297,7 @@ function NbcWalletPayButton({ isNbcSelected }: { isNbcSelected: boolean }) {
     >
       {loadingStates.placingOrder
         ? _('Placing Order...')
-        : _('Pay with NBC Wallet')}
+        : `${_('Pay with')} ${selectedAssetSymbol} ${_('Wallet')}`}
     </Button>
   );
 }
@@ -249,6 +329,15 @@ export const query = `
       chainBalanceEnabled
       treasuryAddress
       onchainEnabled
+      assets {
+        symbol
+        displayName
+        chainId
+        assetType
+        tokenAddress
+        tokenDecimals
+        exchangeRate
+      }
     }
     myCart {
       grandTotal {

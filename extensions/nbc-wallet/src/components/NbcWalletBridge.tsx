@@ -14,6 +14,7 @@ interface NbcWalletBridgeProps {
   publicConfig: NbcWalletPublicConfig;
   orderCnyTotal: number;
   enabled: boolean;
+  selectedAssetSymbol: string;
 }
 
 /** Syncs wallet state for checkout form + pay button (separate React trees). */
@@ -21,12 +22,14 @@ export function NbcWalletBridge({
   apis,
   publicConfig,
   orderCnyTotal,
-  enabled
+  enabled,
+  selectedAssetSymbol
 }: NbcWalletBridgeProps) {
   const walletState = useNbcWallet(apis, publicConfig, {
     orderCnyTotal,
     autoLoadBalance: enabled,
-    syncPageContextOnConnect: false
+    syncPageContextOnConnect: false,
+    selectedAssetSymbol
   });
 
   useEffect(() => {
@@ -43,6 +46,9 @@ export function NbcWalletBridge({
       loadingOnchainBalance: walletState.loadingOnchainBalance,
       error: walletState.error,
       requiredNbc: walletState.requiredNbc,
+      requiredAssetAmount: walletState.requiredAssetAmount,
+      selectedAssetSymbol: walletState.selectedAssetSymbol,
+      selectedAsset: walletState.selectedAsset,
       availableBalance: walletState.availableBalance,
       hasSufficientBalance: walletState.hasSufficientBalance,
       isConnected: walletState.isConnected,

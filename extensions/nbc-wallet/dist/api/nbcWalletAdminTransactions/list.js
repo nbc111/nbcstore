@@ -10,12 +10,13 @@ export default async function listNbcWalletAdminTransactions(request, response) 
             });
             return;
         }
-        const { walletId, customerId, walletAddress, transactionType, dateFrom, dateTo, limit, page } = request.query || {};
+        const { walletId, customerId, walletAddress, transactionType, assetSymbol, asset, dateFrom, dateTo, limit, page } = request.query || {};
         const result = await listAdminTransactions({
             walletId: walletId ? Number(walletId) : undefined,
             customerId: customerId ? Number(customerId) : undefined,
             walletAddress: walletAddress ? String(walletAddress) : undefined,
             transactionType: transactionType ? String(transactionType) : undefined,
+            assetSymbol: assetSymbol || asset ? String(assetSymbol || asset) : undefined,
             dateFrom: dateFrom ? String(dateFrom) : undefined,
             dateTo: dateTo ? String(dateTo) : undefined,
             limit: limit ? Number(limit) : 20,

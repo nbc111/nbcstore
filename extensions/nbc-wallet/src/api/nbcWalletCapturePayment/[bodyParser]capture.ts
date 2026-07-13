@@ -37,7 +37,11 @@ export default async function captureNbcOrder(
       return;
     }
 
-    const result = await captureOrderPayment(orderUuid, customer.customer_id);
+    const result = await captureOrderPayment(
+      orderUuid,
+      customer.customer_id,
+      request.body?.assetSymbol || request.body?.asset
+    );
 
     response.status(OK).json({
       data: result

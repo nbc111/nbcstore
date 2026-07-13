@@ -1,5 +1,5 @@
 import { pool } from '@evershop/evershop/lib/postgres';
-import { getExchangeRate } from './getExchangeRate.js';
+import { getAssetExchangeRate, getExchangeRate } from './getExchangeRate.js';
 import { getWalletAssetConfigs } from './assets.js';
 
 function roundAmount(value: number, digits = 8) {
@@ -32,8 +32,10 @@ export async function getWalletSummary(customerId: number) {
        FROM nbc_onchain_deposit d
        INNER JOIN nbc_wallet_transaction t ON t.wallet_tx_id = d.wallet_tx_id
       WHERE d.wallet_id = $1
+        AND COALESCE(d.asset_symbol, t.asset_symbol, 'NBC') = 'NBC'
         AND d.status = 'completed'
-        AND t.transaction_type = 'onchain_deposit'`,
+        AND t.transaction_type = 'onchain_deposit'
+        AND COALESCE(t.asset_symbol, 'NBC') = 'NBC'`,
     [wallet.wallet_id]
   );
 
@@ -50,7 +52,7 @@ export async function getWalletSummary(customerId: number) {
       WHERE wallet_id = $1`,
     [wallet.wallet_id]
   );
-  const assets = getWalletAssetConfigs().map((asset) => {
+  const assets = await Promise.all(getWalletAssetConfigs().map(async (asset) => {
     const row = assetRows.rows.find(
       (item) => String(item.asset_symbol).toUpperCase() === asset.symbol
     );
@@ -65,13 +67,14 @@ export async function getWalletSummary(customerId: number) {
       chainId: asset.chainId,
       tokenAddress: asset.tokenAddress,
       tokenDecimals: asset.tokenDecimals,
+      exchangeRate: await getAssetExchangeRate(asset.symbol),
       balance: roundAmount(rawBalance),
       frozenBalance: rawFrozen,
       availableBalance: available,
       status: row?.status ?? 1,
       updatedAt: row?.updated_at || null
     };
-  });
+  }));
 
   return {
     walletId: wallet.wallet_id,

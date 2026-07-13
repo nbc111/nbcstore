@@ -1,7 +1,11 @@
 import { pool } from '@evershop/evershop/lib/postgres';
 import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 import { fetchNbcMarketBuyPrice } from './fetchNbcMarketBuyPrice.js';
-import { getNbcToFiatRateKey } from './getNbcToFiatRateKey.js';
+import { normalizeAssetSymbol } from './assets.js';
+import {
+  getAssetToFiatRateKey,
+  getNbcToFiatRateKey
+} from './getNbcToFiatRateKey.js';
 
 async function getConfiguredExchangeRate(rateKey: string): Promise<number> {
   const result = await pool.query(
@@ -35,4 +39,15 @@ export async function getExchangeRate(rateKey?: string): Promise<number> {
   }
 
   return getConfiguredExchangeRate(key);
+}
+
+export async function getAssetExchangeRate(
+  assetSymbol = 'NBC',
+  currency?: string
+): Promise<number> {
+  const symbol = normalizeAssetSymbol(assetSymbol);
+  if (symbol === 'NBC') {
+    return getExchangeRate(getNbcToFiatRateKey(currency));
+  }
+  return getConfiguredExchangeRate(getAssetToFiatRateKey(symbol, currency));
 }

@@ -11,12 +11,16 @@ interface NbcWalletCheckoutPanelProps {
   publicConfig: NbcWalletPublicConfig;
   orderCnyTotal: number;
   isSelected: boolean;
+  selectedAssetSymbol: string;
+  onSelectAsset: (symbol: string) => void;
 }
 
 export function NbcWalletCheckoutPanel({
   publicConfig,
   orderCnyTotal,
-  isSelected
+  isSelected,
+  selectedAssetSymbol,
+  onSelectAsset
 }: NbcWalletCheckoutPanelProps) {
   const {
     wallet,
@@ -26,7 +30,8 @@ export function NbcWalletCheckoutPanel({
     loadingBalance,
     loadingOnchainBalance,
     error,
-    requiredNbc,
+    requiredAssetAmount,
+    selectedAsset,
     availableBalance,
     hasSufficientBalance,
     isConnected,
@@ -34,9 +39,24 @@ export function NbcWalletCheckoutPanel({
     refreshBalance
   } = useCheckoutWalletSnapshot();
 
+  const assets = publicConfig.assets?.length
+    ? publicConfig.assets
+    : [
+        {
+          symbol: 'NBC',
+          displayName: 'NBC',
+          assetType: publicConfig.tokenAddress ? 'erc20' : 'native',
+          tokenAddress: publicConfig.tokenAddress,
+          tokenDecimals: publicConfig.tokenDecimals,
+          exchangeRate: publicConfig.exchangeRate
+        }
+      ];
+  const activeAsset =
+    selectedAsset || assets.find((asset) => asset.symbol === selectedAssetSymbol) || assets[0];
+  const activeSymbol = activeAsset?.symbol || 'NBC';
   const showOnchainBalance = Boolean(publicConfig.chainBalanceEnabled);
-  const onchainFractionDigits = publicConfig.tokenDecimals
-    ? Math.min(publicConfig.tokenDecimals, 6)
+  const onchainFractionDigits = activeAsset?.tokenDecimals
+    ? Math.min(activeAsset.tokenDecimals, 6)
     : 4;
 
   if (!isSelected) {
@@ -46,8 +66,28 @@ export function NbcWalletCheckoutPanel({
   return (
     <div className="space-y-4 py-3 text-sm">
       <p className="text-muted-foreground text-center">
-        {_('Pay with your NBC wallet balance. Connect your wallet to continue.')}
+        {_('Pay with your wallet balance. Connect your wallet to continue.')}
       </p>
+
+      <div className="grid grid-cols-2 gap-2">
+        {assets.map((asset) => {
+          const active = asset.symbol === activeSymbol;
+          return (
+            <button
+              key={asset.symbol}
+              type="button"
+              className={
+                active
+                  ? 'rounded-md border border-primary bg-primary text-primary-foreground px-3 py-2 font-medium'
+                  : 'rounded-md border border-border bg-background px-3 py-2 font-medium hover:bg-muted'
+              }
+              onClick={() => onSelectAsset(asset.symbol)}
+            >
+              {asset.symbol}
+            </button>
+          );
+        })}
+      </div>
 
       <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-2">
         <div className="flex justify-between items-start gap-3">
@@ -57,17 +97,19 @@ export function NbcWalletCheckoutPanel({
           </span>
         </div>
         <div className="flex justify-between items-start gap-3">
-          <span className="text-muted-foreground shrink-0">{_('Required NBC')}</span>
+          <span className="text-muted-foreground shrink-0">
+            {_('Required')} {activeSymbol}
+          </span>
           <span className="font-medium text-right tabular-nums">
-            {formatNbcAmount(requiredNbc)} NBC
+            {formatNbcAmount(requiredAssetAmount)} {activeSymbol}
           </span>
         </div>
         <div className="flex justify-between items-start gap-3 text-xs text-muted-foreground">
           <span className="shrink-0">{_('Exchange rate')}</span>
           <span className="text-right tabular-nums">
-            1 NBC ={' '}
+            1 {activeSymbol} ={' '}
             {formatNbcExchangeRate(
-              publicConfig.exchangeRate,
+              activeAsset?.exchangeRate || publicConfig.exchangeRate,
               publicConfig.shopCurrency || 'USD'
             )}
           </span>
@@ -96,7 +138,7 @@ export function NbcWalletCheckoutPanel({
             )}
           </Button>
           <p className="text-xs text-muted-foreground text-center">
-            {_('Sign in with your wallet to pay with NBC tokens.')}
+            {_('Sign in with your wallet to pay with tokens.')}
           </p>
         </div>
       ) : (
@@ -111,13 +153,13 @@ export function NbcWalletCheckoutPanel({
             {showOnchainBalance && (
               <div className="flex justify-between items-start gap-3">
                 <span className="text-muted-foreground shrink-0 max-w-[55%]">
-                  {_('On-chain NBC balance')}
+                  {_('On-chain')} {activeSymbol} {_('balance')}
                 </span>
                 <span className="font-semibold text-foreground text-right tabular-nums break-all">
                   {loadingOnchainBalance ? (
                     <Loader2 className="h-4 w-4 animate-spin inline" />
                   ) : onchainBalance !== null ? (
-                    `${formatNbcAmount(onchainBalance, onchainFractionDigits)} NBC`
+                    `${formatNbcAmount(onchainBalance, onchainFractionDigits)} ${activeSymbol}`
                   ) : (
                     '—'
                   )}
@@ -138,7 +180,7 @@ export function NbcWalletCheckoutPanel({
                 {loadingBalance ? (
                   <Loader2 className="h-4 w-4 animate-spin inline" />
                 ) : (
-                  `${formatNbcAmount(availableBalance)} NBC`
+                  `${formatNbcAmount(availableBalance)} ${activeSymbol}`
                 )}
               </span>
             </div>
@@ -152,9 +194,7 @@ export function NbcWalletCheckoutPanel({
 
           {!hasSufficientBalance && !loadingBalance && (
             <div className="rounded-md bg-destructive/10 text-destructive px-3 py-2 text-xs">
-              {_(
-                'Insufficient NBC balance. Top up your wallet before paying.'
-              )}
+              {`${activeSymbol} ${_('balance is insufficient. Top up your wallet before paying.')}`}
               {publicConfig.onchainEnabled && publicConfig.treasuryAddress && (
                 <p className="mt-2 break-all font-mono">
                   {_('Deposit to')}: {publicConfig.treasuryAddress}
