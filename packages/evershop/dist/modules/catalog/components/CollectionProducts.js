@@ -6,17 +6,19 @@ export default function CollectionProducts({ collection, collectionProductsWidge
         return null;
     }
     return /*#__PURE__*/ React.createElement("div", {
-        className: "pt-7 collection__products__widget"
+        className: "pt-12 pb-4 collection__products__widget"
     }, /*#__PURE__*/ React.createElement("div", {
         className: "page-width"
+    }, /*#__PURE__*/ React.createElement("div", {
+        className: "text-center mb-8"
     }, /*#__PURE__*/ React.createElement("h3", {
-        className: "text-center uppercase h5 tracking-widest"
-    }, collection?.name), /*#__PURE__*/ React.createElement("div", {
-        className: "flex justify-center"
+        className: "web3-section-title web3-gradient-text text-xl md:text-2xl font-bold tracking-wide uppercase"
+    }, collection?.name)), /*#__PURE__*/ React.createElement("div", {
+        className: "flex justify-center text-muted-foreground"
     }, collection?.description && /*#__PURE__*/ React.createElement(Editor, {
         rows: collection?.description
     })), /*#__PURE__*/ React.createElement("div", {
-        className: "mt-3"
+        className: "mt-8"
     }, /*#__PURE__*/ React.createElement(ProductList, {
         products: collection?.products?.items,
         gridColumns: countPerRow

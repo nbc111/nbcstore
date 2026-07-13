@@ -1,3 +1,5 @@
+@import './web3-theme.scss';
+
 @layer base {
   $font-size-sm: 0.875rem;
   $font-size-md: 0.875rem;
@@ -9,9 +11,18 @@
 
   $font-size-base: $font-size-sm;
 
+  body.frontStore {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-size: 100%;
+    color: #f0f0f5;
+    background: #0a0a0f;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
     font-size: 100%;
-    color: #3a3a3a;
+    color: #f0f0f5;
     input[type='email'],
     input[type='password'],
     input[type='tel'],
@@ -168,11 +179,11 @@
     margin: 0 auto;
   }
   .page-width {
-    max-width: 1200px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 0 22px;
     @media screen and (min-width: 1200px) {
-      padding: 0 55px;
+      padding: 0 48px;
     }
   }
 

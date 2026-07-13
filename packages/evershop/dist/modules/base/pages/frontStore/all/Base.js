@@ -15,8 +15,11 @@ export default function Base({ myCart, customer, themeConfig, addMineCartItemApi
         cart: myCart,
         query: `${query}\n${fragments}`,
         addMineCartItemApi: addMineCartItemApi
-    }, /*#__PURE__*/ React.createElement(LoadingBar, null), /*#__PURE__*/ React.createElement(Header, null), /*#__PURE__*/ React.createElement("main", {
-        className: "content"
+    }, /*#__PURE__*/ React.createElement(LoadingBar, null), /*#__PURE__*/ React.createElement("div", {
+        className: "web3-bg",
+        "aria-hidden": "true"
+    }), /*#__PURE__*/ React.createElement(Header, null), /*#__PURE__*/ React.createElement("main", {
+        className: "content relative z-0"
     }, /*#__PURE__*/ React.createElement(Area, {
         id: "content",
         noOuter: true

@@ -70,10 +70,7 @@ const Image = ({ data, columnSize })=>{
         target: "_blank",
         rel: "noopener noreferrer"
     }, imageElement) : imageElement, caption && /*#__PURE__*/ React.createElement("p", {
-        style: {
-            textAlign: 'center',
-            marginTop: '10px'
-        }
+        className: "text-center mt-2.5 text-muted-foreground text-sm"
     }, caption));
 };
 const RawHtml = ({ data })=>{
@@ -85,7 +82,7 @@ const RawHtml = ({ data })=>{
 };
 const RenderEditorJS = ({ blocks, columnSize })=>{
     return /*#__PURE__*/ React.createElement("div", {
-        className: "prose prose-base max-w-none text-base"
+        className: "prose prose-base prose-invert max-w-none text-base"
     }, blocks.map((block, index)=>{
         switch(block.type){
             case 'paragraph':

@@ -24,7 +24,7 @@ export const ProductListItemRender = ({
 }) => {
   if (layout === 'list') {
     return (
-      <div className="product__list__item__inner group relative overflow-hidden flex gap-4 p-4">
+      <div className="web3-product-card product__list__item__inner group relative overflow-hidden flex gap-4 p-4">
         <div className="product__list__image flex-shrink-0">
           <a href={product.url}>
             {product.image && (
@@ -55,7 +55,7 @@ export const ProductListItemRender = ({
               </a>
             </h3>
 
-            <div className="product__list__sku text-sm text-gray-600 mb-2">
+            <div className="product__list__sku text-sm text-muted-foreground mb-2 font-mono">
               {_('SKU ${sku}', { sku: product.sku })}
             </div>
 
@@ -85,11 +85,11 @@ export const ProductListItemRender = ({
 
             <div className="product__list__stock mb-3">
               {product.inventory.isInStock ? (
-                <span className="text-green-600 text-sm font-medium">
+                <span className="text-[#00ff88] text-sm font-medium font-mono">
                   {_('In Stock')}
                 </span>
               ) : (
-                <span className="text-red-600 text-sm font-medium">
+                <span className="text-destructive text-sm font-medium">
                   {_('Out of Stock')}
                 </span>
               )}
@@ -131,30 +131,30 @@ export const ProductListItemRender = ({
   }
 
   return (
-    <div className="product__list__item__inner group overflow-hidden">
-      <a href={product.url} className="product__list__link block">
-        <div className="product__list__image overflow-hidden flex w-full justify-center">
+    <div className="web3-product-card product__list__item__inner group overflow-hidden">
+      <a href={product.url} className="product__list__link block p-3 pb-0">
+        <div className="product__list__image overflow-hidden flex w-full justify-center rounded-xl bg-muted/20 aspect-square items-center">
           {product.image && (
             <Image
               src={product.image.url}
               alt={product.image.alt || product.name}
               width={imageWidth || 120}
               height={imageHeight || 120}
-              sizes="(max-width: 768px) 100vw, 33vw" // Assume 3 columns on larger screens
-              className="transition-transform duration-500 ease-in-out group-hover:scale-110"
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="transition-transform duration-500 ease-in-out group-hover:scale-105 object-cover w-full h-full"
             />
           )}
           {!product.image && (
             <ProductNoThumbnail width={imageWidth} height={imageHeight} />
           )}
         </div>
-        <div className="product__list__info mt-3">
-          <h3 className="product__list__name h5 font-medium">{product.name}</h3>
-          <div className="product__list__price">
+        <div className="product__list__info mt-3 px-1 pb-3">
+          <h3 className="product__list__name h5 font-medium text-foreground line-clamp-2">{product.name}</h3>
+          <div className="product__list__price mt-1.5 flex items-center gap-2">
             {product.price.special &&
             product.price.regular < product.price.special ? (
               <>
-                <span className="regular-price">
+                <span className="regular-price line-through opacity-50 text-sm">
                   {product.price.regular.text}
                 </span>
                 <span className="special-price">
@@ -170,7 +170,7 @@ export const ProductListItemRender = ({
         </div>
       </a>
       {showAddToCart && (
-        <div className="product__list__actions p-4 invisible transform translate-y-4 transition-all duration-300 ease-in-out group-hover:visible group-hover:translate-y-0">
+        <div className="product__list__actions px-3 pb-3 invisible transform translate-y-2 transition-all duration-300 ease-in-out group-hover:visible group-hover:translate-y-0">
           {customAddToCartRenderer ? (
             customAddToCartRenderer(product)
           ) : (

@@ -27,13 +27,13 @@ export default function ProductView({
 
   return (
     <ProductProvider product={productWithNbcRate}>
-      <div className="product__detail">
+      <div className="product__detail web3-product-detail">
         <Area id="productPageTop" className="product__page__top" />
         <div className="product__page__middle page-width">
           <div className="grid grid-cols-1 gap-7 md:grid-cols-2">
             <Area
               id="productPageMiddleLeft"
-              className="product__detail__left"
+              className="product__detail__left web3-glass rounded-2xl overflow-hidden p-2"
               coreComponents={[
                 {
                   component: { default: <Media /> },
@@ -44,7 +44,7 @@ export default function ProductView({
             />
             <Area
               id="productPageMiddleRight"
-              className="product__detail__right"
+              className="product__detail__right web3-detail-panel"
               coreComponents={[
                 {
                   component: { default: <ProductSingleName /> },

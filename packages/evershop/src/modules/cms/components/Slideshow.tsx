@@ -7,7 +7,7 @@ function PrevArrow(props: any) {
   const { onClick } = props;
   return (
     <button
-      className="absolute bottom-[20px] right-[70px] z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white transition-all hover:bg-black/70 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/50 md:bottom-[20px] md:right-[70px] md:h-10 md:w-10"
+      className="absolute bottom-[20px] right-[70px] z-20 flex h-10 w-10 items-center justify-center rounded-full web3-glass border border-primary/30 text-primary transition-all hover:border-primary/60 hover:shadow-[0_0_16px_rgba(0,240,255,0.3)] focus:outline-none focus:ring-2 focus:ring-primary/50 md:bottom-[20px] md:right-[70px] md:h-10 md:w-10"
       onClick={onClick}
       aria-label="Previous slide"
       type="button"
@@ -34,7 +34,7 @@ function NextArrow(props: any) {
   const { onClick } = props;
   return (
     <button
-      className="absolute bottom-[20px] right-5 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white transition-all hover:bg-black/70 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/50 md:bottom-[20px] md:right-5 md:h-10 md:w-10"
+      className="absolute bottom-[20px] right-5 z-20 flex h-10 w-10 items-center justify-center rounded-full web3-glass border border-primary/30 text-primary transition-all hover:border-primary/60 hover:shadow-[0_0_16px_rgba(0,240,255,0.3)] focus:outline-none focus:ring-2 focus:ring-primary/50 md:bottom-[20px] md:right-5 md:h-10 md:w-10"
       onClick={onClick}
       aria-label="Next slide"
       type="button"
@@ -64,10 +64,10 @@ function CustomDot(props: any) {
   return (
     <button
       onClick={onClick}
-      className={`mx-1 my-0 h-3 w-3 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-white/50 md:h-3 md:w-3 ${
+      className={`mx-1 my-0 h-2.5 w-2.5 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 md:h-2.5 md:w-2.5 ${
         isActive
-          ? '!bg-black scale-125 shadow-md'
-          : '!bg-black/70 !hover:bg-black/90'
+          ? '!bg-primary scale-125 shadow-[0_0_8px_rgba(0,240,255,0.6)]'
+          : '!bg-primary/30 !hover:bg-primary/60'
       }`}
       aria-label="Go to slide"
       type="button"
@@ -173,19 +173,21 @@ export default function Slideshow({
                 priority={true}
               />
 
+              <div className="absolute inset-0 web3-hero-overlay" />
+
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 md:p-8">
                 {(slide.headline ||
                   slide.subText ||
                   (slide.buttonText && slide.buttonLink)) && (
-                  <div className="p-4 md:p-8 rounded-lg max-w-3xl">
+                  <div className="p-4 md:p-8 rounded-2xl max-w-3xl web3-glass border border-white/10">
                     {slide.headline && (
-                      <h2 className="text-white text-2xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-4 drop-shadow-lg">
+                      <h2 className="web3-hero-title web3-gradient-text text-2xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-4">
                         {slide.headline}
                       </h2>
                     )}
 
                     {slide.subText && (
-                      <p className="text-white text-sm md:text-base lg:text-lg mb-4 md:mb-8 max-w-2xl mx-auto drop-shadow-md">
+                      <p className="text-foreground/80 text-sm md:text-base lg:text-lg mb-4 md:mb-8 max-w-2xl mx-auto">
                         {slide.subText}
                       </p>
                     )}
@@ -193,10 +195,7 @@ export default function Slideshow({
                     {slide.buttonText && slide.buttonLink && (
                       <a
                         href={slide.buttonLink}
-                        className="inline-block px-6 py-3 rounded-lg text-white font-medium transition-all hover:opacity-90 hover:scale-105"
-                        style={{
-                          backgroundColor: slide.buttonColor || '#3B82F6'
-                        }}
+                        className="web3-glow-btn inline-block px-8 py-3 rounded-full font-medium transition-all hover:scale-105"
                       >
                         {slide.buttonText}
                       </a>

@@ -45,8 +45,9 @@ export default function Base({
         addMineCartItemApi={addMineCartItemApi}
       >
         <LoadingBar />
+        <div className="web3-bg" aria-hidden="true" />
         <Header />
-        <main className="content">
+        <main className="content relative z-0">
           <Area id="content" noOuter />
         </main>
         <Footer copyRight={themeConfig.copyRight} />

@@ -1,0 +1,229 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ── Web3 ambient background ── */
+.web3-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0, 240, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(168, 85, 247, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(0, 255, 136, 0.03) 0%, transparent 70%),
+    #0a0a0f;
+}
+
+.web3-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 80%);
+}
+
+/* ── Glass surfaces ── */
+.web3-glass {
+  background: rgba(18, 18, 26, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.web3-glass-hover {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+
+  &:hover {
+    border-color: rgba(0, 240, 255, 0.35);
+    box-shadow:
+      0 0 24px rgba(0, 240, 255, 0.08),
+      0 8px 32px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+  }
+}
+
+/* ── Neon text gradient ── */
+.web3-gradient-text {
+  background: linear-gradient(135deg, #00f0ff 0%, #a855f7 50%, #00ff88 100%);
+  -webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Neon glow button ── */
+.web3-glow-btn {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  color: #00f0ff;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.15);
+  transition: all 0.25s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%);
+    border-color: rgba(0, 240, 255, 0.7);
+    box-shadow: 0 0 28px rgba(0, 240, 255, 0.3);
+    color: #fff;
+  }
+}
+
+/* ── Section divider ── */
+.web3-section-title {
+  position: relative;
+  display: inline-block;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 48px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00f0ff, #a855f7, transparent);
+    border-radius: 2px;
+  }
+}
+
+/* ── Product card ── */
+.web3-product-card {
+  @extend .web3-glass;
+  @extend .web3-glass-hover;
+  border-radius: 16px;
+  overflow: hidden;
+
+  .product__list__name {
+    color: #f0f0f5;
+  }
+
+  .regular-price {
+    color: #00f0ff;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .special-price {
+    color: #00ff88;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+  }
+}
+
+/* ── Header ── */
+.web3-header {
+  @extend .web3-glass;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.12);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Footer ── */
+.web3-footer {
+  background: rgba(10, 10, 15, 0.95);
+  border-top: 1px solid rgba(168, 85, 247, 0.15);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.4), rgba(168, 85, 247, 0.4), transparent);
+  }
+}
+
+/* ── Hero slideshow ── */
+.web3-hero-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(10, 10, 15, 0.75) 0%,
+    rgba(10, 10, 15, 0.3) 50%,
+    rgba(168, 85, 247, 0.2) 100%
+  );
+}
+
+.web3-hero-title {
+  text-shadow: 0 0 40px rgba(0, 240, 255, 0.4);
+  letter-spacing: -0.02em;
+}
+
+/* ── Wallet button in header ── */
+.web3-wallet-btn {
+  @extend .web3-glow-btn;
+  border-radius: 9999px;
+  height: 36px;
+  padding: 0 14px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Product detail page ── */
+.web3-product-detail {
+  .product__page__middle {
+    padding-top: 2rem;
+  }
+}
+
+.web3-detail-panel {
+  @extend .web3-glass;
+  border-radius: 20px;
+  padding: 2rem;
+}
+
+/* ── CMS / prose content on dark background ── */
+.frontStore {
+  .prose {
+    color: #c8c8d4;
+
+    :where(h1, h2, h3, h4, h5, h6):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      color: #f0f0f5;
+      font-weight: 600;
+    }
+
+    :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      color: #c8c8d4;
+    }
+
+    :where(a):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      color: #00f0ff;
+      text-decoration-color: rgba(0, 240, 255, 0.4);
+
+      &:hover {
+        color: #a855f7;
+      }
+    }
+
+    :where(strong):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      color: #f0f0f5;
+    }
+
+    :where(blockquote):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      color: #a0a0b8;
+      border-left-color: rgba(0, 240, 255, 0.4);
+    }
+  }
+
+  .cms__page__heading {
+    color: #f0f0f5;
+  }
+}
+
+/* ── Slideshow dots ── */
+.custom-dots-container {
+  bottom: 24px !important;
+
+  li button {
+    &::before {
+      display: none !important;
+    }
+  }
+}

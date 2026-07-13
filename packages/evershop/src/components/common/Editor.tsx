@@ -109,7 +109,7 @@ const Image: React.FC<{
         imageElement
       )}
       {caption && (
-        <p style={{ textAlign: 'center', marginTop: '10px' }}>{caption}</p>
+        <p className="text-center mt-2.5 text-muted-foreground text-sm">{caption}</p>
       )}
     </div>
   );
@@ -124,7 +124,7 @@ const RenderEditorJS: React.FC<{
   columnSize: number; // Renamed from 'size' to 'columnSize' for clarity
 }> = ({ blocks, columnSize }) => {
   return (
-    <div className="prose prose-base max-w-none text-base">
+    <div className="prose prose-base prose-invert max-w-none text-base">
       {blocks.map((block, index) => {
         switch (block.type) {
           case 'paragraph':

@@ -65,7 +65,7 @@ export default function BasicMenu({
                     e.preventDefault();
                     toggleMenu();
                   }}
-                  className="text-black focus:outline-none"
+                  className="text-foreground focus:outline-none"
                 >
                   <svg
                     className="w-6 h-6"
@@ -87,8 +87,8 @@ export default function BasicMenu({
             <div
               className={cn(
                 isMain
-                  ? 'md:flex absolute md:relative -left-10 md:left-0 top-full md:top-auto mt-2 md:mt-0 w-screen md:w-auto p-2 md:p-0 min-w-62.5 bg-white md:bg-transparent z-30'
-                  : 'flex relative -left-10 md:left-0 w-screen md:w-auto p-2 md:p-0 min-w-62.5 bg-white md:bg-transparent',
+                  ? 'md:flex absolute md:relative -left-10 md:left-0 top-full md:top-auto mt-2 md:mt-0 w-screen md:w-auto p-2 md:p-0 min-w-62.5 web3-glass md:bg-transparent md:border-0 border border-border rounded-xl md:rounded-none z-30'
+                  : 'flex relative -left-10 md:left-0 w-screen md:w-auto p-2 md:p-0 min-w-62.5 web3-glass md:bg-transparent md:border-0 border border-border rounded-xl md:rounded-none',
                 isOpen ? 'block' : 'hidden',
                 'md:flex'
               )}
@@ -123,7 +123,7 @@ export default function BasicMenu({
                       ) : (
                         <NavigationMenuLink
                           href={item.url}
-                          className="w-full md:w-auto px-4 py-2 hover:text-primary data-[active=true]:bg-transparent data-[active=true]:hover:bg-transparent transition-colors data-[active=true]:text-primary data-[active=true]:font-semibold hover:bg-transparent focus:bg-transparent hover:underline text-xl md:text-base"
+                          className="w-full md:w-auto px-4 py-2 text-foreground hover:text-primary data-[active=true]:bg-transparent data-[active=true]:hover:bg-transparent transition-colors data-[active=true]:text-primary data-[active=true]:font-semibold hover:bg-transparent focus:bg-transparent hover:underline text-xl md:text-sm font-medium"
                           data-active={isActive(item.url)}
                         >
                           {item.name}

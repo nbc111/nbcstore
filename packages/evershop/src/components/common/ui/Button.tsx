@@ -9,7 +9,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/80',
+        default: 'bg-primary text-primary-foreground hover:bg-primary/80 shadow-[0_0_12px_rgba(0,240,255,0.2)]',
+        glow: 'web3-glow-btn rounded-full border border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 hover:shadow-[0_0_20px_rgba(0,240,255,0.3)]',
         outline:
           'border-border bg-background hover:bg-muted hover:text-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 aria-expanded:bg-muted aria-expanded:text-foreground shadow-xs',
         secondary:

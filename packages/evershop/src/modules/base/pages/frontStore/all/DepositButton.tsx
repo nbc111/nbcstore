@@ -1018,7 +1018,7 @@ export default function DepositButton({
         render={
           <button
             type="button"
-            className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-background px-3.5 text-sm font-medium text-foreground transition-all hover:bg-muted/40"
+            className="web3-wallet-btn"
           />
         }
       >
@@ -1026,7 +1026,7 @@ export default function DepositButton({
         {_('Deposit')}
       </DialogTrigger>
       <DialogContent
-        className="max-w-[430px] rounded-xl border border-border bg-background p-5 text-foreground shadow-2xl"
+        className="max-w-[430px] rounded-2xl border border-primary/20 web3-glass p-5 text-foreground shadow-[0_0_40px_rgba(0,240,255,0.1)]"
         showCloseButton={false}
       >
         <DialogHeader>

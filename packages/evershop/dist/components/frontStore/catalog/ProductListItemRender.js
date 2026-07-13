@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 export const ProductListItemRender = ({ product, imageWidth, imageHeight, layout = 'grid', showAddToCart = false, customAddToCartRenderer })=>{
     if (layout === 'list') {
         return /*#__PURE__*/ React.createElement("div", {
-            className: "product__list__item__inner group relative overflow-hidden flex gap-4 p-4"
+            className: "web3-product-card product__list__item__inner group relative overflow-hidden flex gap-4 p-4"
         }, /*#__PURE__*/ React.createElement("div", {
             className: "product__list__image flex-shrink-0"
         }, /*#__PURE__*/ React.createElement("a", {
@@ -32,7 +32,7 @@ export const ProductListItemRender = ({ product, imageWidth, imageHeight, layout
             href: product.url,
             className: "hover:text-primary transition-colors"
         }, product.name)), /*#__PURE__*/ React.createElement("div", {
-            className: "product__list__sku text-sm text-gray-600 mb-2"
+            className: "product__list__sku text-sm text-muted-foreground mb-2 font-mono"
         }, _('SKU ${sku}', {
             sku: product.sku
         })), /*#__PURE__*/ React.createElement("div", {
@@ -55,9 +55,9 @@ export const ProductListItemRender = ({ product, imageWidth, imageHeight, layout
         }, product.price.regular.text)), /*#__PURE__*/ React.createElement("div", {
             className: "product__list__stock mb-3"
         }, product.inventory.isInStock ? /*#__PURE__*/ React.createElement("span", {
-            className: "text-green-600 text-sm font-medium"
+            className: "text-[#00ff88] text-sm font-medium font-mono"
         }, _('In Stock')) : /*#__PURE__*/ React.createElement("span", {
-            className: "text-red-600 text-sm font-medium"
+            className: "text-destructive text-sm font-medium"
         }, _('Out of Stock')))), showAddToCart && /*#__PURE__*/ React.createElement("div", {
             className: "product__list__actions invisible transform translate-y-2 transition-all duration-300 ease-in-out group-hover:visible group-hover:translate-y-0"
         }, customAddToCartRenderer ? customAddToCartRenderer(product) : /*#__PURE__*/ React.createElement(AddToCart, {
@@ -77,36 +77,36 @@ export const ProductListItemRender = ({ product, imageWidth, imageHeight, layout
             }, state.isLoading ? _('Adding...') : _('Add to Cart'))))));
     }
     return /*#__PURE__*/ React.createElement("div", {
-        className: "product__list__item__inner group overflow-hidden"
+        className: "web3-product-card product__list__item__inner group overflow-hidden"
     }, /*#__PURE__*/ React.createElement("a", {
         href: product.url,
-        className: "product__list__link block"
+        className: "product__list__link block p-3 pb-0"
     }, /*#__PURE__*/ React.createElement("div", {
-        className: "product__list__image overflow-hidden flex w-full justify-center"
+        className: "product__list__image overflow-hidden flex w-full justify-center rounded-xl bg-muted/20 aspect-square items-center"
     }, product.image && /*#__PURE__*/ React.createElement(Image, {
         src: product.image.url,
         alt: product.image.alt || product.name,
         width: imageWidth || 120,
         height: imageHeight || 120,
         sizes: "(max-width: 768px) 100vw, 33vw",
-        className: "transition-transform duration-500 ease-in-out group-hover:scale-110"
+        className: "transition-transform duration-500 ease-in-out group-hover:scale-105 object-cover w-full h-full"
     }), !product.image && /*#__PURE__*/ React.createElement(ProductNoThumbnail, {
         width: imageWidth,
         height: imageHeight
     })), /*#__PURE__*/ React.createElement("div", {
-        className: "product__list__info mt-3"
+        className: "product__list__info mt-3 px-1 pb-3"
     }, /*#__PURE__*/ React.createElement("h3", {
-        className: "product__list__name h5 font-medium"
+        className: "product__list__name h5 font-medium text-foreground line-clamp-2"
     }, product.name), /*#__PURE__*/ React.createElement("div", {
-        className: "product__list__price"
+        className: "product__list__price mt-1.5 flex items-center gap-2"
     }, product.price.special && product.price.regular < product.price.special ? /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("span", {
-        className: "regular-price"
+        className: "regular-price line-through opacity-50 text-sm"
     }, product.price.regular.text), /*#__PURE__*/ React.createElement("span", {
         className: "special-price"
     }, product.price.special.text)) : /*#__PURE__*/ React.createElement("span", {
         className: "regular-price"
     }, product.price.regular.text)))), showAddToCart && /*#__PURE__*/ React.createElement("div", {
-        className: "product__list__actions p-4 invisible transform translate-y-4 transition-all duration-300 ease-in-out group-hover:visible group-hover:translate-y-0"
+        className: "product__list__actions px-3 pb-3 invisible transform translate-y-2 transition-all duration-300 ease-in-out group-hover:visible group-hover:translate-y-0"
     }, customAddToCartRenderer ? customAddToCartRenderer(product) : /*#__PURE__*/ React.createElement(AddToCart, {
         product: {
             sku: product.sku,

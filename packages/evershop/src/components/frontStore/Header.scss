@@ -1,8 +1,9 @@
 .header {
-  padding: 1rem;
-  border-bottom: 1px solid #ebebeb;
+  padding: 0.75rem 1rem;
+  border-bottom: none;
+
   @media only screen and (min-width: 1200px) {
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-left: 48px;
+    padding-right: 48px;
   }
 }

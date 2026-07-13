@@ -14,7 +14,7 @@ export default function ProductView({ product, nbcWalletPublicConfig }) {
     return /*#__PURE__*/ React.createElement(ProductProvider, {
         product: productWithNbcRate
     }, /*#__PURE__*/ React.createElement("div", {
-        className: "product__detail"
+        className: "product__detail web3-product-detail"
     }, /*#__PURE__*/ React.createElement(Area, {
         id: "productPageTop",
         className: "product__page__top"
@@ -24,7 +24,7 @@ export default function ProductView({ product, nbcWalletPublicConfig }) {
         className: "grid grid-cols-1 gap-7 md:grid-cols-2"
     }, /*#__PURE__*/ React.createElement(Area, {
         id: "productPageMiddleLeft",
-        className: "product__detail__left",
+        className: "product__detail__left web3-glass rounded-2xl overflow-hidden p-2",
         coreComponents: [
             {
                 component: {
@@ -36,7 +36,7 @@ export default function ProductView({ product, nbcWalletPublicConfig }) {
         ]
     }), /*#__PURE__*/ React.createElement(Area, {
         id: "productPageMiddleRight",
-        className: "product__detail__right",
+        className: "product__detail__right web3-detail-panel",
         coreComponents: [
             {
                 component: {

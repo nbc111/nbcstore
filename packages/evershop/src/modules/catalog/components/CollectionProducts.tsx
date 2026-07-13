@@ -24,15 +24,17 @@ export default function CollectionProducts({
     return null;
   }
   return (
-    <div className="pt-7 collection__products__widget">
+    <div className="pt-12 pb-4 collection__products__widget">
       <div className="page-width">
-        <h3 className="text-center uppercase h5 tracking-widest">
-          {collection?.name}
-        </h3>
-        <div className="flex justify-center">
+        <div className="text-center mb-8">
+          <h3 className="web3-section-title web3-gradient-text text-xl md:text-2xl font-bold tracking-wide uppercase">
+            {collection?.name}
+          </h3>
+        </div>
+        <div className="flex justify-center text-muted-foreground">
           {collection?.description && <Editor rows={collection?.description} />}
         </div>
-        <div className="mt-3">
+        <div className="mt-8">
           <ProductList
             products={collection?.products?.items}
             gridColumns={countPerRow}
