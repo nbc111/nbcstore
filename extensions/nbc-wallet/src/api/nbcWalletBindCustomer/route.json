@@ -1,0 +1,5 @@
+{
+  "methods": ["POST"],
+  "path": "/nbcWallet/customer/bind",
+  "access": "public"
+}

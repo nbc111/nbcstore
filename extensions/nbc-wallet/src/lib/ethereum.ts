@@ -1,7 +1,8 @@
 declare global {
   interface Window {
     ethereum?: EthereumProvider;
-    okxwallet?: {
+    /** OKX injects EVM provider at okxwallet or okxwallet.ethereum depending on version */
+    okxwallet?: (EthereumProvider & { isOkxWallet?: boolean }) & {
       ethereum?: EthereumProvider;
     };
   }
@@ -31,32 +32,59 @@ export type WalletChainParams = {
   blockExplorerUrl?: string;
 };
 
+function isEthereumProvider(value: unknown): value is EthereumProvider {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as EthereumProvider).request === 'function'
+  );
+}
+
+function resolveOkxProvider(): EthereumProvider | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  const okx = window.okxwallet;
+  if (!okx) {
+    return null;
+  }
+  if (isEthereumProvider(okx.ethereum)) {
+    return okx.ethereum;
+  }
+  if (isEthereumProvider(okx)) {
+    return okx;
+  }
+  return null;
+}
+
 function getInjectedProviders(): EthereumProvider[] {
   if (typeof window === 'undefined') {
     return [];
   }
   const base = window.ethereum;
-  const list = base?.providers?.length ? base.providers : base ? [base] : [];
-  if (window.okxwallet?.ethereum) {
-    return [...list, window.okxwallet.ethereum];
+  const list = base?.providers?.length ? [...base.providers] : base ? [base] : [];
+  const okxProvider = resolveOkxProvider();
+  if (okxProvider && !list.includes(okxProvider)) {
+    list.push(okxProvider);
   }
   return list;
 }
 
 function pickProvider(kind: WalletProviderKind = 'any'): EthereumProvider | null {
+  if (kind === 'okx') {
+    const providers = getInjectedProviders();
+    return (
+      providers.find((p) => Boolean(p.isOkxWallet)) ||
+      resolveOkxProvider()
+    );
+  }
+
   const providers = getInjectedProviders();
   if (!providers.length) {
     return null;
   }
   if (kind === 'metamask') {
     return providers.find((p) => Boolean(p.isMetaMask)) || null;
-  }
-  if (kind === 'okx') {
-    return (
-      providers.find((p) => Boolean(p.isOkxWallet)) ||
-      window.okxwallet?.ethereum ||
-      null
-    );
   }
   return providers[0] || null;
 }
