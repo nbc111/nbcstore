@@ -15,23 +15,23 @@ export function DefaultMiniCartDropdownSummary({
   totalQty: number;
 }) {
   return (
-    <>
-      <div className="minicart__summary flex justify-between items-center mb-3">
-        <span className="font-medium text-gray-900">{_('Subtotal')}:</span>
-        <span className="font-semibold text-lg text-gray-900">
+    <div className="web3-minicart-footer space-y-3">
+      <div className="minicart__summary flex justify-between items-center">
+        <span className="font-medium text-muted-foreground">{_('Subtotal')}:</span>
+        <span className="font-semibold text-lg web3-mono text-primary">
           {total || '—'}
         </span>
       </div>
       <Area id="miniCartSummaryViewCartButtonBefore" noOuter />
       <Button
-        variant={'outline'}
-        size={'lg'}
+        variant="outline"
+        size="lg"
         onClick={() => {
           if (cartUrl) {
             window.location.href = cartUrl;
           }
         }}
-        className="minicart__viewcart__button w-full "
+        className="minicart__viewcart__button w-full web3-tap"
       >
         {_('View Cart (${totalQty})', {
           totalQty: totalQty.toString()
@@ -40,18 +40,18 @@ export function DefaultMiniCartDropdownSummary({
       <Area id="miniCartSummaryViewCartButtonAfter" noOuter />
       <Area id="miniCartSummaryCheckoutButtonBefore" noOuter />
       <Button
-        variant={'default'}
-        size={'lg'}
+        variant="default"
+        size="lg"
         onClick={() => {
           if (checkoutUrl) {
             window.location.href = checkoutUrl;
           }
         }}
-        className="minicart__checkout__button w-full "
+        className="minicart__checkout__button w-full web3-btn-glow web3-tap"
       >
         {_('Checkout')}
       </Button>
       <Area id="miniCartSummaryCheckoutButtonAfter" noOuter />
-    </>
+    </div>
   );
 }

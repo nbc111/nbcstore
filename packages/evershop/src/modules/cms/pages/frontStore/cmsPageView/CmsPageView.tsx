@@ -12,9 +12,11 @@ interface CmsPageViewProps {
 }
 export default function CmsPageView({ page }: CmsPageViewProps) {
   return (
-    <div className="page-width">
-      <div className="prose prose-base max-w-none">
-        <h1 className="cms__page__heading text-center text-3xl">{page.name}</h1>
+    <div className="page-width py-8">
+      <div className="prose prose-base prose-invert max-w-none">
+        <h1 className="cms__page__heading text-center text-3xl md:text-4xl">
+          <span className="web3-gradient-text">{page.name}</span>
+        </h1>
         <Editor rows={page.content} />
       </div>
     </div>

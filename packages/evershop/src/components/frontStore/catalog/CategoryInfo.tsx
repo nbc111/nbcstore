@@ -20,8 +20,8 @@ export function CategoryInfo() {
             priority={true}
           />
         )}
-        <div className="category__info prose prose-base page-width">
-          <h1 className="category__name">{name}</h1>
+        <div className="category__info prose prose-base prose-invert page-width py-8">
+          <h1 className="category__name web3-gradient-text">{name}</h1>
           <div className="category__description">
             <Editor rows={description} />
           </div>

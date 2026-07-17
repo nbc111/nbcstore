@@ -6,18 +6,22 @@ export default function CollectionProducts({ collection, collectionProductsWidge
         return null;
     }
     return /*#__PURE__*/ React.createElement("div", {
-        className: "pt-7 collection__products__widget"
+        className: "collection__products__widget web3-fade-in-up"
     }, /*#__PURE__*/ React.createElement("div", {
-        className: "page-width"
-    }, /*#__PURE__*/ React.createElement("h3", {
-        className: "text-center uppercase h5 tracking-widest"
-    }, collection?.name), /*#__PURE__*/ React.createElement("div", {
-        className: "flex justify-center"
-    }, collection?.description && /*#__PURE__*/ React.createElement(Editor, {
+        className: "page-width relative z-10"
+    }, /*#__PURE__*/ React.createElement("div", {
+        className: "text-center mb-8"
+    }, /*#__PURE__*/ React.createElement("p", {
+        className: "web3-section-title"
+    }, collection?.name), /*#__PURE__*/ React.createElement("h3", {
+        className: "text-2xl md:text-3xl font-bold tracking-tight mt-4"
+    }, /*#__PURE__*/ React.createElement("span", {
+        className: "web3-gradient-text"
+    }, collection?.name))), collection?.description && /*#__PURE__*/ React.createElement("div", {
+        className: "flex justify-center mb-8 max-w-2xl mx-auto text-muted-foreground"
+    }, /*#__PURE__*/ React.createElement(Editor, {
         rows: collection?.description
-    })), /*#__PURE__*/ React.createElement("div", {
-        className: "mt-3"
-    }, /*#__PURE__*/ React.createElement(ProductList, {
+    })), /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(ProductList, {
         products: collection?.products?.items,
         gridColumns: countPerRow
     }))));

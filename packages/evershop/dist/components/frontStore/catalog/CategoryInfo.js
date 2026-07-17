@@ -17,9 +17,9 @@ export function CategoryInfo() {
         height: 1029,
         priority: true
     }), /*#__PURE__*/ React.createElement("div", {
-        className: "category__info prose prose-base page-width"
+        className: "category__info prose prose-base prose-invert page-width py-8"
     }, /*#__PURE__*/ React.createElement("h1", {
-        className: "category__name"
+        className: "category__name web3-gradient-text"
     }, name), /*#__PURE__*/ React.createElement("div", {
         className: "category__description"
     }, /*#__PURE__*/ React.createElement(Editor, {

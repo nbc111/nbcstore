@@ -13,75 +13,22 @@ export const ProductListLoadingSkeleton = ({
 }: LoadingSkeletonProps) => {
   if (layout === 'list') {
     return (
-      <div
-        className="product-list"
-        style={{
-          display: 'flex',
-          flexDirection: 'column' as const,
-          gap: '20px'
-        }}
-      >
+      <div className="product-list flex flex-col gap-5">
         {Array.from({ length: count }).map((_, i) => (
-          <div
-            key={i}
-            className="product-skeleton product-skeleton-list"
-            style={{
-              display: 'flex',
-              gap: '20px'
-            }}
-          >
-            <div
-              className="skeleton-image"
-              style={{
-                flexShrink: 0,
-                width: '120px',
-                height: '120px',
-                backgroundColor: '#f0f0f0'
-              }}
-            />
-            <div className="skeleton-content" style={{ flex: 1 }}>
-              <div
-                className="skeleton-name"
-                style={{
-                  height: '20px',
-                  backgroundColor: '#f0f0f0',
-                  marginBottom: '10px',
-                  width: '60%'
-                }}
-              />
-              <div
-                className="skeleton-sku"
-                style={{
-                  height: '16px',
-                  backgroundColor: '#f0f0f0',
-                  marginBottom: '10px',
-                  width: '30%'
-                }}
-              />
-              <div
-                className="skeleton-price"
-                style={{
-                  height: '20px',
-                  backgroundColor: '#f0f0f0',
-                  marginBottom: '10px',
-                  width: '25%'
-                }}
-              />
-              <div
-                className="skeleton-stock"
-                style={{
-                  height: '16px',
-                  backgroundColor: '#f0f0f0',
-                  width: '20%'
-                }}
-              />
+          <div key={i} className="flex gap-4 p-4 rounded-lg border border-border">
+            <div className="web3-skeleton shrink-0 w-[120px] h-[120px] rounded-lg" />
+            <div className="flex-1 space-y-3">
+              <div className="web3-skeleton h-5 w-3/5" />
+              <div className="web3-skeleton h-4 w-1/4" />
+              <div className="web3-skeleton h-5 w-1/5" />
+              <div className="web3-skeleton h-4 w-1/6" />
             </div>
           </div>
         ))}
       </div>
     );
   }
-  // Compute responsive grid columns class based on gridColumns
+
   const className = (() => {
     switch (gridColumns) {
       case 1:
@@ -100,35 +47,14 @@ export const ProductListLoadingSkeleton = ({
         return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4';
     }
   })();
+
   return (
-    <div className={`product__list grid gap-8 ${className}`}>
+    <div className={`product__list grid gap-6 ${className}`}>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="product-skeleton">
-          <div
-            className="skeleton-image"
-            style={{
-              aspectRatio: '1/1',
-              backgroundColor: '#f0f0f0',
-              marginBottom: '10px'
-            }}
-          />
-          <div
-            className="skeleton-name"
-            style={{
-              height: '20px',
-              backgroundColor: '#f0f0f0',
-              marginBottom: '10px',
-              width: '80%'
-            }}
-          />
-          <div
-            className="skeleton-price"
-            style={{
-              height: '20px',
-              backgroundColor: '#f0f0f0',
-              width: '40%'
-            }}
-          />
+        <div key={i} className="space-y-3">
+          <div className="web3-skeleton aspect-square rounded-lg" />
+          <div className="web3-skeleton h-5 w-4/5" />
+          <div className="web3-skeleton h-4 w-2/5" />
         </div>
       ))}
     </div>

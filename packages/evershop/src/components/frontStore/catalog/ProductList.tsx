@@ -75,7 +75,7 @@ export const ProductList: React.FC<ProductListProps> = ({
     layout === 'list' ? (imageHeight > 150 ? 150 : imageHeight) : imageHeight;
 
   return (
-    <div className={containerClass}>
+    <div className={`${containerClass} web3-stagger`}>
       {products.map((product) => (
         <div
           key={product.productId}

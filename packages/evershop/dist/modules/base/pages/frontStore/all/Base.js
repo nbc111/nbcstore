@@ -16,7 +16,7 @@ export default function Base({ myCart, customer, themeConfig, addMineCartItemApi
         query: `${query}\n${fragments}`,
         addMineCartItemApi: addMineCartItemApi
     }, /*#__PURE__*/ React.createElement(LoadingBar, null), /*#__PURE__*/ React.createElement(Header, null), /*#__PURE__*/ React.createElement("main", {
-        className: "content"
+        className: "content min-h-[60vh]"
     }, /*#__PURE__*/ React.createElement(Area, {
         id: "content",
         noOuter: true

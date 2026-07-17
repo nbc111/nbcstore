@@ -4,12 +4,12 @@ import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import React from 'react';
 export function Footer({ copyRight }) {
     return /*#__PURE__*/ React.createElement("footer", {
-        className: "footer bg-gray-100 mt-24 pt-2.5 pb-2.5 border-t border-gray-300"
+        className: "footer web3-footer mt-24 pt-8 pb-6"
     }, /*#__PURE__*/ React.createElement(Area, {
         id: "footerTop",
         className: "footer__top"
     }), /*#__PURE__*/ React.createElement("div", {
-        className: "footer__middle flex justify-between items-center"
+        className: "footer__middle page-width flex justify-between items-center py-6"
     }, /*#__PURE__*/ React.createElement(Area, {
         id: "footerMiddleLeft",
         className: "footer__middle__left"
@@ -30,7 +30,7 @@ export function Footer({ copyRight }) {
                     }, /*#__PURE__*/ React.createElement("div", {
                         className: "self-center"
                     }, /*#__PURE__*/ React.createElement("div", {
-                        className: "copyright text-center md:text-right text-textSubdued"
+                        className: "copyright text-center md:text-right text-muted-foreground text-sm"
                     }, /*#__PURE__*/ React.createElement("span", null, _(copyRight)))))
                 },
                 sortOrder: 10

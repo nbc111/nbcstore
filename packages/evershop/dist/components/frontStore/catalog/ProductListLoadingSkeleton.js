@@ -2,68 +2,26 @@ import React from 'react';
 export const ProductListLoadingSkeleton = ({ count = 4, gridColumns = 4, layout = 'grid' })=>{
     if (layout === 'list') {
         return /*#__PURE__*/ React.createElement("div", {
-            className: "product-list",
-            style: {
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '20px'
-            }
+            className: "product-list flex flex-col gap-5"
         }, Array.from({
             length: count
         }).map((_, i)=>/*#__PURE__*/ React.createElement("div", {
                 key: i,
-                className: "product-skeleton product-skeleton-list",
-                style: {
-                    display: 'flex',
-                    gap: '20px'
-                }
+                className: "flex gap-4 p-4 rounded-lg border border-border"
             }, /*#__PURE__*/ React.createElement("div", {
-                className: "skeleton-image",
-                style: {
-                    flexShrink: 0,
-                    width: '120px',
-                    height: '120px',
-                    backgroundColor: '#f0f0f0'
-                }
+                className: "web3-skeleton shrink-0 w-[120px] h-[120px] rounded-lg"
             }), /*#__PURE__*/ React.createElement("div", {
-                className: "skeleton-content",
-                style: {
-                    flex: 1
-                }
+                className: "flex-1 space-y-3"
             }, /*#__PURE__*/ React.createElement("div", {
-                className: "skeleton-name",
-                style: {
-                    height: '20px',
-                    backgroundColor: '#f0f0f0',
-                    marginBottom: '10px',
-                    width: '60%'
-                }
+                className: "web3-skeleton h-5 w-3/5"
             }), /*#__PURE__*/ React.createElement("div", {
-                className: "skeleton-sku",
-                style: {
-                    height: '16px',
-                    backgroundColor: '#f0f0f0',
-                    marginBottom: '10px',
-                    width: '30%'
-                }
+                className: "web3-skeleton h-4 w-1/4"
             }), /*#__PURE__*/ React.createElement("div", {
-                className: "skeleton-price",
-                style: {
-                    height: '20px',
-                    backgroundColor: '#f0f0f0',
-                    marginBottom: '10px',
-                    width: '25%'
-                }
+                className: "web3-skeleton h-5 w-1/5"
             }), /*#__PURE__*/ React.createElement("div", {
-                className: "skeleton-stock",
-                style: {
-                    height: '16px',
-                    backgroundColor: '#f0f0f0',
-                    width: '20%'
-                }
+                className: "web3-skeleton h-4 w-1/6"
             })))));
     }
-    // Compute responsive grid columns class based on gridColumns
     const className = (()=>{
         switch(gridColumns){
             case 1:
@@ -83,33 +41,17 @@ export const ProductListLoadingSkeleton = ({ count = 4, gridColumns = 4, layout 
         }
     })();
     return /*#__PURE__*/ React.createElement("div", {
-        className: `product__list grid gap-8 ${className}`
+        className: `product__list grid gap-6 ${className}`
     }, Array.from({
         length: count
     }).map((_, i)=>/*#__PURE__*/ React.createElement("div", {
             key: i,
-            className: "product-skeleton"
+            className: "space-y-3"
         }, /*#__PURE__*/ React.createElement("div", {
-            className: "skeleton-image",
-            style: {
-                aspectRatio: '1/1',
-                backgroundColor: '#f0f0f0',
-                marginBottom: '10px'
-            }
+            className: "web3-skeleton aspect-square rounded-lg"
         }), /*#__PURE__*/ React.createElement("div", {
-            className: "skeleton-name",
-            style: {
-                height: '20px',
-                backgroundColor: '#f0f0f0',
-                marginBottom: '10px',
-                width: '80%'
-            }
+            className: "web3-skeleton h-5 w-4/5"
         }), /*#__PURE__*/ React.createElement("div", {
-            className: "skeleton-price",
-            style: {
-                height: '20px',
-                backgroundColor: '#f0f0f0',
-                width: '40%'
-            }
+            className: "web3-skeleton h-4 w-2/5"
         }))));
 };

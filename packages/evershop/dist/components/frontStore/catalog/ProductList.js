@@ -41,7 +41,7 @@ export const ProductList = ({ products = [], imageWidth = 300, imageHeight = 300
     const itemImageWidth = layout === 'list' ? imageWidth > 150 ? 150 : imageWidth : imageWidth;
     const itemImageHeight = layout === 'list' ? imageHeight > 150 ? 150 : imageHeight : imageHeight;
     return /*#__PURE__*/ React.createElement("div", {
-        className: containerClass
+        className: `${containerClass} web3-stagger`
     }, products.map((product)=>/*#__PURE__*/ React.createElement("div", {
             key: product.productId,
             className: `product__list__item ${layout === 'list' ? 'product__list__item__list' : 'product__list__item__grid'}`

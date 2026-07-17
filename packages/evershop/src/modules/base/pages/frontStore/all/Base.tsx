@@ -46,7 +46,7 @@ export default function Base({
       >
         <LoadingBar />
         <Header />
-        <main className="content">
+        <main className="content min-h-[60vh]">
           <Area id="content" noOuter />
         </main>
         <Footer copyRight={themeConfig.copyRight} />

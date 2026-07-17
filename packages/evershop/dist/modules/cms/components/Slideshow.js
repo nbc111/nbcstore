@@ -5,7 +5,7 @@ import 'slick-carousel/slick/slick.css';
 function PrevArrow(props) {
     const { onClick } = props;
     return /*#__PURE__*/ React.createElement("button", {
-        className: "absolute bottom-[20px] right-[70px] z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white transition-all hover:bg-black/70 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/50 md:bottom-[20px] md:right-[70px] md:h-10 md:w-10",
+        className: "absolute bottom-[20px] right-[70px] z-20 flex h-10 w-10 items-center justify-center rounded-full web3-glass text-foreground transition-all hover:scale-105 hover:shadow-[0_0_20px_var(--web3-glow-cyan)] focus:outline-none focus:ring-2 focus:ring-primary/50 md:bottom-[20px] md:right-[70px] md:h-10 md:w-10",
         onClick: onClick,
         "aria-label": "Previous slide",
         type: "button"
@@ -19,7 +19,7 @@ function PrevArrow(props) {
         strokeWidth: "2",
         strokeLinecap: "round",
         strokeLinejoin: "round",
-        className: "h-6 w-6 md:h-6 md:w-6"
+        className: "h-5 w-5"
     }, /*#__PURE__*/ React.createElement("polyline", {
         points: "15 18 9 12 15 6"
     })));
@@ -27,7 +27,7 @@ function PrevArrow(props) {
 function NextArrow(props) {
     const { onClick } = props;
     return /*#__PURE__*/ React.createElement("button", {
-        className: "absolute bottom-[20px] right-5 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white transition-all hover:bg-black/70 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/50 md:bottom-[20px] md:right-5 md:h-10 md:w-10",
+        className: "absolute bottom-[20px] right-5 z-20 flex h-10 w-10 items-center justify-center rounded-full web3-glass text-foreground transition-all hover:scale-105 hover:shadow-[0_0_20px_var(--web3-glow-cyan)] focus:outline-none focus:ring-2 focus:ring-primary/50 md:bottom-[20px] md:right-5 md:h-10 md:w-10",
         onClick: onClick,
         "aria-label": "Next slide",
         type: "button"
@@ -41,7 +41,7 @@ function NextArrow(props) {
         strokeWidth: "2",
         strokeLinecap: "round",
         strokeLinejoin: "round",
-        className: "h-6 w-6 md:h-6 md:w-6"
+        className: "h-5 w-5"
     }, /*#__PURE__*/ React.createElement("polyline", {
         points: "9 18 15 12 9 6"
     })));
@@ -51,13 +51,35 @@ function CustomDot(props) {
     const isActive = active || className && className.includes('active');
     return /*#__PURE__*/ React.createElement("button", {
         onClick: onClick,
-        className: `mx-1 my-0 h-3 w-3 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-white/50 md:h-3 md:w-3 ${isActive ? '!bg-black scale-125 shadow-md' : '!bg-black/70 !hover:bg-black/90'}`,
+        className: `mx-1 my-0 h-2 w-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 md:h-2.5 md:w-2.5 ${isActive ? '!bg-primary scale-125 shadow-[0_0_8px_var(--web3-glow-cyan)]' : '!bg-foreground/30 hover:!bg-foreground/50'}`,
         "aria-label": "Go to slide",
         type: "button"
     });
 }
 const SliderComponent = Slider;
 export default function Slideshow({ slideshowWidget: { slides = [], autoplay = true, autoplaySpeed = 3000, arrows = true, dots = true } }) {
+    const [currentSlide, setCurrentSlide] = React.useState(0);
+    const [progress, setProgress] = React.useState(0);
+    const progressRef = React.useRef(0);
+    const speed = Number(autoplaySpeed) || 3000;
+    React.useEffect(()=>{
+        if (!autoplay || slides.length <= 1) return;
+        progressRef.current = 0;
+        setProgress(0);
+        const interval = setInterval(()=>{
+            progressRef.current += 100 / (speed / 50);
+            if (progressRef.current >= 100) {
+                progressRef.current = 0;
+            }
+            setProgress(progressRef.current);
+        }, 50);
+        return ()=>clearInterval(interval);
+    }, [
+        autoplay,
+        speed,
+        currentSlide,
+        slides.length
+    ]);
     const settings = {
         dots: false,
         infinite: true,
@@ -65,11 +87,16 @@ export default function Slideshow({ slideshowWidget: { slides = [], autoplay = t
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: Boolean(autoplay),
-        autoplaySpeed: Number(autoplaySpeed) || 3000,
+        autoplaySpeed: speed,
         arrows: Boolean(arrows),
-        fade: false,
+        fade: true,
         pauseOnHover: true,
         adaptiveHeight: true,
+        beforeChange: (_current, next)=>{
+            setCurrentSlide(next);
+            progressRef.current = 0;
+            setProgress(0);
+        },
         nextArrow: arrows ? /*#__PURE__*/ React.createElement(NextArrow, null) : undefined,
         prevArrow: arrows ? /*#__PURE__*/ React.createElement(PrevArrow, null) : undefined,
         customPaging: function(i) {
@@ -97,12 +124,17 @@ export default function Slideshow({ slideshowWidget: { slides = [], autoplay = t
         maxWidth: '100%'
     };
     const sliderStyle = {
-        height: 'auto' // Adaptive height for slider
+        height: 'auto'
     };
     return /*#__PURE__*/ React.createElement("div", {
         className: containerClasses,
         style: containerStyle
-    }, /*#__PURE__*/ React.createElement(SliderComponent, {
+    }, autoplay && slides.length > 1 && /*#__PURE__*/ React.createElement("div", {
+        className: "web3-slide-progress",
+        style: {
+            width: `${progress}%`
+        }
+    }), /*#__PURE__*/ React.createElement(SliderComponent, {
         ...settings,
         style: sliderStyle
     }, slides.map((slide)=>/*#__PURE__*/ React.createElement("div", {
@@ -127,19 +159,20 @@ export default function Slideshow({ slideshowWidget: { slides = [], autoplay = t
             sizes: "100vw",
             priority: true
         }), /*#__PURE__*/ React.createElement("div", {
-            className: "absolute inset-0 flex flex-col items-center justify-center text-center p-4 md:p-8"
+            className: "web3-slide-overlay absolute inset-0"
+        }), /*#__PURE__*/ React.createElement("div", {
+            className: "absolute inset-0 flex flex-col items-center justify-end text-center p-6 md:p-12 pb-16 md:pb-20"
         }, (slide.headline || slide.subText || slide.buttonText && slide.buttonLink) && /*#__PURE__*/ React.createElement("div", {
-            className: "p-4 md:p-8 rounded-lg max-w-3xl"
+            className: "max-w-3xl"
         }, slide.headline && /*#__PURE__*/ React.createElement("h2", {
-            className: "text-white text-2xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-4 drop-shadow-lg"
-        }, slide.headline), slide.subText && /*#__PURE__*/ React.createElement("p", {
-            className: "text-white text-sm md:text-base lg:text-lg mb-4 md:mb-8 max-w-2xl mx-auto drop-shadow-md"
+            className: "text-foreground text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-5 tracking-tight"
+        }, /*#__PURE__*/ React.createElement("span", {
+            className: "web3-gradient-text"
+        }, slide.headline)), slide.subText && /*#__PURE__*/ React.createElement("p", {
+            className: "text-muted-foreground text-sm md:text-lg lg:text-xl mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed"
         }, slide.subText), slide.buttonText && slide.buttonLink && /*#__PURE__*/ React.createElement("a", {
             href: slide.buttonLink,
-            className: "inline-block px-6 py-3 rounded-lg text-white font-medium transition-all hover:opacity-90 hover:scale-105",
-            style: {
-                backgroundColor: slide.buttonColor || '#3B82F6'
-            }
+            className: "web3-btn-glow inline-block px-8 py-3.5 rounded-lg font-semibold text-sm tracking-wide transition-all hover:scale-105"
         }, slide.buttonText))))))));
 }
 export const query = `

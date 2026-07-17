@@ -18,8 +18,12 @@ export default function UserIcon({
 }: UserIconProps) {
   return (
     <div className="self-center customer-icon">
-      <a href={customer ? accountUrl : loginUrl}>
-        <CircleUser className="w-5 h-5 text-foreground hover:text-primary" />
+      <a
+        href={customer ? accountUrl : loginUrl}
+        className="web3-icon-btn"
+        aria-label={customer ? customer.fullName : 'Login'}
+      >
+        <CircleUser className="w-5 h-5" />
       </a>
     </div>
   );

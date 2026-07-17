@@ -1018,7 +1018,7 @@ export default function DepositButton({
         render={
           <button
             type="button"
-            className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-background px-3.5 text-sm font-medium text-foreground transition-all hover:bg-muted/40"
+            className="inline-flex h-9 items-center gap-1.5 justify-center rounded-full border border-primary/30 bg-primary/10 px-3.5 text-sm font-medium text-primary transition-all hover:bg-primary/20 hover:shadow-[0_0_12px_var(--web3-glow-cyan)] active:scale-95 web3-tap"
           />
         }
       >
