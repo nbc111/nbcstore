@@ -505,7 +505,6 @@ export default function DepositButton({
   const [autoSigningIn, setAutoSigningIn] = React.useState(false);
   const [pauseDepositPolling, setPauseDepositPolling] = React.useState(false);
   const [openRefreshing, setOpenRefreshing] = React.useState(false);
-  const [debugLogs, setDebugLogs] = React.useState<string[]>([]);
   const autoSignInAttemptedRef = React.useRef<string | null>(null);
   const sessionReadyRef = React.useRef(false);
   const hasCustomerSession = Boolean(wallet?.walletAddress);
@@ -547,17 +546,7 @@ export default function DepositButton({
     sessionReadyRef.current = hasCustomerSession;
   }, [hasCustomerSession]);
 
-  const pushDebugLog = React.useCallback(
-    (step: string, detail?: unknown) => {
-      const line = `${new Date().toLocaleTimeString()} ${step}`;
-      console.log('[nbc-wallet-debug]', line, detail ?? '');
-      setDebugLogs((prev) => [line, ...prev].slice(0, 8));
-    },
-    []
-  );
-
   const loadDepositData = React.useCallback(async () => {
-    pushDebugLog('Loading deposit data started');
     setLoading(true);
     setError('');
     try {
@@ -571,11 +560,6 @@ export default function DepositButton({
       setDepositAddress(addressData);
       setWallet(walletData);
       setDepositTxs(txData);
-      pushDebugLog('Loading deposit data succeeded', {
-        hasAddress: Boolean(addressData?.depositAddress),
-        hasWallet: Boolean(walletData?.walletAddress),
-        txCount: Array.isArray(txData) ? txData.length : 0
-      });
     } catch (error) {
       console.error('[nbc-wallet] deposit-address error', error);
       const message = mapDepositErrorMessage(
@@ -585,7 +569,6 @@ export default function DepositButton({
       setError(message);
       setDepositAddress(null);
       setDepositTxs([]);
-      pushDebugLog('Loading deposit data failed', { message });
     } finally {
       setLoading(false);
       setOpenRefreshing(false);
@@ -593,7 +576,6 @@ export default function DepositButton({
   }, [
     balanceApi,
     depositAddressApi,
-    pushDebugLog,
     selectedAssetSymbol,
     transactionsApi
   ]);
@@ -625,7 +607,6 @@ export default function DepositButton({
 
   const ensureCustomerSession = React.useCallback(
     async (ethereum: any, walletAddress: string) => {
-      pushDebugLog('Auto sign-in started', { walletAddress });
       const auth = await requestWithTimeout(
         requestWalletAuth(authRequestApi, walletAddress),
         12000,
@@ -648,9 +629,8 @@ export default function DepositButton({
         12000,
         _('Wallet sign-in verify timed out. Please try again.')
       );
-      pushDebugLog('Auto sign-in succeeded');
     },
-    [authRequestApi, authVerifyApi, pushDebugLog]
+    [authRequestApi, authVerifyApi]
   );
 
   React.useEffect(() => {
@@ -691,7 +671,6 @@ export default function DepositButton({
               : _('Please connect wallet and sign in first.');
           sessionReadyRef.current = false;
           setError(message);
-          pushDebugLog('Auto sign-in failed', { message });
         }
       } finally {
         if (!cancelled) {
@@ -711,7 +690,6 @@ export default function DepositButton({
     loadDepositData,
     loadWalletData,
     open,
-    pushDebugLog,
     wallet
   ]);
 
@@ -731,7 +709,6 @@ export default function DepositButton({
     if (activeTab === 'deposit' && !hasCustomerSession && !customer?.uuid) {
       const ethereum = (window as any).ethereum || (window as any).okxwallet?.ethereum;
       if (ethereum?.request) {
-        pushDebugLog('Skipping deposit load while waiting sign-in');
         return;
       }
     }
@@ -769,7 +746,6 @@ export default function DepositButton({
     customer?.uuid,
     hasCustomerSession,
     pauseDepositPolling,
-    pushDebugLog,
     open
   ]);
 
@@ -796,11 +772,9 @@ export default function DepositButton({
   }, []);
 
   const handleDepositAction = React.useCallback(async () => {
-    pushDebugLog('Add funds clicked');
     setError('');
     let targetDepositAddress = depositAddress?.depositAddress || '';
     if (!targetDepositAddress) {
-      pushDebugLog('Deposit address missing, requesting address');
       try {
         const latestAddress = await requestDepositAddress(
           depositAddressApi,
@@ -820,7 +794,6 @@ export default function DepositButton({
     const amountText = String(depositAmount || '').trim();
     if (!amountText || Number(amountText) <= 0) {
       const message = _('Deposit amount must be greater than 0');
-      pushDebugLog('Validation failed: amount <= 0');
       setError(message);
       toast.error(message);
       return;
@@ -829,7 +802,6 @@ export default function DepositButton({
     const ethereum = (window as any).ethereum || (window as any).okxwallet?.ethereum;
     if (!ethereum?.request) {
       const message = _('No Web3 wallet detected. Install MetaMask or another wallet.');
-      pushDebugLog('Validation failed: wallet provider missing');
       setError(message);
       toast.error(message);
       return;
@@ -837,7 +809,6 @@ export default function DepositButton({
 
     try {
       setSubmittingDeposit(true);
-      pushDebugLog('Requesting wallet accounts');
       toast.info(_('Requesting wallet confirmation...'));
       const accounts = (await requestWithTimeout(
         ethereum.request({
@@ -850,7 +821,6 @@ export default function DepositButton({
       if (!from) {
         throw new Error('No wallet account returned');
       }
-      pushDebugLog('Wallet account ready', { from });
 
       let sessionReady = sessionReadyRef.current || hasCustomerSession;
       if (!sessionReady) {
@@ -858,21 +828,15 @@ export default function DepositButton({
         sessionReady = sessionReadyRef.current || hasCustomerSession;
       }
       if (!sessionReady && !customer?.uuid) {
-        pushDebugLog('Customer session missing, starting wallet sign-in');
         await ensureCustomerSession(ethereum, from);
         await loadDepositData();
         sessionReadyRef.current = true;
       } else if (!sessionReady && customer?.uuid) {
-        pushDebugLog('Customer session already exists, skip wallet sign-in');
       }
 
       const chainId = selectedPublicAsset?.chainId || nbcWalletPublicConfig.chainId;
       if (chainId && chainId > 0) {
         const chainIdHex = `0x${Number(chainId).toString(16)}`;
-        pushDebugLog('Switching wallet chain', {
-          chainId,
-          chainIdHex
-        });
         await requestWithTimeout(
           ethereum.request({
             method: 'wallet_switchEthereumChain',
@@ -881,7 +845,6 @@ export default function DepositButton({
           12000,
           _('Wallet network switch timed out. Please switch network in wallet manually.')
         );
-        pushDebugLog('Wallet chain ready');
       }
 
       const tokenAddress = String(selectedPublicAsset?.tokenAddress || '').trim();
@@ -890,12 +853,6 @@ export default function DepositButton({
       if (units <= 0n) {
         throw new Error('Deposit amount must be greater than 0');
       }
-      pushDebugLog('Prepared transfer params', {
-        to: targetDepositAddress,
-        tokenAddress: tokenAddress || null,
-        amount: amountText,
-        units: units.toString()
-      });
 
       const txParams = tokenAddress
         ? {
@@ -909,8 +866,6 @@ export default function DepositButton({
             to: targetDepositAddress,
             value: toRpcHex(units)
           };
-
-      pushDebugLog('Sending transaction request');
       const txHash = (await requestWithTimeout(
         ethereum.request({
           method: 'eth_sendTransaction',
@@ -919,17 +874,11 @@ export default function DepositButton({
         20000,
         _('Wallet transaction request timed out. Please check wallet popup.')
       )) as string;
-
-      pushDebugLog('Transaction submitted', { txHash });
       setError('');
       toast.success(_('Deposit transaction submitted: ${txHash}', { txHash }));
       await loadDepositData();
     } catch (error) {
       const code = (error as any)?.code;
-      pushDebugLog('Deposit flow error', {
-        code: code ?? null,
-        message: error instanceof Error ? error.message : String(error)
-      });
       if (code === 4001) {
         const message = _('Transaction was rejected by wallet');
         setError(message);
@@ -941,7 +890,6 @@ export default function DepositButton({
       toast.error(message);
     } finally {
       setSubmittingDeposit(false);
-      pushDebugLog('Deposit flow finished');
     }
   }, [
     depositAddress?.depositAddress,
@@ -953,7 +901,6 @@ export default function DepositButton({
     nbcWalletPublicConfig.chainId,
     selectedAssetSymbol,
     selectedPublicAsset,
-    pushDebugLog,
     hasCustomerSession,
     loadWalletData
   ]);
@@ -1070,16 +1017,6 @@ export default function DepositButton({
                 selectedAssetSymbol={selectedAssetSymbol}
                 onSelectAsset={handleSelectAsset}
               />
-              {debugLogs.length > 0 && (
-                <div className="rounded-lg border border-border bg-muted/20 p-3 text-xs">
-                  <p className="mb-1 font-medium">{_('Debug logs')}</p>
-                  <div className="space-y-1 font-mono text-muted-foreground">
-                    {debugLogs.map((line, index) => (
-                      <div key={`${line}-${index}`}>{line}</div>
-                    ))}
-                  </div>
-                </div>
-              )}
               {(loading || openRefreshing) && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
